@@ -12,37 +12,48 @@
       font-family: Arial, sans-serif;
       color: white;
     }
+
     header {
+      position: absolute;
+      top: 0;
+      width: 100%;
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 1rem;
-      background-color: #000;
+      background-color: transparent; /* transparente */
       font-size: 2rem;
       font-weight: bold;
+      z-index: 3;
     }
+
     .header-left {
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
+
     .header-left span {
       color: #001f3f;
     }
+
     .icon-bar {
       display: none;
       align-items: center;
       gap: 1rem;
     }
+
     .content {
       display: none;
       flex-direction: column;
       padding: 1rem;
     }
+
     .category-toggle {
       cursor: pointer;
       font-size: 1.5rem;
     }
+
     .categories {
       display: none;
       background-color: #111;
@@ -50,15 +61,18 @@
       border-radius: 0.5rem;
       margin-top: 0.5rem;
     }
+
     .categories span {
       display: block;
       margin: 0.2rem 0;
       cursor: pointer;
     }
+
     .search-container {
       display: flex;
       align-items: center;
     }
+
     .search-box {
       display: none;
       align-items: center;
@@ -67,6 +81,7 @@
       border-radius: 20px;
       margin-left: 0.5rem;
     }
+
     .search-box input {
       background: transparent;
       color: white;
@@ -75,10 +90,12 @@
       width: 150px;
       font-size: 1rem;
     }
+
     .search-toggle {
       cursor: pointer;
       font-size: 1.2rem;
     }
+
     .profile-icon {
       width: 32px;
       height: 32px;
@@ -86,13 +103,35 @@
       background-color: white;
       cursor: pointer;
     }
+
     #password-container {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 80vh;
+      height: 100vh;
+      position: relative;
+      background-image: url('https://i.pinimg.com/736x/f6/82/d6/f682d6277a04b3d4f2c9c09216b7b419.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: 1;
     }
+
+    #password-container::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: -1;
+    }
+
+    #password-container label,
+    #password-container input,
+    #password-container button {
+      z-index: 2;
+    }
+
     input[type="password"] {
       padding: 0.5rem;
       font-size: 1rem;
@@ -100,6 +139,7 @@
       border: none;
       margin-top: 1rem;
     }
+
     button {
       margin-top: 1rem;
       padding: 0.5rem 1rem;
@@ -110,6 +150,7 @@
       border-radius: 5px;
       cursor: pointer;
     }
+
     .home-btn {
       cursor: pointer;
       font-size: 1.5rem;
