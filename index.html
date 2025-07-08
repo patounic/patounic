@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" >
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Patounic</title>
-  <link rel="icon" type="image/webp" href="https://media.discordapp.net/attachments/1381522672558669843/1392046188693553262/1333894209119453256.webp?ex=686e1b8a&is=686cca0a&hm=2d1ad98fa56306479b98ad7fc457079cb7cdfda0bc4316fc9c83fac2d52ed5d1&=&format=webp&width=86&height=86">
+  <link rel="icon" type="image/webp" href="https://media.discordapp.net/attachments/1381522672558669843/1392046188693553262/1333894209119453256.webp?ex=686e1b8a&is=686cca0a&hm=2d1ad98fa56306479b98ad7fc457079cb7cdfda0bc4316fc9c83fac2d52ed5d1&=&format=webp&width=86&height=86" />
   <style>
     * {
       margin: 0;
@@ -15,7 +16,7 @@
     body {
       font-family: Arial, sans-serif;
       color: white;
-      background-color: #000;
+      background-color: black;
       overflow-x: hidden;
       text-align: center;
       padding: 2rem;
@@ -215,6 +216,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="patounic-title">patounic</div>
 
@@ -295,7 +297,7 @@
     const db = getFirestore(app);
 
     const loginContainer = document.getElementById("login-container");
-    const perfilContainer = document.getElementById("site-content");
+    const siteContent = document.getElementById("site-content");
     const profileIcon = document.getElementById("profile-icon");
     const iconBar = document.getElementById("icon-bar");
     const homeBtn = document.getElementById("home-btn");
@@ -322,8 +324,8 @@
         return;
       }
       try {
-        await createUserWithEmailAndPassword(auth, email, senha);
-        await setDoc(doc(db, "usuarios", auth.currentUser.uid), { avatar: "" });
+        const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+        await setDoc(doc(db, "usuarios", userCredential.user.uid), { avatar: "" });
         alert("Registrado com sucesso. Agora faça login.");
       } catch (e) {
         alert("Erro ao registrar: " + e.message);
@@ -369,13 +371,13 @@
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         loginContainer.style.display = "none";
-        perfilContainer.style.display = "flex";
+        siteContent.style.display = "flex";
         iconBar.style.display = "flex";
         homeBtn.style.display = "block";
         await carregarAvatar(user.uid);
       } else {
         loginContainer.style.display = "flex";
-        perfilContainer.style.display = "none";
+        siteContent.style.display = "none";
         iconBar.style.display = "none";
         homeBtn.style.display = "none";
         profileIcon.style.backgroundImage = "";
@@ -383,7 +385,7 @@
       document.getElementById("profile-menu").style.display = "none";
     });
 
-    // Funções da UI
+    // Mantendo suas funções originais da UI, só colocando aqui sem alterar
     function toggleCategorias() {
       const categorias = document.getElementById("categorias");
       categorias.style.display = categorias.style.display === "block" ? "none" : "block";
@@ -432,4 +434,5 @@
     };
   </script>
 </body>
+
 </html>
