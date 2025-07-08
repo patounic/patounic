@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="pt-BR" >
-
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Patounic</title>
-  <link rel="icon" type="image/webp" href="https://media.discordapp.net/attachments/1381522672558669843/1392046188693553262/1333894209119453256.webp?ex=686e1b8a&is=686cca0a&hm=2d1ad98fa56306479b98ad7fc457079cb7cdfda0bc4316fc9c83fac2d52ed5d1&=&format=webp&width=86&height=86" />
+  <link rel="icon" type="image/webp" href="https://media.discordapp.net/attachments/1381522672558669843/1392046188693553262/1333894209119453256.webp?ex=686e1b8a&is=686cca0a&hm=2d1ad98fa56306479b98ad7fc457079cb7cdfda0bc4316fc9c83fac2d52ed5d1&=&format=webp&width=86&height=86">
   <style>
     * {
       margin: 0;
@@ -16,10 +15,8 @@
     body {
       font-family: Arial, sans-serif;
       color: white;
-      background-color: black;
+      background-color: #000;
       overflow-x: hidden;
-      text-align: center;
-      padding: 2rem;
     }
 
     header {
@@ -51,7 +48,7 @@
     }
 
     .icon-bar {
-      display: flex;
+      display: none;
       align-items: center;
       gap: 1rem;
       position: relative;
@@ -65,16 +62,17 @@
       padding: 1rem;
     }
 
+    .category-toggle {
+      cursor: pointer;
+      font-size: 1.5rem;
+    }
+
     .categories {
       display: none;
       background-color: #111;
       padding: 0.5rem;
       border-radius: 0.5rem;
       margin-top: 4rem;
-      text-align: left;
-      max-width: 300px;
-      margin-left: auto;
-      margin-right: auto;
     }
 
     .categories span {
@@ -116,33 +114,35 @@
     }
 
     .profile-icon {
-      width: 40px;
-      height: 40px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
-      background-color: #444;
+      background-color: white;
       cursor: pointer;
+      margin: 0;
+      padding: 0;
+      display: block;
       background-size: cover;
       background-position: center;
-      border: 2px solid white;
     }
 
     .profile-menu {
       display: none;
       position: absolute;
       right: 0;
-      top: 50px;
+      top: 40px;
       background-color: #111;
       border-radius: 6px;
       overflow: hidden;
       z-index: 20;
-      min-width: 120px;
-      text-align: left;
+      min-width: 100px;
     }
 
     .profile-menu div {
       padding: 0.4rem 1rem;
       cursor: pointer;
       white-space: nowrap;
+      color: white;
     }
 
     .profile-menu div:hover {
@@ -153,45 +153,28 @@
       color: red;
     }
 
-    #login-container, #password-container {
+    #password-container {
       background-image: url("https://i.pinimg.com/736x/31/9d/88/319d889cb884fd2bdfce68c7eacc3017.jpg");
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
       width: 100vw;
       height: 100vh;
-      display: flex;
+      display: none;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       position: relative;
-      gap: 1rem;
+    }
+
+    .senha-box {
+      background-color: rgba(0, 0, 0, 0.5);
       padding: 2rem;
-      box-sizing: border-box;
-      max-width: 400px;
-      margin: 0 auto;
       border-radius: 15px;
-      background-color: rgba(0,0,0,0.7);
-    }
-
-    #login-container input, #login-container button {
-      width: 100%;
-      padding: 0.6rem;
-      margin-top: 0.7rem;
-      font-size: 1rem;
-      border-radius: 5px;
-      border: none;
-    }
-
-    #login-container button {
-      background-color: #5865f2;
-      color: white;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    #login-container button:hover {
-      background-color: #4558c9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 2;
     }
 
     .patounic-title {
@@ -207,24 +190,53 @@
       z-index: 3;
     }
 
+    input[type="password"] {
+      padding: 0.5rem;
+      font-size: 1rem;
+      border-radius: 5px;
+      border: none;
+      margin-top: 1rem;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    button {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border: none;
+      background-color: #5865f2;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
     .home-btn {
       cursor: pointer;
       font-size: 1.5rem;
-      display: none;
-      color: white;
-      user-select: none;
     }
   </style>
 </head>
-
 <body>
-  <div class="patounic-title">patounic</div>
+  <script>
+    window.onload = () => {
+      const logado = localStorage.getItem("logado");
+      if (logado === "true") {
+        document.getElementById("site-content").style.display = "flex";
+        document.getElementById("icon-bar").style.display = "flex";
+        document.getElementById("home-btn").style.display = "block";
+        carregarFoto();
+      } else {
+        document.getElementById("password-container").style.display = "flex";
+      }
+    };
+  </script>
 
   <header>
     <div class="header-left">
-      <div class="home-btn" id="home-btn" onclick="voltarHome()">🎬</div>
+      <div class="home-btn" id="home-btn" onclick="voltarHome()" style="display: none;">🎬</div>
     </div>
-    <div class="icon-bar" id="icon-bar" style="display:none;">
+    <div class="icon-bar" id="icon-bar">
       <div class="category-toggle" onclick="toggleCategorias()">🦆</div>
       <div class="search-container">
         <div class="search-box" id="search-box">
@@ -234,25 +246,24 @@
         <div class="search-toggle" id="search-icon" onclick="toggleSearch()">🍿</div>
       </div>
       <div class="profile-container">
-        <div class="profile-icon" onclick="toggleProfileMenu()" id="profile-icon"></div>
+        <div class="profile-icon" id="profile-icon" onclick="toggleProfileMenu()"></div>
         <div class="profile-menu" id="profile-menu">
-          <div onclick="trocarAvatar()">Trocar avatar</div>
-          <div class="logout" onclick="logout()">Sair</div>
+          <div onclick="escolherFoto()">avatar</div>
+          <div class="logout" onclick="logout()">logout</div>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Tela de Login -->
-  <div id="login-container">
-    <h1 style="color:white;">Login Patounic</h1>
-    <input type="email" id="email" placeholder="Seu email" autocomplete="username" />
-    <input type="password" id="senha" placeholder="Senha" autocomplete="current-password" />
-    <button onclick="login()">Entrar</button>
-    <button onclick="registrar()">Registrar</button>
+  <div id="password-container" style="display: none;">
+    <div class="patounic-title">patounic</div>
+    <div class="senha-box">
+      <label for="senha">Digite a senha para entrar:</label>
+      <input type="password" id="senha" placeholder="Senha">
+      <button onclick="verificarSenha()">Entrar</button>
+    </div>
   </div>
 
-  <!-- Conteúdo do site -->
   <div id="site-content" class="content">
     <div class="categories" id="categorias">
       <span onclick="filtrarCategoria('anime')">anime</span>
@@ -267,172 +278,120 @@
     </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import {
-      getAuth,
-      signInWithEmailAndPassword,
-      createUserWithEmailAndPassword,
-      signOut,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import {
-      getFirestore,
-      doc,
-      setDoc,
-      getDoc
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAmgCrKUu8_YrIQwn59gZ9bq97YVWOqF6w",
-      authDomain: "sample-firebase-ai-app-eceff.firebaseapp.com",
-      projectId: "sample-firebase-ai-app-eceff",
-      storageBucket: "sample-firebase-ai-app-eceff.appspot.com",
-      messagingSenderId: "77390794219",
-      appId: "1:77390794219:web:0e53aa6bc3ec2bb9e45dae"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    const loginContainer = document.getElementById("login-container");
-    const siteContent = document.getElementById("site-content");
-    const profileIcon = document.getElementById("profile-icon");
-    const iconBar = document.getElementById("icon-bar");
-    const homeBtn = document.getElementById("home-btn");
-
-    window.login = async function () {
-      const email = document.getElementById("email").value.trim();
-      const senha = document.getElementById("senha").value.trim();
-      if (!email || !senha) {
-        alert("Preencha email e senha!");
-        return;
+  <script>
+    function verificarSenha() {
+      const senha = document.getElementById("senha").value;
+      if (senha === "123") {
+        localStorage.setItem("logado", "true");
+        mostrarSite();
+        carregarFoto();
+      } else {
+        alert("Senha incorreta!");
       }
-      try {
-        await signInWithEmailAndPassword(auth, email, senha);
-      } catch (e) {
-        alert("Erro no login: " + e.message);
-      }
-    };
+    }
 
-    window.registrar = async function () {
-      const email = document.getElementById("email").value.trim();
-      const senha = document.getElementById("senha").value.trim();
-      if (!email || !senha) {
-        alert("Preencha email e senha!");
-        return;
-      }
-      try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-        await setDoc(doc(db, "usuarios", userCredential.user.uid), { avatar: "" });
-        alert("Registrado com sucesso. Agora faça login.");
-      } catch (e) {
-        alert("Erro ao registrar: " + e.message);
-      }
-    };
+    function mostrarSite() {
+      document.getElementById("password-container").style.display = "none";
+      document.getElementById("site-content").style.display = "flex";
+      document.getElementById("icon-bar").style.display = "flex";
+      document.getElementById("home-btn").style.display = "block";
+    }
 
-    window.trocarAvatar = async function () {
+    function voltarHome() {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function escolherFoto() {
       const input = document.createElement("input");
       input.type = "file";
       input.accept = "image/*";
-      input.onchange = async (e) => {
+      input.onchange = (e) => {
         const file = e.target.files[0];
-        if (!file) return;
         const reader = new FileReader();
-        reader.onload = async () => {
+        reader.onload = () => {
           const imageData = reader.result;
-          profileIcon.style.backgroundImage = `url('${imageData}')`;
-          await setDoc(doc(db, "usuarios", auth.currentUser.uid), { avatar: imageData });
+          localStorage.setItem("fotoPerfil", imageData);
+          aplicarFoto(imageData);
         };
         reader.readAsDataURL(file);
       };
       input.click();
-    };
+      toggleProfileMenu(); // fecha o menu ao escolher foto
+    }
 
-    window.logout = function () {
-      signOut(auth);
-    };
+    function aplicarFoto(imageData) {
+      const icon = document.querySelector(".profile-icon");
+      icon.style.backgroundImage = `url('${imageData}')`;
+    }
 
-    async function carregarAvatar(uid) {
-      const docSnap = await getDoc(doc(db, "usuarios", uid));
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        if (data.avatar) {
-          profileIcon.style.backgroundImage = `url('${data.avatar}')`;
-        } else {
-          profileIcon.style.backgroundImage = "";
-        }
+    function carregarFoto() {
+      const savedImage = localStorage.getItem("fotoPerfil");
+      if (savedImage) {
+        aplicarFoto(savedImage);
       } else {
-        profileIcon.style.backgroundImage = "";
+        // Se não tiver, usa um ícone padrão
+        document.querySelector(".profile-icon").style.backgroundImage = `url('https://cdn-icons-png.flaticon.com/512/1077/1077012.png')`;
       }
     }
 
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        loginContainer.style.display = "none";
-        siteContent.style.display = "flex";
-        iconBar.style.display = "flex";
-        homeBtn.style.display = "block";
-        await carregarAvatar(user.uid);
+    function logout() {
+      localStorage.removeItem("logado");
+      document.getElementById("password-container").style.display = "flex";
+      document.getElementById("site-content").style.display = "none";
+      document.getElementById("icon-bar").style.display = "none";
+      document.getElementById("home-btn").style.display = "none";
+      toggleProfileMenu(); // fecha o menu ao sair
+    }
+
+    function toggleProfileMenu() {
+      const menu = document.getElementById("profile-menu");
+      if (menu.style.display === "block") {
+        menu.style.display = "none";
       } else {
-        loginContainer.style.display = "flex";
-        siteContent.style.display = "none";
-        iconBar.style.display = "none";
-        homeBtn.style.display = "none";
-        profileIcon.style.backgroundImage = "";
+        menu.style.display = "block";
       }
-      document.getElementById("profile-menu").style.display = "none";
+    }
+
+    window.addEventListener("click", function(event) {
+      const menu = document.getElementById("profile-menu");
+      const profileIcon = document.getElementById("profile-icon");
+      if (!menu.contains(event.target) && !profileIcon.contains(event.target)) {
+        menu.style.display = "none";
+      }
     });
 
-    // Mantendo suas funções originais da UI, só colocando aqui sem alterar
+    // Categoria toggle e filtro
     function toggleCategorias() {
       const categorias = document.getElementById("categorias");
-      categorias.style.display = categorias.style.display === "block" ? "none" : "block";
+      if (categorias.style.display === "block") {
+        categorias.style.display = "none";
+      } else {
+        categorias.style.display = "block";
+      }
     }
 
-    function toggleSearch() {
-      const box = document.getElementById("search-box");
-      const icon = document.getElementById("search-icon");
+    function filtrarCategoria(categoria) {
+      alert("Filtrando categoria: " + categoria);
+      // Aqui você coloca o código para filtrar os filmes conforme a categoria
+    }
 
-      if (box.style.display === "flex") {
-        box.style.display = "none";
-        icon.style.display = "block";
-        document.getElementById("search-input").value = "";
+    // Pesquisa toggle e função
+    function toggleSearch() {
+      const searchBox = document.getElementById("search-box");
+      if (searchBox.style.display === "flex") {
+        searchBox.style.display = "none";
       } else {
-        box.style.display = "flex";
-        icon.style.display = "none";
+        searchBox.style.display = "flex";
         document.getElementById("search-input").focus();
       }
     }
 
     function handleSearchKey(event) {
       if (event.key === "Enter") {
-        submitSearch();
+        alert("Procurando por: " + event.target.value);
+        // Aqui você pode colocar o código para buscar os filmes
       }
     }
-
-    function submitSearch() {
-      const query = document.getElementById("search-input").value.trim();
-      if (query) {
-        alert(`Você pesquisou por: ${query}`);
-      }
-      toggleSearch();
-    }
-
-    function filtrarCategoria(categoria) {
-      alert(`Você escolheu a categoria: ${categoria}`);
-    }
-
-    function toggleProfileMenu() {
-      const menu = document.getElementById("profile-menu");
-      menu.style.display = menu.style.display === "block" ? "none" : "block";
-    }
-
-    window.voltarHome = function () {
-      alert("Voltando para a página inicial");
-    };
   </script>
 </body>
-
 </html>
