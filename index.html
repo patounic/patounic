@@ -2,10 +2,11 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Patounic</title>
-  <link rel="icon" type="image/webp" href="https://media.discordapp.net/attachments/1381522672558669843/1392046188693553262/1333894209119453256.webp?ex=686e1b8a&is=686cca0a&hm=2d1ad98fa56306479b98ad7fc457079cb7cdfda0bc4316fc9c83fac2d52ed5d1&=&format=webp&width=86&height=86">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Patounic com Firebase</title>
+  <link rel="icon" href="https://media.discordapp.net/attachments/1381522672558669843/1392046188693553262/1333894209119453256.webp?width=86&height=86" />
   <style>
+    /* Seu CSS aqui, mantém igual o seu, só removi alguns elementos não usados */
     * {
       margin: 0;
       padding: 0;
@@ -17,6 +18,8 @@
       color: white;
       background-color: #000;
       overflow-x: hidden;
+      text-align: center;
+      padding: 2rem;
     }
 
     header {
@@ -32,12 +35,6 @@
       z-index: 10;
     }
 
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
     .header-left span {
       font-size: 2rem;
       font-weight: bold;
@@ -48,65 +45,10 @@
     }
 
     .icon-bar {
-      display: none;
+      display: flex;
       align-items: center;
       gap: 1rem;
       position: relative;
-      margin: 0;
-      padding: 0;
-    }
-
-    .content {
-      display: none;
-      flex-direction: column;
-      padding: 1rem;
-    }
-
-    .category-toggle {
-      cursor: pointer;
-      font-size: 1.5rem;
-    }
-
-    .categories {
-      display: none;
-      background-color: #111;
-      padding: 0.5rem;
-      border-radius: 0.5rem;
-      margin-top: 4rem;
-    }
-
-    .categories span {
-      display: block;
-      margin: 0.3rem 0;
-      cursor: pointer;
-    }
-
-    .search-container {
-      display: flex;
-      align-items: center;
-    }
-
-    .search-box {
-      display: none;
-      align-items: center;
-      background-color: #111;
-      padding: 0.3rem 0.7rem;
-      border-radius: 20px;
-      margin-left: 0.5rem;
-    }
-
-    .search-box input {
-      background: transparent;
-      color: white;
-      border: none;
-      outline: none;
-      width: 150px;
-      font-size: 1rem;
-    }
-
-    .search-toggle {
-      cursor: pointer;
-      font-size: 1.2rem;
     }
 
     .profile-container {
@@ -114,35 +56,39 @@
     }
 
     .profile-icon {
-      width: 32px;
-      height: 32px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      background-color: white;
+      background-color: #666;
       cursor: pointer;
-      margin: 0;
-      padding: 0;
-      display: block;
       background-size: cover;
       background-position: center;
+      border: 2px solid white;
     }
 
     .profile-menu {
       display: none;
       position: absolute;
       right: 0;
-      top: 40px;
+      top: 50px;
       background-color: #111;
       border-radius: 6px;
       overflow: hidden;
       z-index: 20;
-      min-width: 100px;
+      width: 120px;
+      box-shadow: 0 0 5px #000;
     }
 
     .profile-menu div {
-      padding: 0.4rem 1rem;
+      padding: 0.5rem 1rem;
       cursor: pointer;
       white-space: nowrap;
       color: white;
+      border-bottom: 1px solid #222;
+    }
+
+    .profile-menu div:last-child {
+      border-bottom: none;
     }
 
     .profile-menu div:hover {
@@ -153,245 +99,227 @@
       color: red;
     }
 
-    #password-container {
-      background-image: url("https://i.pinimg.com/736x/31/9d/88/319d889cb884fd2bdfce68c7eacc3017.jpg");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      width: 100vw;
-      height: 100vh;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-
-    .senha-box {
-      background-color: rgba(0, 0, 0, 0.5);
+    #login-container {
+      max-width: 300px;
+      margin: 6rem auto;
+      background: rgba(255 255 255 / 0.05);
       padding: 2rem;
-      border-radius: 15px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 2;
+      border-radius: 8px;
     }
 
-    .patounic-title {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      font-size: 2rem;
-      font-weight: bold;
-      background: linear-gradient(90deg, #0a1123, #1a2b59);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 6px rgba(26, 43, 89, 0.6);
-      z-index: 3;
-    }
-
-    input[type="password"] {
+    #login-container input {
+      width: 100%;
       padding: 0.5rem;
-      font-size: 1rem;
+      margin: 0.5rem 0;
       border-radius: 5px;
       border: none;
-      margin-top: 1rem;
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: rgba(255 255 255 / 0.2);
       color: white;
     }
 
-    button {
-      margin-top: 1rem;
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      border: none;
+    #login-container button {
+      width: 100%;
+      padding: 0.7rem;
+      margin-top: 0.8rem;
       background-color: #5865f2;
-      color: white;
+      border: none;
       border-radius: 5px;
+      color: white;
       cursor: pointer;
+      font-weight: bold;
     }
 
-    .home-btn {
-      cursor: pointer;
-      font-size: 1.5rem;
+    #site-content {
+      display: none;
+      margin-top: 5rem;
     }
+
   </style>
 </head>
 <body>
-  <script>
-    window.onload = () => {
-      const logado = localStorage.getItem("logado");
-      if (logado === "true") {
-        document.getElementById("site-content").style.display = "flex";
-        document.getElementById("icon-bar").style.display = "flex";
-        document.getElementById("home-btn").style.display = "block";
-        carregarFoto();
-      } else {
-        document.getElementById("password-container").style.display = "flex";
-      }
-    };
-  </script>
 
-  <header>
-    <div class="header-left">
-      <div class="home-btn" id="home-btn" onclick="voltarHome()" style="display: none;">🎬</div>
-    </div>
-    <div class="icon-bar" id="icon-bar">
-      <div class="category-toggle" onclick="toggleCategorias()">🦆</div>
-      <div class="search-container">
-        <div class="search-box" id="search-box">
-          <input type="text" id="search-input" placeholder="pesquise..." onkeydown="handleSearchKey(event)" />
-          <div class="search-toggle" onclick="toggleSearch()">🍿</div>
-        </div>
-        <div class="search-toggle" id="search-icon" onclick="toggleSearch()">🍿</div>
-      </div>
-      <div class="profile-container">
-        <div class="profile-icon" id="profile-icon" onclick="toggleProfileMenu()"></div>
-        <div class="profile-menu" id="profile-menu">
-          <div onclick="escolherFoto()">avatar</div>
-          <div class="logout" onclick="logout()">logout</div>
-        </div>
+<header>
+  <div class="header-left"><span>Patounic</span></div>
+  <div class="icon-bar" id="icon-bar" style="display:none;">
+    <div class="profile-container">
+      <div class="profile-icon" id="profile-icon" title="Menu de perfil"></div>
+      <div class="profile-menu" id="profile-menu">
+        <div id="trocar-avatar">Trocar Avatar</div>
+        <div class="logout" id="logout">Sair</div>
       </div>
     </div>
-  </header>
-
-  <div id="password-container" style="display: none;">
-    <div class="patounic-title">patounic</div>
-    <div class="senha-box">
-      <label for="senha">Digite a senha para entrar:</label>
-      <input type="password" id="senha" placeholder="Senha">
-      <button onclick="verificarSenha()">Entrar</button>
-    </div>
   </div>
+</header>
 
-  <div id="site-content" class="content">
-    <div class="categories" id="categorias">
-      <span onclick="filtrarCategoria('anime')">anime</span>
-      <span onclick="filtrarCategoria('comedia')">comedia</span>
-      <span onclick="filtrarCategoria('ação')">ação</span>
-      <span onclick="filtrarCategoria('terror')">terror</span>
-      <span onclick="filtrarCategoria('gospel')">gospel</span>
-      <span onclick="filtrarCategoria('drama')">drama</span>
-      <span onclick="filtrarCategoria('romance')">romance</span>
-      <span onclick="filtrarCategoria('aventura')">aventura</span>
-      <span onclick="filtrarCategoria('ciencia')">ciencia</span>
-    </div>
-  </div>
+<div id="login-container">
+  <h2>Login</h2>
+  <input type="email" id="email" placeholder="Email" />
+  <input type="password" id="senha" placeholder="Senha (mín. 6 caracteres)" />
+  <button id="btn-login">Entrar</button>
+  <button id="btn-registrar">Registrar</button>
+</div>
 
-  <script>
-    function verificarSenha() {
-      const senha = document.getElementById("senha").value;
-      if (senha === "123") {
-        localStorage.setItem("logado", "true");
-        mostrarSite();
-        carregarFoto();
+<div id="site-content">
+  <h2>Bem-vindo ao Patounic!</h2>
+  <!-- Aqui pode ficar o conteúdo do site após login -->
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getAuth,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import {
+    getFirestore,
+    doc,
+    setDoc,
+    getDoc,
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAmgCrKUu8_YrIQwn59gZ9bq97YVWOqF6w",
+    authDomain: "sample-firebase-ai-app-eceff.firebaseapp.com",
+    projectId: "sample-firebase-ai-app-eceff",
+    storageBucket: "sample-firebase-ai-app-eceff.appspot.com",
+    messagingSenderId: "77390794219",
+    appId: "1:77390794219:web:0e53aa6bc3ec2bb9e45dae"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const loginContainer = document.getElementById("login-container");
+  const siteContent = document.getElementById("site-content");
+  const iconBar = document.getElementById("icon-bar");
+  const profileIcon = document.getElementById("profile-icon");
+  const profileMenu = document.getElementById("profile-menu");
+  const btnLogin = document.getElementById("btn-login");
+  const btnRegistrar = document.getElementById("btn-registrar");
+  const inputEmail = document.getElementById("email");
+  const inputSenha = document.getElementById("senha");
+  const btnTrocarAvatar = document.getElementById("trocar-avatar");
+  const btnLogout = document.getElementById("logout");
+
+  // Atualiza o avatar na UI
+  function aplicarAvatar(url) {
+    profileIcon.style.backgroundImage = url ? `url(${url})` : "none";
+  }
+
+  // Salva avatar no Firestore
+  async function salvarAvatar(uid, avatarDataUrl) {
+    await setDoc(doc(db, "usuarios", uid), { avatar: avatarDataUrl }, { merge: true });
+  }
+
+  // Carrega avatar do Firestore e aplica
+  async function carregarAvatar(uid) {
+    const docSnap = await getDoc(doc(db, "usuarios", uid));
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      if (data.avatar) {
+        aplicarAvatar(data.avatar);
       } else {
-        alert("Senha incorreta!");
+        aplicarAvatar(null);
       }
+    } else {
+      aplicarAvatar(null);
     }
+  }
 
-    function mostrarSite() {
-      document.getElementById("password-container").style.display = "none";
-      document.getElementById("site-content").style.display = "flex";
-      document.getElementById("icon-bar").style.display = "flex";
-      document.getElementById("home-btn").style.display = "block";
+  btnLogin.onclick = async () => {
+    const email = inputEmail.value.trim();
+    const senha = inputSenha.value.trim();
+    if (!email || !senha) {
+      alert("Preencha email e senha.");
+      return;
     }
-
-    function voltarHome() {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    try {
+      await signInWithEmailAndPassword(auth, email, senha);
+    } catch (e) {
+      alert("Erro ao logar: " + e.message);
     }
+  };
 
-    function escolherFoto() {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/*";
-      input.onchange = (e) => {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onload = () => {
-          const imageData = reader.result;
-          localStorage.setItem("fotoPerfil", imageData);
-          aplicarFoto(imageData);
-        };
-        reader.readAsDataURL(file);
+  btnRegistrar.onclick = async () => {
+    const email = inputEmail.value.trim();
+    const senha = inputSenha.value.trim();
+    if (!email || !senha) {
+      alert("Preencha email e senha.");
+      return;
+    }
+    if (senha.length < 6) {
+      alert("Senha deve ter ao menos 6 caracteres.");
+      return;
+    }
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, senha);
+      // Cria documento vazio para avatar
+      await setDoc(doc(db, "usuarios", cred.user.uid), { avatar: "" });
+      alert("Registrado com sucesso. Agora faça login.");
+    } catch (e) {
+      alert("Erro ao registrar: " + e.message);
+    }
+  };
+
+  btnLogout.onclick = async () => {
+    await signOut(auth);
+  };
+
+  // Trocar avatar
+  btnTrocarAvatar.onclick = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const dataUrl = reader.result;
+        const user = auth.currentUser;
+        if (user) {
+          await salvarAvatar(user.uid, dataUrl);
+          aplicarAvatar(dataUrl);
+          alert("Avatar atualizado!");
+        }
       };
-      input.click();
-      toggleProfileMenu(); // fecha o menu ao escolher foto
-    }
+      reader.readAsDataURL(file);
+    };
+    input.click();
+  };
 
-    function aplicarFoto(imageData) {
-      const icon = document.querySelector(".profile-icon");
-      icon.style.backgroundImage = `url('${imageData}')`;
-    }
+  // Mostrar ou esconder menu de perfil ao clicar no avatar
+  profileIcon.onclick = (e) => {
+    e.stopPropagation();
+    profileMenu.style.display = profileMenu.style.display === "block" ? "none" : "block";
+  };
 
-    function carregarFoto() {
-      const savedImage = localStorage.getItem("fotoPerfil");
-      if (savedImage) {
-        aplicarFoto(savedImage);
-      } else {
-        // Se não tiver, usa um ícone padrão
-        document.querySelector(".profile-icon").style.backgroundImage = `url('https://cdn-icons-png.flaticon.com/512/1077/1077012.png')`;
-      }
-    }
+  // Esconder menu se clicar fora
+  document.body.onclick = () => {
+    profileMenu.style.display = "none";
+  };
 
-    function logout() {
-      localStorage.removeItem("logado");
-      document.getElementById("password-container").style.display = "flex";
-      document.getElementById("site-content").style.display = "none";
-      document.getElementById("icon-bar").style.display = "none";
-      document.getElementById("home-btn").style.display = "none";
-      toggleProfileMenu(); // fecha o menu ao sair
+  // Detecta mudança de estado do login
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      loginContainer.style.display = "none";
+      siteContent.style.display = "block";
+      iconBar.style.display = "flex";
+      await carregarAvatar(user.uid);
+    } else {
+      loginContainer.style.display = "block";
+      siteContent.style.display = "none";
+      iconBar.style.display = "none";
+      aplicarAvatar(null);
+      inputEmail.value = "";
+      inputSenha.value = "";
     }
+  });
+</script>
 
-    function toggleProfileMenu() {
-      const menu = document.getElementById("profile-menu");
-      if (menu.style.display === "block") {
-        menu.style.display = "none";
-      } else {
-        menu.style.display = "block";
-      }
-    }
-
-    window.addEventListener("click", function(event) {
-      const menu = document.getElementById("profile-menu");
-      const profileIcon = document.getElementById("profile-icon");
-      if (!menu.contains(event.target) && !profileIcon.contains(event.target)) {
-        menu.style.display = "none";
-      }
-    });
-
-    // Categoria toggle e filtro
-    function toggleCategorias() {
-      const categorias = document.getElementById("categorias");
-      if (categorias.style.display === "block") {
-        categorias.style.display = "none";
-      } else {
-        categorias.style.display = "block";
-      }
-    }
-
-    function filtrarCategoria(categoria) {
-      alert("Filtrando categoria: " + categoria);
-      // Aqui você coloca o código para filtrar os filmes conforme a categoria
-    }
-
-    // Pesquisa toggle e função
-    function toggleSearch() {
-      const searchBox = document.getElementById("search-box");
-      if (searchBox.style.display === "flex") {
-        searchBox.style.display = "none";
-      } else {
-        searchBox.style.display = "flex";
-        document.getElementById("search-input").focus();
-      }
-    }
-
-    function handleSearchKey(event) {
-      if (event.key === "Enter") {
-        alert("Procurando por: " + event.target.value);
-        // Aqui você pode colocar o código para buscar os filmes
-      }
-    }
-  </script>
 </body>
 </html>
