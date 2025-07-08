@@ -117,24 +117,23 @@
     .profile-menu {
       display: none;
       position: absolute;
-      top: 50px;
+      top: 40px;
       right: 0;
       background-color: #111;
       border: 1px solid #333;
       border-radius: 8px;
-      padding: 0.5rem 0;
-      width: 160px;
+      padding: 0.5rem;
       z-index: 20;
     }
 
-    .profile-menu div {
-      padding: 0.5rem 1rem;
-      cursor: pointer;
+    .profile-menu button {
+      background: none;
+      border: none;
       color: white;
-    }
-
-    .profile-menu div:hover {
-      background-color: #222;
+      cursor: pointer;
+      padding: 0.3rem 0.5rem;
+      width: 100%;
+      text-align: left;
     }
 
     #password-container {
@@ -215,10 +214,10 @@
         </div>
         <div class="search-toggle" id="search-icon" onclick="toggleSearch()">🍿</div>
       </div>
-      <div class="profile-icon"></div>
+      <div class="profile-icon" onclick="toggleProfileMenu()"></div>
       <div class="profile-menu" id="profile-menu">
-        <div onclick="escolherFoto()">Avatar</div>
-        <div onclick="logout()">Logout</div>
+        <button onclick="escolherFoto()">Alterar Avatar</button>
+        <button onclick="logout()">Logout</button>
       </div>
     </div>
   </header>
@@ -247,9 +246,20 @@
   </div>
 
   <script>
+    window.onload = function () {
+      if (localStorage.getItem("logado") === "true") {
+        document.getElementById("password-container").style.display = "none";
+        document.getElementById("site-content").style.display = "flex";
+        document.getElementById("icon-bar").style.display = "flex";
+        document.getElementById("home-btn").style.display = "block";
+        carregarFoto();
+      }
+    };
+
     function verificarSenha() {
       const senha = document.getElementById("senha").value;
       if (senha === "123") {
+        localStorage.setItem("logado", "true");
         document.getElementById("password-container").style.display = "none";
         document.getElementById("site-content").style.display = "flex";
         document.getElementById("icon-bar").style.display = "flex";
@@ -262,38 +272,6 @@
 
     function voltarHome() {
       window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-
-    function escolherFoto() {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/*";
-      input.onchange = (e) => {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onload = () => {
-          const imageData = reader.result;
-          localStorage.setItem("fotoPerfil", imageData);
-          aplicarFoto(imageData);
-        };
-        reader.readAsDataURL(file);
-      };
-      input.click();
-      document.getElementById("profile-menu").style.display = "none";
-    }
-
-    function aplicarFoto(imageData) {
-      const icon = document.querySelector(".profile-icon");
-      icon.style.backgroundImage = `url('${imageData}')`;
-      icon.style.backgroundSize = "cover";
-      icon.style.backgroundPosition = "center";
-    }
-
-    function carregarFoto() {
-      const savedImage = localStorage.getItem("fotoPerfil");
-      if (savedImage) {
-        aplicarFoto(savedImage);
-      }
     }
 
     function toggleCategorias() {
@@ -334,12 +312,44 @@
       alert(`Você escolheu a categoria: ${categoria}`);
     }
 
-    document.querySelector(".profile-icon").onclick = function () {
+    function toggleProfileMenu() {
       const menu = document.getElementById("profile-menu");
       menu.style.display = menu.style.display === "block" ? "none" : "block";
-    };
+    }
+
+    function escolherFoto() {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = () => {
+          const imageData = reader.result;
+          localStorage.setItem("fotoPerfil", imageData);
+          aplicarFoto(imageData);
+        };
+        reader.readAsDataURL(file);
+      };
+      input.click();
+    }
+
+    function aplicarFoto(imageData) {
+      const icon = document.querySelector(".profile-icon");
+      icon.style.backgroundImage = `url('${imageData}')`;
+      icon.style.backgroundSize = "cover";
+      icon.style.backgroundPosition = "center";
+    }
+
+    function carregarFoto() {
+      const savedImage = localStorage.getItem("fotoPerfil");
+      if (savedImage) {
+        aplicarFoto(savedImage);
+      }
+    }
 
     function logout() {
+      localStorage.removeItem("logado");
       localStorage.removeItem("fotoPerfil");
       document.getElementById("site-content").style.display = "none";
       document.getElementById("icon-bar").style.display = "none";
@@ -348,14 +358,6 @@
       document.getElementById("senha").value = "";
       document.getElementById("profile-menu").style.display = "none";
     }
-
-    document.addEventListener("click", function (event) {
-      const profileIcon = document.querySelector(".profile-icon");
-      const profileMenu = document.getElementById("profile-menu");
-      if (!profileIcon.contains(event.target) && !profileMenu.contains(event.target)) {
-        profileMenu.style.display = "none";
-      }
-    });
   </script>
 </body>
 </html>
