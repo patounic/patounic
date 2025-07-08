@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Patounic com Firebase</title>
+  <title>Patounic com Firebase 🍿</title>
   <link rel="icon" href="https://media.discordapp.net/attachments/1381522672558669843/1392046188693553262/1333894209119453256.webp?width=86&height=86" />
   <style>
     * {
@@ -29,16 +29,13 @@
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-
       width: 100vw;
       height: 100vh;
-
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 2rem;
-
       background-color: rgba(0, 0, 0, 0.6);
       background-blend-mode: overlay;
     }
@@ -90,6 +87,45 @@
       right: 0;
       width: 100%;
       z-index: 10;
+      gap: 1rem;
+    }
+
+    .search-container {
+      display: flex;
+      align-items: center;
+    }
+
+    .popcorn-icon {
+      font-size: 24px;
+      cursor: pointer;
+      opacity: 0.8;
+      transition: opacity 0.2s ease;
+    }
+
+    .popcorn-icon:hover {
+      opacity: 1;
+    }
+
+    .search-input-wrapper {
+      display: flex;
+      align-items: center;
+      background-color: #111;
+      border-radius: 6px;
+      padding: 0.3rem 0.6rem;
+    }
+
+    .search-input {
+      border: none;
+      background: transparent;
+      outline: none;
+      color: white;
+      padding: 0.4rem;
+    }
+
+    .search-submit-icon {
+      cursor: pointer;
+      font-size: 20px;
+      margin-left: 0.5rem;
     }
 
     .profile-container {
@@ -97,14 +133,17 @@
     }
 
     .profile-icon {
-      width: 40px;
-      height: 40px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
-      background-color: #666;
+      background-color: white;
       cursor: pointer;
+      margin: 0;
+      padding: 0;
+      display: block;
       background-size: cover;
       background-position: center;
-      /* borda removida */
+
     }
 
     .profile-menu {
@@ -136,7 +175,7 @@
       background-color: #222;
     }
 
-    .profile-menu .logout {
+    .logout {
       color: red;
     }
   </style>
@@ -153,6 +192,9 @@
 
   <div id="site-content">
     <div class="icon-bar" id="icon-bar">
+      <div class="search-container" id="search-container">
+        <div class="popcorn-icon" id="popcorn-icon" title="Pesquisar 🍿">🍿</div>
+      </div>
       <div class="profile-container">
         <div class="profile-icon" id="profile-icon" title="Menu de perfil"></div>
         <div class="profile-menu" id="profile-menu">
@@ -204,6 +246,10 @@
     const inputSenha = document.getElementById("senha");
     const btnTrocarAvatar = document.getElementById("trocar-avatar");
     const btnLogout = document.getElementById("logout");
+
+    const searchContainer = document.getElementById("search-container");
+    let searchInputWrapper = null;
+    let popcornIcon = document.getElementById("popcorn-icon");
 
     function aplicarAvatar(url) {
       profileIcon.style.backgroundImage = url ? `url(${url})` : "none";
@@ -296,6 +342,59 @@
       profileMenu.style.display = "none";
     };
 
+    function criarCampoPesquisa() {
+      if (searchInputWrapper) return;
+
+      searchInputWrapper = document.createElement("div");
+      searchInputWrapper.className = "search-input-wrapper";
+
+      const input = document.createElement("input");
+      input.className = "search-input";
+      input.placeholder = "Pesquise...";
+      input.type = "text";
+
+      const submitIcon = document.createElement("div");
+      submitIcon.className = "search-submit-icon";
+      submitIcon.title = "Enviar pesquisa";
+      submitIcon.textContent = "🍿";
+
+      const realizarPesquisa = () => {
+        const termo = input.value.trim();
+        if (termo) {
+          alert("🍿 Pesquisando por: " + termo);
+        }
+        limparCampoPesquisa();
+      };
+
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          realizarPesquisa();
+        }
+      });
+
+      submitIcon.onclick = realizarPesquisa;
+
+      searchInputWrapper.appendChild(input);
+      searchInputWrapper.appendChild(submitIcon);
+      searchContainer.innerHTML = "";
+      searchContainer.appendChild(searchInputWrapper);
+      input.focus();
+    }
+
+    function limparCampoPesquisa() {
+      if (searchInputWrapper) {
+        searchContainer.innerHTML = "";
+        const icon = document.createElement("div");
+        icon.className = "popcorn-icon";
+        icon.id = "popcorn-icon";
+        icon.title = "Pesquisar 🍿";
+        icon.textContent = "🍿";
+        icon.onclick = criarCampoPesquisa;
+        searchContainer.appendChild(icon);
+        searchInputWrapper = null;
+      }
+    }
+
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         loginContainer.style.display = "none";
@@ -311,6 +410,8 @@
         inputSenha.value = "";
       }
     });
+
+    popcornIcon.onclick = criarCampoPesquisa;
   </script>
 
 </body>
