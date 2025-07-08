@@ -1,278 +1,210 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Patounic</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #000;
-      color: white;
       margin: 0;
       padding: 0;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
       background-color: #000;
-      position: relative;
+      font-family: Arial, sans-serif;
+      color: white;
     }
-
-    .logo {
-      color: #0a3d62;
-      font-size: 1.5rem;
+    header {
+      padding: 1rem;
+      background-color: #000;
+      font-size: 2rem;
       font-weight: bold;
+      color: #001f3f;
+      text-align: left;
     }
-
-    .top-right {
+    .content {
+      display: none;
+      flex-direction: column;
+      padding: 1rem;
+    }
+    .top-bar {
       display: flex;
+      justify-content: flex-end;
       align-items: center;
       gap: 1rem;
     }
-
-    /* 🔍 Pesquisa */
+    .category-toggle {
+      cursor: pointer;
+      font-size: 1.5rem;
+    }
+    .categories {
+      display: none;
+      background-color: #111;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .categories span {
+      display: block;
+      margin: 0.2rem 0;
+    }
     .search-container {
       display: flex;
       align-items: center;
       position: relative;
     }
-
-    .search-icon {
+    .search-toggle {
       cursor: pointer;
       font-size: 1.2rem;
     }
-
-    #search-form {
+    .search-box {
       display: none;
-      margin-left: 0.5rem;
-      background-color: rgba(10, 61, 98, 0.5);
-      padding: 0.4rem 0.6rem;
+      align-items: center;
+      background-color: #111;
+      padding: 0.3rem 0.7rem;
       border-radius: 20px;
-      box-shadow: 0 0 5px rgba(255,255,255,0.2);
+      margin-left: 0.5rem;
     }
-
-    #search-form input {
+    .search-box input {
       background: transparent;
       color: white;
       border: none;
       outline: none;
-      width: 140px;
-    }
-
-    #search-form button {
-      background: none;
-      border: none;
-      color: white;
-      cursor: pointer;
+      width: 150px;
       font-size: 1rem;
     }
-
-    /* Perfil */
-    .profile-pic {
-      width: 40px;
-      height: 40px;
+    .search-btn {
+      margin-left: 0.5rem;
+      cursor: pointer;
+      font-size: 1rem;
+      color: white;
+    }
+    .profile-icon {
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       background-color: white;
       cursor: pointer;
-      object-fit: cover;
     }
-
-    #file-input {
-      display: none;
-    }
-
-    #login-box, #content {
+    #password-container {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: calc(100vh - 80px);
-      text-align: center;
+      height: 80vh;
     }
-
-    #content {
-      display: none;
-    }
-
     input[type="password"] {
       padding: 0.5rem;
       font-size: 1rem;
-      margin-top: 1rem;
+      border-radius: 5px;
       border: none;
-      border-radius: 4px;
+      margin-top: 1rem;
     }
-
     button {
+      margin-top: 1rem;
       padding: 0.5rem 1rem;
-      margin-top: 1rem;
       font-size: 1rem;
-      cursor: pointer;
-      background-color: #0a3d62;
-      color: white;
       border: none;
-      border-radius: 4px;
-    }
-
-    #error {
-      color: red;
-      margin-top: 1rem;
-    }
-
-    .duck {
-      font-size: 1.5rem;
+      background-color: #001f3f;
+      color: white;
+      border-radius: 5px;
       cursor: pointer;
-    }
-
-    .categories {
-      display: none;
-      position: absolute;
-      top: 70px;
-      right: 120px;
-      background-color: #111;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(255,255,255,0.1);
-      z-index: 10;
-    }
-
-    .categories ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-
-    .categories li {
-      margin: 0.5rem 0;
-      cursor: pointer;
-    }
-
-    .categories li:hover {
-      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <!-- Cabeçalho -->
-  <header>
-    <div class="logo">Patounic</div>
-    <div class="top-right" id="top-ui" style="display: none;">
-      <div class="duck" onclick="toggleCategories()">🦆</div>
+  <header>Patounic</header>
 
-      <!-- 🔍 Pesquisa -->
-      <div class="search-container">
-        <div class="search-icon" onclick="toggleSearch()">🔍</div>
-        <form id="search-form" onsubmit="submitSearch(event)">
-          <input type="text" id="search-input" placeholder="pesquisar..." />
-          <button type="submit">🔍</button>
-        </form>
+  <div id="password-container">
+    <label for="senha">Digite a senha para entrar:</label>
+    <input type="password" id="senha" placeholder="Senha">
+    <button onclick="verificarSenha()">Entrar</button>
+  </div>
+
+  <div id="site-content" class="content">
+    <div class="top-bar">
+      <div class="category-toggle" onclick="toggleCategorias()">🦆</div>
+      <div class="categories" id="categorias">
+        <span>anime</span>
+        <span>comedia</span>
+        <span>ação</span>
+        <span>terror</span>
+        <span>gospel</span>
+        <span>drama</span>
+        <span>romance</span>
+        <span>aventura</span>
+        <span>ciencia</span>
       </div>
-
-      <!-- Perfil -->
-      <label for="file-input">
-        <img src="" alt="Perfil" class="profile-pic" id="profile-pic"/>
-      </label>
-      <input type="file" id="file-input" accept="image/*" onchange="loadImage(event)" />
+      <div class="search-container">
+        <div class="search-toggle" onclick="toggleSearch()">🔍</div>
+        <div class="search-box" id="search-box">
+          <input type="text" id="search-input" placeholder="pesquise..." onkeydown="handleSearchKey(event)" />
+          <div class="search-btn" onclick="submitSearch()">🔍</div>
+        </div>
+      </div>
+      <div class="profile-icon" onclick="escolherFoto()"></div>
     </div>
-
-    <!-- Categorias -->
-    <div class="categories" id="categories-box">
-      <ul>
-        <li>Anime</li>
-        <li>Comédia</li>
-        <li>Ação</li>
-        <li>Terror</li>
-        <li>Gospel</li>
-        <li>Drama</li>
-        <li>Romance</li>
-        <li>Aventura</li>
-        <li>Ciência</li>
-      </ul>
+    <div style="padding-top: 1rem;">
+      <p>Bem-vindo ao site secreto do Patounic 🦆</p>
     </div>
-  </header>
-
-  <!-- Tela de login -->
-  <div id="login-box">
-    <h2>Digite a senha para entrar:</h2>
-    <input type="password" id="password" placeholder="Senha" />
-    <button onclick="checkPassword()">Entrar</button>
-    <p id="error"></p>
   </div>
 
-  <!-- Conteúdo desbloqueado -->
-  <div id="content">
-    <main style="padding: 2rem; text-align: center;">
-      <h1>Bem-vindo ao site secreto!</h1>
-      <p>Você desbloqueou o conteúdo protegido.</p>
-    </main>
-  </div>
-
-  <!-- Scripts -->
   <script>
-    // Carregar imagem salva
-    window.onload = () => {
-      const img = localStorage.getItem("profilePic");
-      if (img) {
-        document.getElementById("profile-pic").src = img;
-      } else {
-        document.getElementById("profile-pic").src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IndoaXRlIiBzdHJva2U9ImdyYXkiIHN0cm9rZS13aWR0aD0iMiIvPjwvc3ZnPg==";
-      }
-    };
-
-    function checkPassword() {
-      const senha = document.getElementById("password").value;
-      const erro = document.getElementById("error");
-
+    function verificarSenha() {
+      const senha = document.getElementById("senha").value;
       if (senha === "123") {
-        document.getElementById("login-box").style.display = "none";
-        document.getElementById("content").style.display = "block";
-        document.getElementById("top-ui").style.display = "flex";
+        document.getElementById("password-container").style.display = "none";
+        document.getElementById("site-content").style.display = "flex";
       } else {
-        erro.textContent = "Senha incorreta.";
+        alert("Senha incorreta!");
       }
     }
 
-    function loadImage(event) {
-      const file = event.target.files[0];
-      if (file) {
+    function escolherFoto() {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.onchange = (e) => {
+        const file = e.target.files[0];
         const reader = new FileReader();
-        reader.onload = function(e) {
-          const imgData = e.target.result;
-          document.getElementById("profile-pic").src = imgData;
-          localStorage.setItem("profilePic", imgData);
+        reader.onload = () => {
+          document.querySelector(".profile-icon").style.backgroundImage = `url('${reader.result}')`;
+          document.querySelector(".profile-icon").style.backgroundSize = "cover";
+          document.querySelector(".profile-icon").style.backgroundPosition = "center";
         };
         reader.readAsDataURL(file);
-      }
+      };
+      input.click();
     }
 
-    function toggleCategories() {
-      const box = document.getElementById("categories-box");
-      box.style.display = box.style.display === "block" ? "none" : "block";
+    function toggleCategorias() {
+      const categorias = document.getElementById("categorias");
+      categorias.style.display = categorias.style.display === "block" ? "none" : "block";
     }
 
     function toggleSearch() {
-      const form = document.getElementById("search-form");
+      const box = document.getElementById("search-box");
       const input = document.getElementById("search-input");
 
-      if (form.style.display === "block") {
-        form.style.display = "none";
+      if (box.style.display === "flex") {
+        box.style.display = "none";
+        input.value = "";
       } else {
-        form.style.display = "block";
+        box.style.display = "flex";
         input.focus();
       }
     }
 
-    function submitSearch(event) {
-      event.preventDefault();
+    function handleSearchKey(event) {
+      if (event.key === "Enter") {
+        submitSearch();
+      }
+    }
+
+    function submitSearch() {
       const query = document.getElementById("search-input").value.trim();
       if (query) {
         alert(`Você pesquisou por: ${query}`);
       }
-      // Limpa e fecha o campo de busca
-      document.getElementById("search-form").style.display = "none";
+      document.getElementById("search-box").style.display = "none";
       document.getElementById("search-input").value = "";
     }
   </script>
