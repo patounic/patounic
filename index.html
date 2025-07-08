@@ -5,44 +5,64 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Patounic</title>
   <style>
-    body {
+    * {
       margin: 0;
       padding: 0;
-      background-color: #000;
+      box-sizing: border-box;
+    }
+
+    body {
       font-family: Arial, sans-serif;
       color: white;
+      background-color: #000;
+      overflow-x: hidden;
     }
+
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 1rem;
-      background-color: #000;
-      font-size: 2rem;
-      font-weight: bold;
+      background-color: transparent;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 10;
     }
+
     .header-left {
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
+
     .header-left span {
-      color: #001f3f;
+      font-size: 2rem;
+      font-weight: bold;
+      background: linear-gradient(90deg, #0a1123, #1a2b59);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 6px rgba(26, 43, 89, 0.6);
     }
+
     .icon-bar {
       display: none;
       align-items: center;
       gap: 1rem;
     }
+
     .content {
       display: none;
       flex-direction: column;
       padding: 1rem;
     }
+
     .category-toggle {
       cursor: pointer;
       font-size: 1.5rem;
     }
+
     .categories {
       display: none;
       background-color: #111;
@@ -50,15 +70,18 @@
       border-radius: 0.5rem;
       margin-top: 0.5rem;
     }
+
     .categories span {
       display: block;
       margin: 0.2rem 0;
       cursor: pointer;
     }
+
     .search-container {
       display: flex;
       align-items: center;
     }
+
     .search-box {
       display: none;
       align-items: center;
@@ -67,6 +90,7 @@
       border-radius: 20px;
       margin-left: 0.5rem;
     }
+
     .search-box input {
       background: transparent;
       color: white;
@@ -75,10 +99,12 @@
       width: 150px;
       font-size: 1rem;
     }
+
     .search-toggle {
       cursor: pointer;
       font-size: 1.2rem;
     }
+
     .profile-icon {
       width: 32px;
       height: 32px;
@@ -88,17 +114,26 @@
     }
 
     #password-container {
+      background-image: url("https://i.pinimg.com/736x/31/9d/88/319d889cb884fd2bdfce68c7eacc3017.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      width: 100vw;
+      height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 80vh;
-      background-image: url('https://i.pinimg.com/736x/31/9d/88/319d889cb884fd2bdfce68c7eacc3017.jpg');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      text-shadow: 1px 1px 3px #000;
+    }
+
+    .senha-box {
+      background-color: rgba(0, 0, 0, 0.5);
+      padding: 2rem;
+      border-radius: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 2;
     }
 
     input[type="password"] {
@@ -107,6 +142,8 @@
       border-radius: 5px;
       border: none;
       margin-top: 1rem;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
     }
 
     button {
@@ -114,7 +151,7 @@
       padding: 0.5rem 1rem;
       font-size: 1rem;
       border: none;
-      background-color: #001f3f;
+      background-color: #5865f2;
       color: white;
       border-radius: 5px;
       cursor: pointer;
@@ -146,9 +183,11 @@
   </header>
 
   <div id="password-container">
-    <label for="senha">Digite a senha para entrar:</label>
-    <input type="password" id="senha" placeholder="Senha">
-    <button onclick="verificarSenha()">Entrar</button>
+    <div class="senha-box">
+      <label for="senha">Digite a senha para entrar:</label>
+      <input type="password" id="senha" placeholder="Senha">
+      <button onclick="verificarSenha()">Entrar</button>
+    </div>
   </div>
 
   <div id="site-content" class="content">
