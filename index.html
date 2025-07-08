@@ -16,6 +16,7 @@
       color: white;
       background-color: #000;
       overflow-x: hidden;
+      visibility: hidden; /* Evita flash de conteúdo */
     }
 
     header {
@@ -112,6 +113,8 @@
       border-radius: 50%;
       background-color: white;
       cursor: pointer;
+      background-size: cover;
+      background-position: center;
     }
 
     .profile-menu {
@@ -119,21 +122,26 @@
       position: absolute;
       top: 40px;
       right: 0;
-      background-color: #111;
-      border: 1px solid #333;
+      background-color: #222;
       border-radius: 8px;
       padding: 0.5rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
       z-index: 20;
     }
 
     .profile-menu button {
+      display: block;
+      width: 100%;
       background: none;
       border: none;
       color: white;
-      cursor: pointer;
-      padding: 0.3rem 0.5rem;
-      width: 100%;
+      padding: 0.5rem;
       text-align: left;
+      cursor: pointer;
+    }
+
+    .profile-menu button:hover {
+      background-color: #333;
     }
 
     #password-container {
@@ -214,10 +222,12 @@
         </div>
         <div class="search-toggle" id="search-icon" onclick="toggleSearch()">🍿</div>
       </div>
-      <div class="profile-icon" onclick="toggleProfileMenu()"></div>
-      <div class="profile-menu" id="profile-menu">
-        <button onclick="escolherFoto()">Alterar Avatar</button>
-        <button onclick="logout()">Logout</button>
+      <div style="position: relative;">
+        <div class="profile-icon" onclick="toggleProfileMenu()"></div>
+        <div class="profile-menu" id="profile-menu">
+          <button onclick="escolherFoto()">Avatar</button>
+          <button onclick="logout()">Sair</button>
+        </div>
       </div>
     </div>
   </header>
@@ -254,6 +264,7 @@
         document.getElementById("home-btn").style.display = "block";
         carregarFoto();
       }
+      document.body.style.visibility = "visible";
     };
 
     function verificarSenha() {
@@ -282,7 +293,6 @@
     function toggleSearch() {
       const box = document.getElementById("search-box");
       const icon = document.getElementById("search-icon");
-
       if (box.style.display === "flex") {
         box.style.display = "none";
         icon.style.display = "block";
@@ -312,11 +322,6 @@
       alert(`Você escolheu a categoria: ${categoria}`);
     }
 
-    function toggleProfileMenu() {
-      const menu = document.getElementById("profile-menu");
-      menu.style.display = menu.style.display === "block" ? "none" : "block";
-    }
-
     function escolherFoto() {
       const input = document.createElement("input");
       input.type = "file";
@@ -337,8 +342,6 @@
     function aplicarFoto(imageData) {
       const icon = document.querySelector(".profile-icon");
       icon.style.backgroundImage = `url('${imageData}')`;
-      icon.style.backgroundSize = "cover";
-      icon.style.backgroundPosition = "center";
     }
 
     function carregarFoto() {
@@ -348,16 +351,23 @@
       }
     }
 
+    function toggleProfileMenu() {
+      const menu = document.getElementById("profile-menu");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
     function logout() {
       localStorage.removeItem("logado");
-      localStorage.removeItem("fotoPerfil");
-      document.getElementById("site-content").style.display = "none";
-      document.getElementById("icon-bar").style.display = "none";
-      document.getElementById("home-btn").style.display = "none";
-      document.getElementById("password-container").style.display = "flex";
-      document.getElementById("senha").value = "";
-      document.getElementById("profile-menu").style.display = "none";
+      location.reload();
     }
+
+    window.onclick = function (event) {
+      const profileMenu = document.getElementById("profile-menu");
+      const profileIcon = document.querySelector(".profile-icon");
+      if (!profileMenu.contains(event.target) && !profileIcon.contains(event.target)) {
+        profileMenu.style.display = "none";
+      }
+    };
   </script>
 </body>
 </html>
