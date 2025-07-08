@@ -23,7 +23,7 @@
       color: #001f3f;
     }
     .icon-bar {
-      display: flex;
+      display: none;
       align-items: center;
       gap: 1rem;
     }
@@ -50,11 +50,6 @@
     .search-container {
       display: flex;
       align-items: center;
-      position: relative;
-    }
-    .search-toggle {
-      cursor: pointer;
-      font-size: 1.2rem;
     }
     .search-box {
       display: none;
@@ -63,9 +58,6 @@
       padding: 0.3rem 0.7rem;
       border-radius: 20px;
       margin-left: 0.5rem;
-      position: absolute;
-      top: 120%;
-      right: 0;
     }
     .search-box input {
       background: transparent;
@@ -74,6 +66,10 @@
       outline: none;
       width: 150px;
       font-size: 1rem;
+    }
+    .search-toggle {
+      cursor: pointer;
+      font-size: 1.2rem;
     }
     .profile-icon {
       width: 32px;
@@ -111,13 +107,14 @@
 <body>
   <header>
     Patounic
-    <div class="icon-bar">
+    <div class="icon-bar" id="icon-bar">
       <div class="category-toggle" onclick="toggleCategorias()">🦆</div>
       <div class="search-container">
-        <div class="search-toggle" onclick="toggleSearch()">🔍</div>
         <div class="search-box" id="search-box">
           <input type="text" id="search-input" placeholder="pesquise..." onkeydown="handleSearchKey(event)" />
+          <div class="search-toggle" onclick="toggleSearch()">🔍</div>
         </div>
+        <div class="search-toggle" id="search-icon" onclick="toggleSearch()">🔍</div>
       </div>
       <div class="profile-icon" onclick="escolherFoto()"></div>
     </div>
@@ -149,6 +146,7 @@
       if (senha === "123") {
         document.getElementById("password-container").style.display = "none";
         document.getElementById("site-content").style.display = "flex";
+        document.getElementById("icon-bar").style.display = "flex";
       } else {
         alert("Senha incorreta!");
       }
@@ -178,14 +176,16 @@
 
     function toggleSearch() {
       const box = document.getElementById("search-box");
-      const input = document.getElementById("search-input");
+      const icon = document.getElementById("search-icon");
 
       if (box.style.display === "flex") {
         box.style.display = "none";
-        input.value = "";
+        icon.style.display = "block";
+        document.getElementById("search-input").value = "";
       } else {
         box.style.display = "flex";
-        input.focus();
+        icon.style.display = "none";
+        document.getElementById("search-input").focus();
       }
     }
 
@@ -200,8 +200,7 @@
       if (query) {
         alert(`Você pesquisou por: ${query}`);
       }
-      document.getElementById("search-box").style.display = "none";
-      document.getElementById("search-input").value = "";
+      toggleSearch();
     }
   </script>
 </body>
