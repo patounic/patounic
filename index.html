@@ -6,20 +6,67 @@
   <title>Patounic com Firebase</title>
   <link rel="icon" href="https://media.discordapp.net/attachments/1381522672558669843/1392046188693553262/1333894209119453256.webp?width=86&height=86" />
   <style>
-    /* Seu CSS aqui, mantém igual o seu, só removi alguns elementos não usados */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
-    body {
+    body, html {
+      height: 100%;
       font-family: Arial, sans-serif;
       color: white;
       background-color: #000;
       overflow-x: hidden;
-      text-align: center;
+    }
+
+    /* Fundo wallpaper cobrindo a tela inteira no login */
+    #login-container {
+      background-image: url("https://i.pinimg.com/736x/31/9d/88/319d889cb884fd2bdfce68c7eacc3017.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+
+      width: 100vw;
+      height: 100vh;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       padding: 2rem;
+
+      /* Fundo preto semitransparente para melhor legibilidade */
+      background-color: rgba(0, 0, 0, 0.6);
+      background-blend-mode: overlay;
+    }
+
+    #login-container h2 {
+      margin-bottom: 1rem;
+    }
+
+    #login-container input {
+      width: 100%;
+      max-width: 300px;
+      padding: 0.5rem;
+      margin: 0.5rem 0;
+      border-radius: 5px;
+      border: none;
+      background-color: rgba(255 255 255 / 0.2);
+      color: white;
+    }
+
+    #login-container button {
+      width: 100%;
+      max-width: 300px;
+      padding: 0.7rem;
+      margin-top: 0.8rem;
+      background-color: #5865f2;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
     }
 
     header {
@@ -35,13 +82,21 @@
       z-index: 10;
     }
 
-    .header-left span {
+    .header-left {
       font-size: 2rem;
       font-weight: bold;
       background: linear-gradient(90deg, #0a1123, #1a2b59);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       text-shadow: 0 0 6px rgba(26, 43, 89, 0.6);
+      transition: opacity 0.3s ease;
+    }
+
+    .header-left.oculto {
+      opacity: 0;
+      pointer-events: none;
+      width: 0;
+      overflow: hidden;
     }
 
     .icon-bar {
@@ -99,39 +154,10 @@
       color: red;
     }
 
-    #login-container {
-      max-width: 300px;
-      margin: 6rem auto;
-      background: rgba(255 255 255 / 0.05);
-      padding: 2rem;
-      border-radius: 8px;
-    }
-
-    #login-container input {
-      width: 100%;
-      padding: 0.5rem;
-      margin: 0.5rem 0;
-      border-radius: 5px;
-      border: none;
-      background-color: rgba(255 255 255 / 0.2);
-      color: white;
-    }
-
-    #login-container button {
-      width: 100%;
-      padding: 0.7rem;
-      margin-top: 0.8rem;
-      background-color: #5865f2;
-      border: none;
-      border-radius: 5px;
-      color: white;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
     #site-content {
       display: none;
       margin-top: 5rem;
+      text-align: center;
     }
 
   </style>
@@ -139,7 +165,7 @@
 <body>
 
 <header>
-  <div class="header-left"><span>Patounic</span></div>
+  <div class="header-left" id="header-left"><span>Patounic</span></div>
   <div class="icon-bar" id="icon-bar" style="display:none;">
     <div class="profile-container">
       <div class="profile-icon" id="profile-icon" title="Menu de perfil"></div>
@@ -161,7 +187,6 @@
 
 <div id="site-content">
   <h2>Bem-vindo ao Patounic!</h2>
-  <!-- Aqui pode ficar o conteúdo do site após login -->
 </div>
 
 <script type="module">
@@ -204,18 +229,16 @@
   const inputSenha = document.getElementById("senha");
   const btnTrocarAvatar = document.getElementById("trocar-avatar");
   const btnLogout = document.getElementById("logout");
+  const headerLeft = document.getElementById("header-left");
 
-  // Atualiza o avatar na UI
   function aplicarAvatar(url) {
     profileIcon.style.backgroundImage = url ? `url(${url})` : "none";
   }
 
-  // Salva avatar no Firestore
   async function salvarAvatar(uid, avatarDataUrl) {
     await setDoc(doc(db, "usuarios", uid), { avatar: avatarDataUrl }, { merge: true });
   }
 
-  // Carrega avatar do Firestore e aplica
   async function carregarAvatar(uid) {
     const docSnap = await getDoc(doc(db, "usuarios", uid));
     if (docSnap.exists()) {
@@ -257,7 +280,6 @@
     }
     try {
       const cred = await createUserWithEmailAndPassword(auth, email, senha);
-      // Cria documento vazio para avatar
       await setDoc(doc(db, "usuarios", cred.user.uid), { avatar: "" });
       alert("Registrado com sucesso. Agora faça login.");
     } catch (e) {
@@ -269,7 +291,6 @@
     await signOut(auth);
   };
 
-  // Trocar avatar
   btnTrocarAvatar.onclick = () => {
     const input = document.createElement("input");
     input.type = "file";
@@ -292,28 +313,27 @@
     input.click();
   };
 
-  // Mostrar ou esconder menu de perfil ao clicar no avatar
   profileIcon.onclick = (e) => {
     e.stopPropagation();
     profileMenu.style.display = profileMenu.style.display === "block" ? "none" : "block";
   };
 
-  // Esconder menu se clicar fora
   document.body.onclick = () => {
     profileMenu.style.display = "none";
   };
 
-  // Detecta mudança de estado do login
   onAuthStateChanged(auth, async (user) => {
     if (user) {
       loginContainer.style.display = "none";
       siteContent.style.display = "block";
       iconBar.style.display = "flex";
+      headerLeft.classList.add("oculto");  // Faz o Patounic sumir
       await carregarAvatar(user.uid);
     } else {
-      loginContainer.style.display = "block";
+      loginContainer.style.display = "flex";
       siteContent.style.display = "none";
       iconBar.style.display = "none";
+      headerLeft.classList.remove("oculto");
       aplicarAvatar(null);
       inputEmail.value = "";
       inputSenha.value = "";
