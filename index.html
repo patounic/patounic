@@ -12,15 +12,18 @@
       box-sizing: border-box;
     }
 
-    body, html {
+    html, body {
       height: 100%;
       font-family: Arial, sans-serif;
       color: white;
-      background-color: #000;
-      overflow-x: hidden;
+      overflow: hidden;
     }
 
-    /* Fundo wallpaper cobrindo a tela inteira no login */
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
     #login-container {
       background-image: url("https://i.pinimg.com/736x/31/9d/88/319d889cb884fd2bdfce68c7eacc3017.jpg");
       background-size: cover;
@@ -36,7 +39,6 @@
       justify-content: center;
       padding: 2rem;
 
-      /* Fundo preto semitransparente para melhor legibilidade */
       background-color: rgba(0, 0, 0, 0.6);
       background-blend-mode: overlay;
     }
@@ -52,7 +54,7 @@
       margin: 0.5rem 0;
       border-radius: 5px;
       border: none;
-      background-color: rgba(255 255 255 / 0.2);
+      background-color: rgba(255, 255, 255, 0.2);
       color: white;
     }
 
@@ -69,41 +71,25 @@
       font-weight: bold;
     }
 
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem;
-      background-color: transparent;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 10;
-    }
-
-    .header-left {
-      font-size: 2rem;
-      font-weight: bold;
-      background: linear-gradient(90deg, #0a1123, #1a2b59);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 6px rgba(26, 43, 89, 0.6);
-      transition: opacity 0.3s ease;
-    }
-
-    .header-left.oculto {
-      opacity: 0;
-      pointer-events: none;
-      width: 0;
-      overflow: hidden;
+    #site-content {
+      display: none;
+      padding: 2rem;
+      background-color: #000;
+      height: 100vh;
+      text-align: center;
     }
 
     .icon-bar {
       display: flex;
       align-items: center;
-      gap: 1rem;
-      position: relative;
+      justify-content: flex-end;
+      padding: 1rem;
+      background-color: #000;
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      z-index: 10;
     }
 
     .profile-container {
@@ -118,7 +104,7 @@
       cursor: pointer;
       background-size: cover;
       background-position: center;
-      border: 2px solid white;
+      /* borda removida */
     }
 
     .profile-menu {
@@ -153,193 +139,179 @@
     .profile-menu .logout {
       color: red;
     }
-
-    #site-content {
-      display: none;
-      margin-top: 5rem;
-      text-align: center;
-    }
-
   </style>
 </head>
 <body>
 
-<header>
-  <div class="header-left" id="header-left"><span>Patounic</span></div>
-  <div class="icon-bar" id="icon-bar" style="display:none;">
-    <div class="profile-container">
-      <div class="profile-icon" id="profile-icon" title="Menu de perfil"></div>
-      <div class="profile-menu" id="profile-menu">
-        <div id="trocar-avatar">Trocar Avatar</div>
-        <div class="logout" id="logout">Sair</div>
+  <div id="login-container">
+    <h2>Login</h2>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="senha" placeholder="Senha (mín. 6 caracteres)" />
+    <button id="btn-login">Entrar</button>
+    <button id="btn-registrar">Registrar</button>
+  </div>
+
+  <div id="site-content">
+    <div class="icon-bar" id="icon-bar">
+      <div class="profile-container">
+        <div class="profile-icon" id="profile-icon" title="Menu de perfil"></div>
+        <div class="profile-menu" id="profile-menu">
+          <div id="trocar-avatar">Trocar Avatar</div>
+          <div class="logout" id="logout">Sair</div>
+        </div>
       </div>
     </div>
+    <h2>Bem-vindo ao Patounic!</h2>
   </div>
-</header>
 
-<div id="login-container">
-  <h2>Login</h2>
-  <input type="email" id="email" placeholder="Email" />
-  <input type="password" id="senha" placeholder="Senha (mín. 6 caracteres)" />
-  <button id="btn-login">Entrar</button>
-  <button id="btn-registrar">Registrar</button>
-</div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      createUserWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      getDoc,
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-<div id="site-content">
-  <h2>Bem-vindo ao Patounic!</h2>
-</div>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAmgCrKUu8_YrIQwn59gZ9bq97YVWOqF6w",
+      authDomain: "sample-firebase-ai-app-eceff.firebaseapp.com",
+      projectId: "sample-firebase-ai-app-eceff",
+      storageBucket: "sample-firebase-ai-app-eceff.appspot.com",
+      messagingSenderId: "77390794219",
+      appId: "1:77390794219:web:0e53aa6bc3ec2bb9e45dae"
+    };
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import {
-    getAuth,
-    signInWithEmailAndPassword,
-    createUserWithEmailAndPassword,
-    signOut,
-    onAuthStateChanged
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import {
-    getFirestore,
-    doc,
-    setDoc,
-    getDoc,
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAmgCrKUu8_YrIQwn59gZ9bq97YVWOqF6w",
-    authDomain: "sample-firebase-ai-app-eceff.firebaseapp.com",
-    projectId: "sample-firebase-ai-app-eceff",
-    storageBucket: "sample-firebase-ai-app-eceff.appspot.com",
-    messagingSenderId: "77390794219",
-    appId: "1:77390794219:web:0e53aa6bc3ec2bb9e45dae"
-  };
+    const loginContainer = document.getElementById("login-container");
+    const siteContent = document.getElementById("site-content");
+    const iconBar = document.getElementById("icon-bar");
+    const profileIcon = document.getElementById("profile-icon");
+    const profileMenu = document.getElementById("profile-menu");
+    const btnLogin = document.getElementById("btn-login");
+    const btnRegistrar = document.getElementById("btn-registrar");
+    const inputEmail = document.getElementById("email");
+    const inputSenha = document.getElementById("senha");
+    const btnTrocarAvatar = document.getElementById("trocar-avatar");
+    const btnLogout = document.getElementById("logout");
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+    function aplicarAvatar(url) {
+      profileIcon.style.backgroundImage = url ? `url(${url})` : "none";
+    }
 
-  const loginContainer = document.getElementById("login-container");
-  const siteContent = document.getElementById("site-content");
-  const iconBar = document.getElementById("icon-bar");
-  const profileIcon = document.getElementById("profile-icon");
-  const profileMenu = document.getElementById("profile-menu");
-  const btnLogin = document.getElementById("btn-login");
-  const btnRegistrar = document.getElementById("btn-registrar");
-  const inputEmail = document.getElementById("email");
-  const inputSenha = document.getElementById("senha");
-  const btnTrocarAvatar = document.getElementById("trocar-avatar");
-  const btnLogout = document.getElementById("logout");
-  const headerLeft = document.getElementById("header-left");
+    async function salvarAvatar(uid, avatarDataUrl) {
+      await setDoc(doc(db, "usuarios", uid), { avatar: avatarDataUrl }, { merge: true });
+    }
 
-  function aplicarAvatar(url) {
-    profileIcon.style.backgroundImage = url ? `url(${url})` : "none";
-  }
-
-  async function salvarAvatar(uid, avatarDataUrl) {
-    await setDoc(doc(db, "usuarios", uid), { avatar: avatarDataUrl }, { merge: true });
-  }
-
-  async function carregarAvatar(uid) {
-    const docSnap = await getDoc(doc(db, "usuarios", uid));
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      if (data.avatar) {
-        aplicarAvatar(data.avatar);
+    async function carregarAvatar(uid) {
+      const docSnap = await getDoc(doc(db, "usuarios", uid));
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (data.avatar) {
+          aplicarAvatar(data.avatar);
+        } else {
+          aplicarAvatar(null);
+        }
       } else {
         aplicarAvatar(null);
       }
-    } else {
-      aplicarAvatar(null);
     }
-  }
 
-  btnLogin.onclick = async () => {
-    const email = inputEmail.value.trim();
-    const senha = inputSenha.value.trim();
-    if (!email || !senha) {
-      alert("Preencha email e senha.");
-      return;
-    }
-    try {
-      await signInWithEmailAndPassword(auth, email, senha);
-    } catch (e) {
-      alert("Erro ao logar: " + e.message);
-    }
-  };
-
-  btnRegistrar.onclick = async () => {
-    const email = inputEmail.value.trim();
-    const senha = inputSenha.value.trim();
-    if (!email || !senha) {
-      alert("Preencha email e senha.");
-      return;
-    }
-    if (senha.length < 6) {
-      alert("Senha deve ter ao menos 6 caracteres.");
-      return;
-    }
-    try {
-      const cred = await createUserWithEmailAndPassword(auth, email, senha);
-      await setDoc(doc(db, "usuarios", cred.user.uid), { avatar: "" });
-      alert("Registrado com sucesso. Agora faça login.");
-    } catch (e) {
-      alert("Erro ao registrar: " + e.message);
-    }
-  };
-
-  btnLogout.onclick = async () => {
-    await signOut(auth);
-  };
-
-  btnTrocarAvatar.onclick = () => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-    input.onchange = async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = async () => {
-        const dataUrl = reader.result;
-        const user = auth.currentUser;
-        if (user) {
-          await salvarAvatar(user.uid, dataUrl);
-          aplicarAvatar(dataUrl);
-          alert("Avatar atualizado!");
-        }
-      };
-      reader.readAsDataURL(file);
+    btnLogin.onclick = async () => {
+      const email = inputEmail.value.trim();
+      const senha = inputSenha.value.trim();
+      if (!email || !senha) {
+        alert("Preencha email e senha.");
+        return;
+      }
+      try {
+        await signInWithEmailAndPassword(auth, email, senha);
+      } catch (e) {
+        alert("Erro ao logar: " + e.message);
+      }
     };
-    input.click();
-  };
 
-  profileIcon.onclick = (e) => {
-    e.stopPropagation();
-    profileMenu.style.display = profileMenu.style.display === "block" ? "none" : "block";
-  };
+    btnRegistrar.onclick = async () => {
+      const email = inputEmail.value.trim();
+      const senha = inputSenha.value.trim();
+      if (!email || !senha) {
+        alert("Preencha email e senha.");
+        return;
+      }
+      if (senha.length < 6) {
+        alert("Senha deve ter ao menos 6 caracteres.");
+        return;
+      }
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, senha);
+        await setDoc(doc(db, "usuarios", cred.user.uid), { avatar: "" });
+        alert("Registrado com sucesso. Agora faça login.");
+      } catch (e) {
+        alert("Erro ao registrar: " + e.message);
+      }
+    };
 
-  document.body.onclick = () => {
-    profileMenu.style.display = "none";
-  };
+    btnLogout.onclick = async () => {
+      await signOut(auth);
+    };
 
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      loginContainer.style.display = "none";
-      siteContent.style.display = "block";
-      iconBar.style.display = "flex";
-      headerLeft.classList.add("oculto");  // Faz o Patounic sumir
-      await carregarAvatar(user.uid);
-    } else {
-      loginContainer.style.display = "flex";
-      siteContent.style.display = "none";
-      iconBar.style.display = "none";
-      headerLeft.classList.remove("oculto");
-      aplicarAvatar(null);
-      inputEmail.value = "";
-      inputSenha.value = "";
-    }
-  });
-</script>
+    btnTrocarAvatar.onclick = () => {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async () => {
+          const dataUrl = reader.result;
+          const user = auth.currentUser;
+          if (user) {
+            await salvarAvatar(user.uid, dataUrl);
+            aplicarAvatar(dataUrl);
+            alert("Avatar atualizado!");
+          }
+        };
+        reader.readAsDataURL(file);
+      };
+      input.click();
+    };
+
+    profileIcon.onclick = (e) => {
+      e.stopPropagation();
+      profileMenu.style.display = profileMenu.style.display === "block" ? "none" : "block";
+    };
+
+    document.body.onclick = () => {
+      profileMenu.style.display = "none";
+    };
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        loginContainer.style.display = "none";
+        siteContent.style.display = "block";
+        iconBar.style.display = "flex";
+        await carregarAvatar(user.uid);
+      } else {
+        loginContainer.style.display = "flex";
+        siteContent.style.display = "none";
+        iconBar.style.display = "none";
+        aplicarAvatar(null);
+        inputEmail.value = "";
+        inputSenha.value = "";
+      }
+    });
+  </script>
 
 </body>
 </html>
