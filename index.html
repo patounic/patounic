@@ -147,6 +147,7 @@
         document.getElementById("password-container").style.display = "none";
         document.getElementById("site-content").style.display = "flex";
         document.getElementById("icon-bar").style.display = "flex";
+        carregarFoto();
       } else {
         alert("Senha incorreta!");
       }
@@ -160,13 +161,27 @@
         const file = e.target.files[0];
         const reader = new FileReader();
         reader.onload = () => {
-          document.querySelector(".profile-icon").style.backgroundImage = `url('${reader.result}')`;
-          document.querySelector(".profile-icon").style.backgroundSize = "cover";
-          document.querySelector(".profile-icon").style.backgroundPosition = "center";
+          const imageData = reader.result;
+          localStorage.setItem("fotoPerfil", imageData);
+          aplicarFoto(imageData);
         };
         reader.readAsDataURL(file);
       };
       input.click();
+    }
+
+    function aplicarFoto(imageData) {
+      const icon = document.querySelector(".profile-icon");
+      icon.style.backgroundImage = `url('${imageData}')`;
+      icon.style.backgroundSize = "cover";
+      icon.style.backgroundPosition = "center";
+    }
+
+    function carregarFoto() {
+      const savedImage = localStorage.getItem("fotoPerfil");
+      if (savedImage) {
+        aplicarFoto(savedImage);
+      }
     }
 
     function toggleCategorias() {
