@@ -51,6 +51,8 @@
       align-items: center;
       gap: 1rem;
       position: relative;
+      margin: 0;
+      padding: 0;
     }
 
     .content {
@@ -106,41 +108,46 @@
       font-size: 1.2rem;
     }
 
+    .profile-container {
+      position: relative;
+    }
+
     .profile-icon {
       width: 32px;
       height: 32px;
       border-radius: 50%;
       background-color: white;
       cursor: pointer;
+      margin: 0;
+      padding: 0;
+      display: block;
       background-size: cover;
       background-position: center;
     }
 
     .profile-menu {
       display: none;
-      flex-direction: column;
       position: absolute;
-      top: 36px;
       right: 0;
+      top: 40px;
       background-color: #111;
-      border: 2px solid red;
-      border-radius: 8px;
+      border-radius: 6px;
       overflow: hidden;
       z-index: 20;
     }
 
-    .profile-menu button {
-      padding: 0.5rem 1rem;
-      background: none;
-      border: none;
-      color: white;
+    .profile-menu div {
+      padding: 0.4rem 1rem;
       cursor: pointer;
-      text-align: left;
-      width: 100%;
+      white-space: nowrap;
     }
 
-    .profile-menu button:hover {
+    .profile-menu div:hover {
       background-color: #222;
+    }
+
+    .profile-menu .logout {
+      color: red;
     }
 
     #password-container {
@@ -208,172 +215,174 @@
   </style>
 </head>
 <body>
+  <script>
+    // Evita piscar a tela de senha ao carregar a página
+    window.onload = () => {
+      const logado = localStorage.getItem("logado");
+      if (logado === "true") {
+        document.getElementById("site-content").style.display = "flex";
+        document.getElementById("icon-bar").style.display = "flex";
+        document.getElementById("home-btn").style.display = "block";
+        carregarFoto();
+      } else {
+        document.getElementById("password-container").style.display = "flex";
+      }
+    };
+  </script>
 
-<script>
-  // Evita flash da tela de senha ao carregar
-  window.onload = () => {
-    const logado = localStorage.getItem("logado");
-    if (logado === "true") {
-      document.getElementById("site-content").style.display = "flex";
-      document.getElementById("icon-bar").style.display = "flex";
-      document.getElementById("home-btn").style.display = "block";
-      carregarFoto();
-    } else {
-      document.getElementById("password-container").style.display = "flex";
-    }
-  };
-</script>
-
-<header>
-  <div class="header-left">
-    <div class="home-btn" id="home-btn" onclick="voltarHome()" style="display: none;">🎬</div>
-  </div>
-  <div class="icon-bar" id="icon-bar">
-    <div class="category-toggle" onclick="toggleCategorias()">🦆</div>
-    <div class="search-container">
-      <div class="search-box" id="search-box">
-        <input type="text" id="search-input" placeholder="pesquise..." onkeydown="handleSearchKey(event)" />
-        <div class="search-toggle" onclick="toggleSearch()">🍿</div>
+  <header>
+    <div class="header-left">
+      <div class="home-btn" id="home-btn" onclick="voltarHome()" style="display: none;">🎬</div>
+    </div>
+    <div class="icon-bar" id="icon-bar">
+      <div class="category-toggle" onclick="toggleCategorias()">🦆</div>
+      <div class="search-container">
+        <div class="search-box" id="search-box">
+          <input type="text" id="search-input" placeholder="pesquise..." onkeydown="handleSearchKey(event)" />
+          <div class="search-toggle" onclick="toggleSearch()">🍿</div>
+        </div>
+        <div class="search-toggle" id="search-icon" onclick="toggleSearch()">🍿</div>
       </div>
-      <div class="search-toggle" id="search-icon" onclick="toggleSearch()">🍿</div>
+      <div class="profile-container">
+        <div class="profile-icon" onclick="toggleProfileMenu()"></div>
+        <div class="profile-menu" id="profile-menu">
+          <div onclick="escolherFoto()">avatar</div>
+          <div class="logout" onclick="logout()">logout</div>
+        </div>
+      </div>
     </div>
-    <div class="profile-icon" onclick="toggleProfileMenu()"></div>
-    <div class="profile-menu" id="profile-menu">
-      <button onclick="escolherFoto()">avatar</button>
-      <button onclick="logout()">logout</button>
+  </header>
+
+  <div id="password-container" style="display: none;">
+    <div class="patounic-title">patounic</div>
+    <div class="senha-box">
+      <label for="senha">Digite a senha para entrar:</label>
+      <input type="password" id="senha" placeholder="Senha">
+      <button onclick="verificarSenha()">Entrar</button>
     </div>
   </div>
-</header>
 
-<div id="password-container">
-  <div class="patounic-title">patounic</div>
-  <div class="senha-box">
-    <label for="senha">Digite a senha para entrar:</label>
-    <input type="password" id="senha" placeholder="Senha">
-    <button onclick="verificarSenha()">Entrar</button>
+  <div id="site-content" class="content">
+    <div class="categories" id="categorias">
+      <span onclick="filtrarCategoria('anime')">anime</span>
+      <span onclick="filtrarCategoria('comedia')">comedia</span>
+      <span onclick="filtrarCategoria('ação')">ação</span>
+      <span onclick="filtrarCategoria('terror')">terror</span>
+      <span onclick="filtrarCategoria('gospel')">gospel</span>
+      <span onclick="filtrarCategoria('drama')">drama</span>
+      <span onclick="filtrarCategoria('romance')">romance</span>
+      <span onclick="filtrarCategoria('aventura')">aventura</span>
+      <span onclick="filtrarCategoria('ciencia')">ciencia</span>
+    </div>
   </div>
-</div>
 
-<div id="site-content" class="content">
-  <div class="categories" id="categorias">
-    <span onclick="filtrarCategoria('anime')">anime</span>
-    <span onclick="filtrarCategoria('comedia')">comedia</span>
-    <span onclick="filtrarCategoria('ação')">ação</span>
-    <span onclick="filtrarCategoria('terror')">terror</span>
-    <span onclick="filtrarCategoria('gospel')">gospel</span>
-    <span onclick="filtrarCategoria('drama')">drama</span>
-    <span onclick="filtrarCategoria('romance')">romance</span>
-    <span onclick="filtrarCategoria('aventura')">aventura</span>
-    <span onclick="filtrarCategoria('ciencia')">ciencia</span>
-  </div>
-</div>
+  <script>
+    function verificarSenha() {
+      const senha = document.getElementById("senha").value;
+      if (senha === "123") {
+        localStorage.setItem("logado", "true");
+        mostrarSite();
+        carregarFoto();
+      } else {
+        alert("Senha incorreta!");
+      }
+    }
 
-<script>
-  function verificarSenha() {
-    const senha = document.getElementById("senha").value;
-    if (senha === "123") {
-      localStorage.setItem("logado", "true");
+    function mostrarSite() {
       document.getElementById("password-container").style.display = "none";
       document.getElementById("site-content").style.display = "flex";
       document.getElementById("icon-bar").style.display = "flex";
       document.getElementById("home-btn").style.display = "block";
-      carregarFoto();
-    } else {
-      alert("Senha incorreta!");
     }
-  }
 
-  function voltarHome() {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  function toggleCategorias() {
-    const categorias = document.getElementById("categorias");
-    categorias.style.display = categorias.style.display === "block" ? "none" : "block";
-  }
-
-  function toggleSearch() {
-    const box = document.getElementById("search-box");
-    const icon = document.getElementById("search-icon");
-    if (box.style.display === "flex") {
-      box.style.display = "none";
-      icon.style.display = "block";
-      document.getElementById("search-input").value = "";
-    } else {
-      box.style.display = "flex";
-      icon.style.display = "none";
-      document.getElementById("search-input").focus();
+    function voltarHome() {
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
-  }
 
-  function handleSearchKey(event) {
-    if (event.key === "Enter") {
-      submitSearch();
-    }
-  }
-
-  function submitSearch() {
-    const query = document.getElementById("search-input").value.trim();
-    if (query) {
-      alert(`Você pesquisou por: ${query}`);
-    }
-    toggleSearch();
-  }
-
-  function filtrarCategoria(categoria) {
-    alert(`Você escolheu a categoria: ${categoria}`);
-  }
-
-  function escolherFoto() {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = "image/*";
-    input.onchange = (e) => {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = () => {
-        const imageData = reader.result;
-        localStorage.setItem("fotoPerfil", imageData);
-        aplicarFoto(imageData);
+    function escolherFoto() {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.onchange = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = () => {
+          const imageData = reader.result;
+          localStorage.setItem("fotoPerfil", imageData);
+          aplicarFoto(imageData);
+        };
+        reader.readAsDataURL(file);
       };
-      reader.readAsDataURL(file);
-    };
-    input.click();
-  }
-
-  function aplicarFoto(imageData) {
-    const icon = document.querySelector(".profile-icon");
-    icon.style.backgroundImage = `url('${imageData}')`;
-  }
-
-  function carregarFoto() {
-    const savedImage = localStorage.getItem("fotoPerfil");
-    if (savedImage) {
-      aplicarFoto(savedImage);
+      input.click();
     }
-  }
 
-  function toggleProfileMenu() {
-    const menu = document.getElementById("profile-menu");
-    menu.style.display = menu.style.display === "flex" ? "none" : "flex";
-  }
-
-  function logout() {
-    localStorage.removeItem("logado");
-    document.getElementById("site-content").style.display = "none";
-    document.getElementById("icon-bar").style.display = "none";
-    document.getElementById("home-btn").style.display = "none";
-    document.getElementById("password-container").style.display = "flex";
-  }
-
-  // Fecha o menu de perfil ao clicar fora
-  document.addEventListener("click", function (event) {
-    const profileIcon = document.querySelector(".profile-icon");
-    const menu = document.getElementById("profile-menu");
-    if (!profileIcon.contains(event.target) && !menu.contains(event.target)) {
-      menu.style.display = "none";
+    function aplicarFoto(imageData) {
+      const icon = document.querySelector(".profile-icon");
+      icon.style.backgroundImage = `url('${imageData}')`;
     }
-  });
-</script>
+
+    function carregarFoto() {
+      const savedImage = localStorage.getItem("fotoPerfil");
+      if (savedImage) {
+        aplicarFoto(savedImage);
+      }
+    }
+
+    function toggleCategorias() {
+      const categorias = document.getElementById("categorias");
+      categorias.style.display = categorias.style.display === "block" ? "none" : "block";
+    }
+
+    function toggleSearch() {
+      const box = document.getElementById("search-box");
+      const icon = document.getElementById("search-icon");
+
+      if (box.style.display === "flex") {
+        box.style.display = "none";
+        icon.style.display = "block";
+        document.getElementById("search-input").value = "";
+      } else {
+        box.style.display = "flex";
+        icon.style.display = "none";
+        document.getElementById("search-input").focus();
+      }
+    }
+
+    function handleSearchKey(event) {
+      if (event.key === "Enter") {
+        submitSearch();
+      }
+    }
+
+    function submitSearch() {
+      const query = document.getElementById("search-input").value.trim();
+      if (query) {
+        alert(`Você pesquisou por: ${query}`);
+      }
+      toggleSearch();
+    }
+
+    function filtrarCategoria(categoria) {
+      alert(`Você escolheu a categoria: ${categoria}`);
+    }
+
+    function toggleProfileMenu() {
+      const menu = document.getElementById("profile-menu");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    function logout() {
+      localStorage.removeItem("logado");
+      location.reload();
+    }
+
+    document.addEventListener("click", function (e) {
+      const profileMenu = document.getElementById("profile-menu");
+      const profileIcon = document.querySelector(".profile-icon");
+      if (!profileMenu.contains(e.target) && !profileIcon.contains(e.target)) {
+        profileMenu.style.display = "none";
+      }
+    });
+  </script>
 </body>
 </html>
