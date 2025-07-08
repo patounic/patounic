@@ -14,14 +14,55 @@
     }
 
     header {
-      background-color: #000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       padding: 1rem 2rem;
-      color: #0a3d62; /* azul escuro */
+      background-color: #000;
+    }
+
+    .logo {
+      color: #0a3d62;
       font-size: 1.5rem;
       font-weight: bold;
+    }
+
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .search-box {
+      position: relative;
+    }
+
+    .search-box input {
+      padding: 0.5rem 2rem 0.5rem 0.5rem;
+      border-radius: 20px;
+      border: none;
+      outline: none;
+    }
+
+    .search-box::after {
+      content: "🔍";
       position: absolute;
-      top: 0;
-      left: 0;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .profile-pic {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: white;
+      cursor: pointer;
+      object-fit: cover;
+    }
+
+    #file-input {
+      display: none;
     }
 
     #login-box, #content {
@@ -63,8 +104,6 @@
   </style>
 </head>
 <body>
-  <header>Patounic</header>
-
   <div id="login-box">
     <h2>Digite a senha para entrar:</h2>
     <input type="password" id="password" placeholder="Senha" />
@@ -73,23 +112,59 @@
   </div>
 
   <div id="content">
-    <h1>Bem-vindo ao site secreto!</h1>
-    <p>Você desbloqueou o conteúdo protegido.</p>
+    <header>
+      <div class="logo">Patounic</div>
+      <div class="top-right">
+        <div class="search-box">
+          <input type="text" placeholder="Pesquisar..." />
+        </div>
+        <label for="file-input">
+          <img src="" alt="Perfil" class="profile-pic" id="profile-pic"/>
+        </label>
+        <input type="file" id="file-input" accept="image/*" onchange="loadImage(event)" />
+      </div>
+    </header>
+    <main style="padding: 2rem; text-align: center;">
+      <h1>Bem-vindo ao site secreto!</h1>
+      <p>Você desbloqueou o conteúdo protegido.</p>
+    </main>
   </div>
 
   <script>
+    // Verifica se há imagem salva
+    window.onload = () => {
+      const img = localStorage.getItem("profilePic");
+      if (img) {
+        document.getElementById("profile-pic").src = img;
+      } else {
+        document.getElementById("profile-pic").src = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IndoaXRlIiBzdHJva2U9ImdyYXkiIHN0cm9rZS13aWR0aD0iMiIvPjwvc3ZnPg==";
+      }
+    };
+
     function checkPassword() {
       const senha = document.getElementById("password").value;
       const erro = document.getElementById("error");
 
       if (senha === "123") {
         document.getElementById("login-box").style.display = "none";
-        document.getElementById("content").style.display = "flex";
+        document.getElementById("content").style.display = "block";
       } else {
         erro.textContent = "Senha incorreta.";
+      }
+    }
+
+    function loadImage(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const imgData = e.target.result;
+          document.getElementById("profile-pic").src = imgData;
+          localStorage.setItem("profilePic", imgData);
+        };
+        reader.readAsDataURL(file);
       }
     }
   </script>
 </body>
 </html>
-
