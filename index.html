@@ -5,6 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Patounic</title>
   <link rel="icon" type="image/webp" href="https://media.discordapp.net/attachments/1381522672558669843/1392046188693553262/1333894209119453256.webp?ex=686e1b8a&is=686cca0a&hm=2d1ad98fa56306479b98ad7fc457079cb7cdfda0bc4316fc9c83fac2d52ed5d1&=&format=webp&width=86&height=86">
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<script>
+  // Suas credenciais Firebase (do Console do Firebase > Configurar SDK Web)
+const firebaseConfig = {
+  apiKey: "AIzaSyBuOc0-_TBiDX1rT1_aFOkURhwXhM2R320",
+  authDomain: "patounic-a61e3.firebaseapp.com",
+  projectId: "patounic-a61e3",
+  storageBucket: "patounic-a61e3.firebasestorage.app",
+  messagingSenderId: "410956869168",
+  appId: "1:410956869168:web:6ab8cca0755a9a9fd987f5",
+  measurementId: "G-SX8JNQDKFR"
+  };
+
+firebase.initializeApp(firebaseConfig);
+</script>
   <style>
     * {
       margin: 0;
@@ -277,16 +297,18 @@
   </div>
 
   <script>
-    function verificarSenha() {
-      const senha = document.getElementById("senha").value;
-      if (senha === "123") {
-        localStorage.setItem("logado", "true");
-        mostrarSite();
-        carregarFoto();
-      } else {
-        alert("Senha incorreta!");
-      }
-    }
+function verificarSenha() {
+  const senha = document.getElementById("senha").value;
+  if (senha === "123") {
+    localStorage.setItem("logado", "true");
+    localStorage.setItem("senha", senha); // salva como ID de usuário
+    mostrarSite();
+    carregarFoto();
+  } else {
+    alert("Senha incorreta!");
+  }
+}
+
 
     function mostrarSite() {
       document.getElementById("password-container").style.display = "none";
@@ -299,34 +321,48 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    function escolherFoto() {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/*";
-      input.onchange = (e) => {
-        const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onload = () => {
-          const imageData = reader.result;
-          localStorage.setItem("fotoPerfil", imageData);
-          aplicarFoto(imageData);
-        };
-        reader.readAsDataURL(file);
-      };
-      input.click();
-    }
+   function escolherFoto() {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*";
+
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    const senha = localStorage.getItem("senha"); // usamos como ID
+    if (!senha) return alert("Erro: sem identificação de usuário.");
+
+    const storageRef = firebase.storage().ref(`avatares/${senha}.jpg`);
+    await storageRef.put(file); // envia para Firebase Storage
+
+    const url = await storageRef.getDownloadURL(); // obtém o link da imagem
+    await firebase.database().ref(`usuarios/${senha}/avatar`).set(url); // salva no Realtime DB
+
+    localStorage.setItem("fotoPerfil", url);
+    aplicarFoto(url);
+  };
+
+  input.click();
+}
+
 
     function aplicarFoto(imageData) {
       const icon = document.querySelector(".profile-icon");
       icon.style.backgroundImage = `url('${imageData}')`;
     }
 
-    function carregarFoto() {
-      const savedImage = localStorage.getItem("fotoPerfil");
-      if (savedImage) {
-        aplicarFoto(savedImage);
-      }
-    }
+async function carregarFoto() {
+  const senha = localStorage.getItem("senha");
+  if (!senha) return;
+
+  const dbRef = firebase.database().ref(`usuarios/${senha}/avatar`);
+  const snapshot = await dbRef.get();
+  if (snapshot.exists()) {
+    const imageUrl = snapshot.val();
+    localStorage.setItem("fotoPerfil", imageUrl);
+    aplicarFoto(imageUrl);
+  }
+}
+
 
     function toggleCategorias() {
       const categorias = document.getElementById("categorias");
