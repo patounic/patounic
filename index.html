@@ -50,6 +50,7 @@
       display: none;
       align-items: center;
       gap: 1rem;
+      position: relative;
     }
 
     .content {
@@ -62,6 +63,7 @@
       cursor: pointer;
       font-size: 1.5rem;
     }
+
     .categories {
       display: none;
       background-color: #111;
@@ -110,6 +112,29 @@
       border-radius: 50%;
       background-color: white;
       cursor: pointer;
+    }
+
+    .profile-menu {
+      display: none;
+      position: absolute;
+      top: 50px;
+      right: 0;
+      background-color: #111;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 0.5rem 0;
+      width: 160px;
+      z-index: 20;
+    }
+
+    .profile-menu div {
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      color: white;
+    }
+
+    .profile-menu div:hover {
+      background-color: #222;
     }
 
     #password-container {
@@ -190,7 +215,11 @@
         </div>
         <div class="search-toggle" id="search-icon" onclick="toggleSearch()">🍿</div>
       </div>
-      <div class="profile-icon" onclick="escolherFoto()"></div>
+      <div class="profile-icon"></div>
+      <div class="profile-menu" id="profile-menu">
+        <div onclick="escolherFoto()">Avatar</div>
+        <div onclick="logout()">Logout</div>
+      </div>
     </div>
   </header>
 
@@ -250,6 +279,7 @@
         reader.readAsDataURL(file);
       };
       input.click();
+      document.getElementById("profile-menu").style.display = "none";
     }
 
     function aplicarFoto(imageData) {
@@ -303,6 +333,29 @@
     function filtrarCategoria(categoria) {
       alert(`Você escolheu a categoria: ${categoria}`);
     }
+
+    document.querySelector(".profile-icon").onclick = function () {
+      const menu = document.getElementById("profile-menu");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    };
+
+    function logout() {
+      localStorage.removeItem("fotoPerfil");
+      document.getElementById("site-content").style.display = "none";
+      document.getElementById("icon-bar").style.display = "none";
+      document.getElementById("home-btn").style.display = "none";
+      document.getElementById("password-container").style.display = "flex";
+      document.getElementById("senha").value = "";
+      document.getElementById("profile-menu").style.display = "none";
+    }
+
+    document.addEventListener("click", function (event) {
+      const profileIcon = document.querySelector(".profile-icon");
+      const profileMenu = document.getElementById("profile-menu");
+      if (!profileIcon.contains(event.target) && !profileMenu.contains(event.target)) {
+        profileMenu.style.display = "none";
+      }
+    });
   </script>
 </body>
 </html>
