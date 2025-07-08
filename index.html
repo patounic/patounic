@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Patounic</title>
   <style>
     body {
@@ -20,6 +20,13 @@
       background-color: #000;
       font-size: 2rem;
       font-weight: bold;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .header-left span {
       color: #001f3f;
     }
     .icon-bar {
@@ -46,6 +53,7 @@
     .categories span {
       display: block;
       margin: 0.2rem 0;
+      cursor: pointer;
     }
     .search-container {
       display: flex;
@@ -102,11 +110,18 @@
       border-radius: 5px;
       cursor: pointer;
     }
+    .home-btn {
+      cursor: pointer;
+      font-size: 1.5rem;
+    }
   </style>
 </head>
 <body>
   <header>
-    Patounic
+    <div class="header-left">
+      <span>Patounic</span>
+      <div class="home-btn" id="home-btn" onclick="voltarHome()" style="display: none;">🏠</div>
+    </div>
     <div class="icon-bar" id="icon-bar">
       <div class="category-toggle" onclick="toggleCategorias()">🦆</div>
       <div class="search-container">
@@ -128,15 +143,15 @@
 
   <div id="site-content" class="content">
     <div class="categories" id="categorias">
-      <span>anime</span>
-      <span>comedia</span>
-      <span>ação</span>
-      <span>terror</span>
-      <span>gospel</span>
-      <span>drama</span>
-      <span>romance</span>
-      <span>aventura</span>
-      <span>ciencia</span>
+      <span onclick="filtrarCategoria('anime')">anime</span>
+      <span onclick="filtrarCategoria('comedia')">comedia</span>
+      <span onclick="filtrarCategoria('ação')">ação</span>
+      <span onclick="filtrarCategoria('terror')">terror</span>
+      <span onclick="filtrarCategoria('gospel')">gospel</span>
+      <span onclick="filtrarCategoria('drama')">drama</span>
+      <span onclick="filtrarCategoria('romance')">romance</span>
+      <span onclick="filtrarCategoria('aventura')">aventura</span>
+      <span onclick="filtrarCategoria('ciencia')">ciencia</span>
     </div>
   </div>
 
@@ -147,10 +162,15 @@
         document.getElementById("password-container").style.display = "none";
         document.getElementById("site-content").style.display = "flex";
         document.getElementById("icon-bar").style.display = "flex";
+        document.getElementById("home-btn").style.display = "block";
         carregarFoto();
       } else {
         alert("Senha incorreta!");
       }
+    }
+
+    function voltarHome() {
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     function escolherFoto() {
@@ -216,6 +236,10 @@
         alert(`Você pesquisou por: ${query}`);
       }
       toggleSearch();
+    }
+
+    function filtrarCategoria(categoria) {
+      alert(`Você escolheu a categoria: ${categoria}`);
     }
   </script>
 </body>
