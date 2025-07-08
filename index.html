@@ -19,6 +19,7 @@
       align-items: center;
       padding: 1rem 2rem;
       background-color: #000;
+      position: relative;
     }
 
     .logo {
@@ -33,23 +34,41 @@
       gap: 1rem;
     }
 
-    .search-box {
+    .search-container {
       position: relative;
     }
 
-    .search-box input {
-      padding: 0.5rem 2rem 0.5rem 0.5rem;
+    .search-icon {
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    #search-form {
+      display: none;
+      position: absolute;
+      top: 30px;
+      right: 0;
+      background-color: #111;
+      padding: 0.5rem;
+      border-radius: 20px;
+      box-shadow: 0 0 5px rgba(255,255,255,0.2);
+    }
+
+    #search-form input {
+      padding: 0.4rem;
       border-radius: 20px;
       border: none;
       outline: none;
+      width: 160px;
     }
 
-    .search-box::after {
-      content: "🔍";
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
+    #search-form button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1rem;
+      margin-left: 0.5rem;
+      cursor: pointer;
     }
 
     .profile-pic {
@@ -70,7 +89,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      height: calc(100vh - 80px);
       text-align: center;
     }
 
@@ -101,9 +120,80 @@
       color: red;
       margin-top: 1rem;
     }
+
+    .duck {
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .categories {
+      display: none;
+      position: absolute;
+      top: 70px;
+      right: 120px;
+      background-color: #111;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(255,255,255,0.1);
+      z-index: 10;
+    }
+
+    .categories ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .categories li {
+      margin: 0.5rem 0;
+      cursor: pointer;
+    }
+
+    .categories li:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
+  <!-- Cabeçalho -->
+  <header>
+    <div class="logo">Patounic</div>
+    <div class="top-right" id="top-ui" style="display: none;">
+      <div class="duck" onclick="toggleCategories()">🦆</div>
+
+      <!-- 🔍 Pesquisa -->
+      <div class="search-container">
+        <div class="search-icon" onclick="toggleSearch()">🔍</div>
+        <form id="search-form" onsubmit="submitSearch(event)">
+          <input type="text" id="search-input" placeholder="Pesquise..." />
+          <button type="submit">🔍</button>
+        </form>
+      </div>
+
+      <!-- Perfil -->
+      <label for="file-input">
+        <img src="" alt="Perfil" class="profile-pic" id="profile-pic"/>
+      </label>
+      <input type="file" id="file-input" accept="image/*" onchange="loadImage(event)" />
+    </div>
+
+    <!-- Categorias -->
+    <div class="categories" id="categories-box">
+      <ul>
+        <li>Anime</li>
+        <li>Comédia</li>
+        <li>Ação</li>
+        <li>Terror</li>
+        <li>Gospel</li>
+        <li>Drama</li>
+        <li>Romance</li>
+        <li>Aventura</li>
+        <li>Ciência</li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Tela de login -->
   <div id="login-box">
     <h2>Digite a senha para entrar:</h2>
     <input type="password" id="password" placeholder="Senha" />
@@ -111,27 +201,17 @@
     <p id="error"></p>
   </div>
 
+  <!-- Conteúdo desbloqueado -->
   <div id="content">
-    <header>
-      <div class="logo">Patounic</div>
-      <div class="top-right">
-        <div class="search-box">
-          <input type="text" placeholder="Pesquisar..." />
-        </div>
-        <label for="file-input">
-          <img src="" alt="Perfil" class="profile-pic" id="profile-pic"/>
-        </label>
-        <input type="file" id="file-input" accept="image/*" onchange="loadImage(event)" />
-      </div>
-    </header>
     <main style="padding: 2rem; text-align: center;">
       <h1>Bem-vindo ao site secreto!</h1>
       <p>Você desbloqueou o conteúdo protegido.</p>
     </main>
   </div>
 
+  <!-- Scripts -->
   <script>
-    // Verifica se há imagem salva
+    // Carregar imagem salva
     window.onload = () => {
       const img = localStorage.getItem("profilePic");
       if (img) {
@@ -148,6 +228,7 @@
       if (senha === "123") {
         document.getElementById("login-box").style.display = "none";
         document.getElementById("content").style.display = "block";
+        document.getElementById("top-ui").style.display = "flex";
       } else {
         erro.textContent = "Senha incorreta.";
       }
@@ -164,6 +245,25 @@
         };
         reader.readAsDataURL(file);
       }
+    }
+
+    function toggleCategories() {
+      const box = document.getElementById("categories-box");
+      box.style.display = box.style.display === "block" ? "none" : "block";
+    }
+
+    function toggleSearch() {
+      const form = document.getElementById("search-form");
+      form.style.display = form.style.display === "block" ? "none" : "block";
+      if (form.style.display === "block") {
+        document.getElementById("search-input").focus();
+      }
+    }
+
+    function submitSearch(event) {
+      event.preventDefault();
+      const query = document.getElementById("search-input").value;
+      alert(`Você pesquisou por: ${query}`);
     }
   </script>
 </body>
