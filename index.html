@@ -3,16 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-  <!-- Uploadcare Widget -->
-  <script>
-    UPLOADCARE_PUBLIC_KEY = 'c045ec16c604aa78483f'; // <-- Coloque sua public key aqui
-  </script>
-  <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
-
   <title>Patounic</title>
-  <link rel="icon" type="image/webp" href="https://i.imgur.com/FWfgKsx.webp" />
-
+  <link rel="icon" type="image/webp" href="https://media.discordapp.net/attachments/1381522672558669843/1392046188693553262/1333894209119453256.webp?ex=686e1b8a&is=686cca0a&hm=2d1ad98fa56306479b98ad7fc457079cb7cdfda0bc4316fc9c83fac2d52ed5d1&=&format=webp&width=86&height=86">
   <style>
     * {
       margin: 0;
@@ -59,6 +51,9 @@
       display: none;
       align-items: center;
       gap: 1rem;
+      position: relative;
+      margin: 0;
+      padding: 0;
     }
 
     .content {
@@ -124,6 +119,9 @@
       border-radius: 50%;
       background-color: white;
       cursor: pointer;
+      margin: 0;
+      padding: 0;
+      display: block;
       background-size: cover;
       background-position: center;
     }
@@ -157,12 +155,14 @@
       background-image: url("https://i.pinimg.com/736x/31/9d/88/319d889cb884fd2bdfce68c7eacc3017.jpg");
       background-size: cover;
       background-position: center;
+      background-repeat: no-repeat;
       width: 100vw;
       height: 100vh;
       display: none;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      position: relative;
     }
 
     .senha-box {
@@ -172,6 +172,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      z-index: 2;
     }
 
     .patounic-title {
@@ -184,6 +185,7 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       text-shadow: 0 0 6px rgba(26, 43, 89, 0.6);
+      z-index: 3;
     }
 
     input[type="password"] {
@@ -214,9 +216,19 @@
   </style>
 </head>
 <body>
-
-  <!-- Input oculto para Uploadcare -->
-  <input type="file" id="uploadcare-input" accept="image/*" style="display: none;" />
+  <script>
+    window.onload = () => {
+      const logado = localStorage.getItem("logado");
+      if (logado === "true") {
+        document.getElementById("site-content").style.display = "flex";
+        document.getElementById("icon-bar").style.display = "flex";
+        document.getElementById("home-btn").style.display = "block";
+        carregarFoto();
+      } else {
+        document.getElementById("password-container").style.display = "flex";
+      }
+    };
+  </script>
 
   <header>
     <div class="header-left">
@@ -241,7 +253,7 @@
     </div>
   </header>
 
-  <div id="password-container">
+  <div id="password-container" style="display: none;">
     <div class="patounic-title">patounic</div>
     <div class="senha-box">
       <label for="senha">Digite a senha para entrar:</label>
@@ -264,18 +276,7 @@
     </div>
   </div>
 
-  <!-- JavaScript -->
   <script>
-    window.onload = () => {
-      const logado = localStorage.getItem("logado");
-      if (logado === "true") {
-        mostrarSite();
-        carregarFoto();
-      } else {
-        document.getElementById("password-container").style.display = "flex";
-      }
-    };
-
     function verificarSenha() {
       const senha = document.getElementById("senha").value;
       if (senha === "123") {
@@ -299,23 +300,20 @@
     }
 
     function escolherFoto() {
-      const input = document.getElementById("uploadcare-input");
-      input.click();
-
-      input.onchange = async (e) => {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.onchange = (e) => {
         const file = e.target.files[0];
-        if (!file) return;
-
-        try {
-          const uploadcareFile = await uploadcare.fileFrom('object', file).done();
-          const imageUrl = uploadcareFile.cdnUrl;
-          localStorage.setItem("fotoPerfil", imageUrl);
-          aplicarFoto(imageUrl);
-        } catch (err) {
-          alert("Erro ao fazer upload da imagem.");
-          console.error(err);
-        }
+        const reader = new FileReader();
+        reader.onload = () => {
+          const imageData = reader.result;
+          localStorage.setItem("fotoPerfil", imageData);
+          aplicarFoto(imageData);
+        };
+        reader.readAsDataURL(file);
       };
+      input.click();
     }
 
     function aplicarFoto(imageData) {
