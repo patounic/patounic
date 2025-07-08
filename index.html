@@ -11,20 +11,22 @@
       background-color: #000;
       font-family: Arial, sans-serif;
       color: white;
+      overflow-x: hidden;
     }
 
     header {
-      position: absolute;
-      top: 0;
-      width: 100%;
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 1rem;
-      background-color: transparent; /* transparente */
+      background-color: transparent;
       font-size: 2rem;
       font-weight: bold;
-      z-index: 3;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 2;
     }
 
     .header-left {
@@ -110,26 +112,12 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
-      position: relative;
-      background-image: url('https://i.pinimg.com/736x/f6/82/d6/f682d6277a04b3d4f2c9c09216b7b419.jpg');
+      background-image: url('https://i.pinimg.com/736x/31/9d/88/319d889cb884fd2bdfce68c7eacc3017.jpg');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      z-index: 1;
-    }
-
-    #password-container::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-color: rgba(0, 0, 0, 0.5);
-      z-index: -1;
-    }
-
-    #password-container label,
-    #password-container input,
-    #password-container button {
-      z-index: 2;
+      background-attachment: fixed;
+      text-shadow: 1px 1px 3px #000;
     }
 
     input[type="password"] {
