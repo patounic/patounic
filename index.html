@@ -6,36 +6,64 @@
   <title>patounic 🍿</title>
   <link rel="icon" href="https://media.discordapp.net/attachments/1381522672558669843/1392046188693553262/1333894209119453256.webp?width=86&height=86" />
   <style>
-/* Menu dropdown */
+/* Menu Dropdown - Alinhar ao lado do ícone com itens lado a lado */
 .dropdown-menu {
   position: absolute;
-  top: 50px;  /* Distância do topo do ícone */
-  left: 0;
-  background-color: #111;
+  top: 0.5rem; /* Distância do topo do ícone */
+  left: 30px; /* Distância do ícone GIF */
+  background-color: transparent; /* Fundo transparente */
   border-radius: 8px;
-  padding: 1rem;
+  padding: 0.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   z-index: 20;
-  display: none;  /* Inicialmente o menu está escondido */
-  width: 150px;
+  display: none;  /* Inicialmente oculto */
+  flex-direction: row;  /* Itens lado a lado */
+  justify-content: space-between; /* Espaço entre os itens */
+  width: auto;
   transition: opacity 0.3s ease;
 }
 
+/* Item de menu */
 .menu-item {
-  padding: 10px;
+  padding: 10px 20px; /* Ajuste de padding para espaçamento correto */
   color: white;
   cursor: pointer;
   font-weight: bold;
-  border-bottom: 1px solid #333;
+  border-left: 1px solid #333;
+  display: inline-block;  /* Garante que os itens se alinhem horizontalmente */
+  background-color: transparent;  /* Remover fundo */
+}
+
+.menu-item:first-child {
+  border-left: none; /* Remove a borda esquerda do primeiro item */
 }
 
 .menu-item:last-child {
-  border-bottom: none;
+  border-right: none; /* Remove a borda direita do último item */
 }
 
 .menu-item:hover {
-  background-color: #333;
+  background-color: transparent; /* Remover o fundo no hover */
 }
+
+
+
+
+/* Para garantir que o ícone de filmes não afete o dropdown */
+.movie-icon {
+  position: relative;  /* Relativo para que o dropdown apareça em relação a ele */
+  z-index: 30;
+}
+
+
+/* Para garantir que o ícone de filmes não afete o dropdown */
+.movie-icon {
+  position: relative;  /* Relativo para que o dropdown apareça em relação a ele */
+  z-index: 30;
+}
+
+
+
 
 #register-container {
   background-image: url("https://i.pinimg.com/736x/31/9d/88/319d889cb884fd2bdfce68c7eacc3017.jpg");
