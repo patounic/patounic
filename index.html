@@ -24,27 +24,51 @@
 }
 
 /* Item de menu */
+/* Menu Dropdown - Caixas estilizadas para Home e Categoria */
+.dropdown-menu {
+  position: absolute;
+  top: 0.5rem; /* Distância do topo */
+  left: 50px; /* Distância do ícone */
+  background-color: transparent;
+  border-radius: 8px;
+  padding: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  z-index: 20;
+  display: none;
+  flex-direction: row;
+  justify-content: space-between;
+  width: auto;
+  transition: opacity 0.3s ease;
+}
+
+/* Item de menu estilizado como caixinha */
 .menu-item {
-  padding: 10px 20px; /* Ajuste de padding para espaçamento correto */
+  padding: 8px 15px;
+  background-color: #333; /* Cor de fundo */
   color: white;
+  border-radius: 10px; /* Bordas arredondadas */
   cursor: pointer;
-  font-weight: bold;
-  border-left: 1px solid #333;
-  display: inline-block;  /* Garante que os itens se alinhem horizontalmente */
-  background-color: transparent;  /* Remover fundo */
+  display: inline-block;
+  text-align: center;
+  width: 120px; /* Largura fixa */
+  margin: 0 5px; /* Espaçamento entre as caixas */
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+/* Efeito ao passar o mouse */
+.menu-item:hover {
+  background-color: #5865f2; /* Cor de fundo quando hover */
+  transform: scale(1.05); /* Leve aumento de tamanho ao passar o mouse */
 }
 
 .menu-item:first-child {
-  border-left: none; /* Remove a borda esquerda do primeiro item */
+  margin-left: 0; /* Retira margem esquerda do primeiro item */
 }
 
 .menu-item:last-child {
-  border-right: none; /* Remove a borda direita do último item */
+  margin-right: 0; /* Retira margem direita do último item */
 }
 
-.menu-item:hover {
-  background-color: transparent; /* Remover o fundo no hover */
-}
 
 
 
