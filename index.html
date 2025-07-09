@@ -6,6 +6,42 @@
   <title>patounic 🍿</title>
   <link rel="icon" href="https://media.discordapp.net/attachments/1381522672558669843/1392046188693553262/1333894209119453256.webp?width=86&height=86" />
   <style>
+#register-container {
+  background-image: url("https://i.pinimg.com/736x/31/9d/88/319d889cb884fd2bdfce68c7eacc3017.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: rgba(0, 0, 0, 0.6);
+  background-blend-mode: overlay;
+}
+#register-container input,
+#register-container button {
+  width: 100%;
+  max-width: 300px;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  border-radius: 5px;
+  border: none;
+}
+#register-container input {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+#register-container button {
+  background-color: #5865f2;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+
     * {
       margin: 0;
       padding: 0;
@@ -220,6 +256,15 @@
     <button id="btn-registrar">Registrar</button>
   </div>
 
+<div id="register-container" style="display: none;">
+  <h2>Registrar</h2>
+  <input type="email" id="register-email" placeholder="Email" />
+  <input type="password" id="register-senha" placeholder="Senha (mín. 6 caracteres)" />
+  <input type="password" id="register-confirmar" placeholder="Confirmar senha" />
+  <button id="btn-registrar-conta">Criar Conta</button>
+  <button id="btn-voltar-login">Voltar ao Login</button>
+</div>
+
   <div id="site-content" style="display: none;">
     <div class="icon-bar" id="icon-bar">
       <div class="search-container" id="search-container">
@@ -275,6 +320,12 @@
     const btnRegistrar = document.getElementById("btn-registrar");
     const inputEmail = document.getElementById("email");
     const inputSenha = document.getElementById("senha");
+const registerContainer = document.getElementById("register-container");
+const btnRegistrarConta = document.getElementById("btn-registrar-conta");
+const btnVoltarLogin = document.getElementById("btn-voltar-login");
+const inputRegisterEmail = document.getElementById("register-email");
+const inputRegisterSenha = document.getElementById("register-senha");
+const inputRegisterConfirmar = document.getElementById("register-confirmar");
     const btnTrocarAvatar = document.getElementById("trocar-avatar");
     const btnRemoverAvatar = document.getElementById("remover-avatar");
     const btnLogout = document.getElementById("logout");
@@ -330,25 +381,43 @@
       }
     };
 
-    btnRegistrar.onclick = async () => {
-      const email = inputEmail.value.trim();
-      const senha = inputSenha.value.trim();
-      if (!email || !senha) {
-        alert("Preencha email e senha.");
-        return;
-      }
-      if (senha.length < 6) {
-        alert("Senha deve ter ao menos 6 caracteres.");
-        return;
-      }
-      try {
-        const cred = await createUserWithEmailAndPassword(auth, email, senha);
-        await setDoc(doc(db, "usuarios", cred.user.uid), { avatar: "" });
-        alert("Registrado com sucesso. Agora faça login.");
-      } catch (e) {
-        alert("Erro ao registrar: " + e.message);
-      }
-    };
+btnRegistrar.onclick = () => {
+  loginContainer.style.display = "none";
+  registerContainer.style.display = "flex";
+};
+btnRegistrarConta.onclick = async () => {
+  const email = inputRegisterEmail.value.trim();
+  const senha = inputRegisterSenha.value.trim();
+  const confirmar = inputRegisterConfirmar.value.trim();
+
+  if (!email || !senha || !confirmar) {
+    alert("Preencha todos os campos.");
+    return;
+  }
+  if (senha.length < 6) {
+    alert("Senha deve ter ao menos 6 caracteres.");
+    return;
+  }
+  if (senha !== confirmar) {
+    alert("As senhas não coincidem.");
+    return;
+  }
+
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, senha);
+    await setDoc(doc(db, "usuarios", cred.user.uid), { avatar: "" });
+    alert("Conta criada com sucesso! Agora faça login.");
+    registerContainer.style.display = "none";
+    loginContainer.style.display = "flex";
+  } catch (e) {
+    alert("Erro ao registrar: " + e.message);
+  }
+};
+btnVoltarLogin.onclick = () => {
+  registerContainer.style.display = "none";
+  loginContainer.style.display = "flex";
+};
+
 
     btnLogout.onclick = async () => {
       await signOut(auth);
