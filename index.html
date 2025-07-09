@@ -250,10 +250,6 @@
     let searchInputWrapper = null;
     let popcornIcon = document.getElementById("popcorn-icon");
 
-    function aplicarAvatar(url) {
-      profileIcon.style.backgroundImage = url ? `url(${url})` : "none";
-    }
-
     async function salvarAvatar(uid, avatarDataUrl) {
       await setDoc(doc(db, "usuarios", uid), { avatar: avatarDataUrl }, { merge: true });
     }
@@ -393,6 +389,11 @@
         searchInputWrapper = null;
       }
     }
+
+function aplicarAvatar(url) {
+  const avatarPadrao = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDwmG52pVI5JZfn04j9gdtsd8pAGbqjjLswg&s"; // ícone genérico
+  profileIcon.style.backgroundImage = `url(${url || avatarPadrao})`;
+}
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
