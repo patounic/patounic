@@ -197,9 +197,10 @@
       <div class="profile-container">
         <div class="profile-icon" id="profile-icon" title="Menu de perfil"></div>
         <div class="profile-menu" id="profile-menu">
-          <div id="trocar-avatar">Trocar Avatar</div>
-          <div class="logout" id="logout">Sair</div>
-        </div>
+  <div id="trocar-avatar">Trocar Avatar</div>
+  <div id="remover-avatar">Remover Avatar</div>
+  <div class="logout" id="logout">Sair</div>
+</div>
       </div>
     </div>
     <h2>Bem-vindo ao Patounic!</h2>
@@ -244,6 +245,7 @@
     const inputEmail = document.getElementById("email");
     const inputSenha = document.getElementById("senha");
     const btnTrocarAvatar = document.getElementById("trocar-avatar");
+const btnRemoverAvatar = document.getElementById("remover-avatar");
     const btnLogout = document.getElementById("logout");
 
     const searchContainer = document.getElementById("search-container");
@@ -253,6 +255,19 @@
     async function salvarAvatar(uid, avatarDataUrl) {
       await setDoc(doc(db, "usuarios", uid), { avatar: avatarDataUrl }, { merge: true });
     }
+
+btnRemoverAvatar.onclick = async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  try {
+    await setDoc(doc(db, "usuarios", user.uid), { avatar: "" }, { merge: true });
+    aplicarAvatar(null);
+    alert("Avatar removido!");
+  } catch (e) {
+    alert("Erro ao remover avatar: " + e.message);
+  }
+};
 
     async function carregarAvatar(uid) {
       const docSnap = await getDoc(doc(db, "usuarios", uid));
