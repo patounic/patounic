@@ -24,6 +24,24 @@
       padding: 0;
     }
 
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    #loading-screen img {
+      width: 80px;
+      height: 80px;
+    }
+
     #login-container {
       background-image: url("https://i.pinimg.com/736x/31/9d/88/319d889cb884fd2bdfce68c7eacc3017.jpg");
       background-size: cover;
@@ -106,33 +124,31 @@
       opacity: 1;
     }
 
-.search-input-wrapper {
-  display: flex;
-  align-items: center;
-  background-color: #111;
-  padding: 0.3rem 0.7rem;
-  border-radius: 20px;
-  margin-left: 0.5rem;
-  display: flex; /* garantir que fique visível */
-}
+    .search-input-wrapper {
+      display: flex;
+      align-items: center;
+      background-color: #111;
+      padding: 0.3rem 0.7rem;
+      border-radius: 20px;
+      margin-left: 0.5rem;
+    }
 
-.search-input {
-  border: none;
-  background: transparent;
-  outline: none;
-  color: white;
-  padding: 0.3rem;
-  font-size: 1rem; /* ← Aqui estava errado */
-  width: 150px;     /* ← Define o tamanho da barra */
-}
+    .search-input {
+      border: none;
+      background: transparent;
+      outline: none;
+      color: white;
+      padding: 0.3rem;
+      font-size: 1rem;
+      width: 150px;
+    }
 
-.search-submit-icon {
-  cursor: pointer;
-  font-size: 18px;
-  margin-left: 0.5rem;
-  color: white;
-}
-
+    .search-submit-icon {
+      cursor: pointer;
+      font-size: 18px;
+      margin-left: 0.5rem;
+      color: white;
+    }
 
     .profile-container {
       position: relative;
@@ -180,14 +196,23 @@
       background-color: #222;
     }
 
-    .logout {
-      color: red;
-    }
+.logout {
+  color: red !important;
+  background-color: transparent !important;
+}
+
+.profile-menu div.logout:hover {
+  background-color: #220000 !important;
+}
   </style>
 </head>
 <body>
 
-  <div id="login-container">
+  <div id="loading-screen">
+    <img src="https://images-ext-1.discordapp.net/external/JEwRwx1pMS_nwX0t_9q6jA_xWzfaueA-zCgYtIihxC4/%3Fsize%3D96%26animated%3Dtrue/https/cdn.discordapp.com/emojis/1326098477712805918.webp?animated=true&width=81&height=81" alt="Carregando...">
+  </div>
+
+  <div id="login-container" style="display: none;">
     <h2>Login</h2>
     <input type="email" id="email" placeholder="Email" />
     <input type="password" id="senha" placeholder="Senha (mín. 6 caracteres)" />
@@ -195,7 +220,7 @@
     <button id="btn-registrar">Registrar</button>
   </div>
 
-  <div id="site-content">
+  <div id="site-content" style="display: none;">
     <div class="icon-bar" id="icon-bar">
       <div class="search-container" id="search-container">
         <div class="popcorn-icon" id="popcorn-icon" title="Pesquisar 🍿">🍿</div>
@@ -203,10 +228,10 @@
       <div class="profile-container">
         <div class="profile-icon" id="profile-icon" title="Menu de perfil"></div>
         <div class="profile-menu" id="profile-menu">
-  <div id="trocar-avatar">Trocar Avatar</div>
-  <div id="remover-avatar">Remover Avatar</div>
-  <div class="logout" id="logout">Sair</div>
-</div>
+          <div id="trocar-avatar">Avatar</div>
+          <div id="remover-avatar">Remover</div>
+          <div class="logout" id="logout">logout</div>
+        </div>
       </div>
     </div>
     <h2>Bem-vindo ao Patounic!</h2>
@@ -251,8 +276,9 @@
     const inputEmail = document.getElementById("email");
     const inputSenha = document.getElementById("senha");
     const btnTrocarAvatar = document.getElementById("trocar-avatar");
-const btnRemoverAvatar = document.getElementById("remover-avatar");
+    const btnRemoverAvatar = document.getElementById("remover-avatar");
     const btnLogout = document.getElementById("logout");
+    const loadingScreen = document.getElementById("loading-screen");
 
     const searchContainer = document.getElementById("search-container");
     let searchInputWrapper = null;
@@ -262,31 +288,32 @@ const btnRemoverAvatar = document.getElementById("remover-avatar");
       await setDoc(doc(db, "usuarios", uid), { avatar: avatarDataUrl }, { merge: true });
     }
 
-btnRemoverAvatar.onclick = async () => {
-  const user = auth.currentUser;
-  if (!user) return;
+    btnRemoverAvatar.onclick = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
 
-  try {
-    await setDoc(doc(db, "usuarios", user.uid), { avatar: "" }, { merge: true });
-    aplicarAvatar(null);
-    alert("Avatar removido!");
-  } catch (e) {
-    alert("Erro ao remover avatar: " + e.message);
-  }
-};
+      try {
+        await setDoc(doc(db, "usuarios", user.uid), { avatar: "" }, { merge: true });
+        aplicarAvatar(null);
+        alert("Avatar removido!");
+      } catch (e) {
+        alert("Erro ao remover avatar: " + e.message);
+      }
+    };
 
     async function carregarAvatar(uid) {
       const docSnap = await getDoc(doc(db, "usuarios", uid));
       if (docSnap.exists()) {
         const data = docSnap.data();
-        if (data.avatar) {
-          aplicarAvatar(data.avatar);
-        } else {
-          aplicarAvatar(null);
-        }
+        aplicarAvatar(data.avatar || null);
       } else {
         aplicarAvatar(null);
       }
+    }
+
+    function aplicarAvatar(url) {
+      const avatarPadrao = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDwmG52pVI5JZfn04j9gdtsd8pAGbqjjLswg&s";
+      profileIcon.style.backgroundImage = `url(${url || avatarPadrao})`;
     }
 
     btnLogin.onclick = async () => {
@@ -411,18 +438,15 @@ btnRemoverAvatar.onclick = async () => {
       }
     }
 
-function aplicarAvatar(url) {
-  const avatarPadrao = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDwmG52pVI5JZfn04j9gdtsd8pAGbqjjLswg&s"; // ícone genérico
-  profileIcon.style.backgroundImage = `url(${url || avatarPadrao})`;
-}
-
     onAuthStateChanged(auth, async (user) => {
       if (user) {
+        await carregarAvatar(user.uid);
+        loadingScreen.style.display = "none";
         loginContainer.style.display = "none";
         siteContent.style.display = "block";
         iconBar.style.display = "flex";
-        await carregarAvatar(user.uid);
       } else {
+        loadingScreen.style.display = "none";
         loginContainer.style.display = "flex";
         siteContent.style.display = "none";
         iconBar.style.display = "none";
@@ -434,6 +458,5 @@ function aplicarAvatar(url) {
 
     popcornIcon.onclick = criarCampoPesquisa;
   </script>
-
 </body>
 </html>
