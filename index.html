@@ -6,6 +6,51 @@
   <title>patounic 🍿</title>
   <link rel="icon" href="https://media.discordapp.net/attachments/1381522672558669843/1392046188693553262/1333894209119453256.webp?width=86&height=86" />
   <style>
+
+.video-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+margin-top: 50px;
+}
+
+.video-row {
+  display: flex;
+  overflow-x: scroll;
+  scroll-behavior: smooth;
+  gap: 1rem;
+  padding: 1rem 0;
+  scrollbar-width: none; /* Firefox */
+}
+
+.video-row::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+.video-card {
+  min-width: 200px;
+  height: 120px;
+  background-color: #ccc;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+/* Botão seta lateral */
+.scroll-arrow {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  font-size: 2rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+}
+
 /* Menu Dropdown - Alinhar ao lado do ícone com itens lado a lado */
 .dropdown-menu {
   position: absolute;
@@ -435,8 +480,23 @@
         </div>
       </div>
     </div>
-    <h2>Bem-vindo ao Patounic!</h2>
+<div class="video-wrapper">
+  <div class="video-row" id="video-row">
+    <!-- Vídeos aqui -->
+    <div class="video-card">Vídeo 1</div>
+    <div class="video-card">Vídeo 2</div>
+    <div class="video-card">Vídeo 3</div>
+    <div class="video-card">Vídeo 4</div>
+   <div class="video-card">Vídeo 5</div>
+    <div class="video-card">Vídeo 6</div>
+    <!-- etc -->
   </div>
+
+  <!-- Botão de rolagem para a direita -->
+  <button class="scroll-arrow" onclick="scrollVideos()">&gt;</button>
+</div>
+  </div>
+</div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -523,6 +583,7 @@ const inputRegisterConfirmar = document.getElementById("register-confirmar");
       profileIcon.style.backgroundImage = `url(${url || avatarPadrao})`;
     }
 
+
     btnLogin.onclick = async () => {
       const email = inputEmail.value.trim();
       const senha = inputSenha.value.trim();
@@ -536,6 +597,34 @@ const inputRegisterConfirmar = document.getElementById("register-confirmar");
         alert("Erro ao logar: " + e.message);
       }
     };
+function scrollVideos() {
+  const row = document.getElementById("video-row");
+  const scrollAmount = 220;
+  row.scrollBy({
+    left: scrollAmount,
+    behavior: "smooth"
+  });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const scrollButton = document.getElementById("scroll-button");
+  const row = document.getElementById("video-row");
+
+  if (scrollButton && row) {
+    scrollButton.addEventListener("click", () => {
+      const scrollAmount = 220;
+      row.scrollBy({
+        left: scrollAmount,
+        behavior: "smooth"
+      });
+    });
+  }
+});
+
+}
+
+window.scrollVideos = scrollVideos; // <- isso expõe a função globalmente
+
+
 
 btnRegistrar.onclick = () => {
   loginContainer.style.display = "none";
@@ -714,6 +803,8 @@ categoriaMenu.onclick = () => {
   alert("Você clicou em Categoria!");
   // Não fecha o menu automaticamente
 };
+
+
   </script>
 </body>
 </html>
