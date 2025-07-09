@@ -560,15 +560,21 @@ btnRegistrarConta.onclick = async () => {
   }
 
   try {
-    const cred = await createUserWithEmailAndPassword(auth, email, senha);
-    await setDoc(doc(db, "usuarios", cred.user.uid), { avatar: "" });
-    alert("Conta criada com sucesso! Agora faça login.");
-    registerContainer.style.display = "none";
-    loginContainer.style.display = "flex";
+await createUserWithEmailAndPassword(auth, email, senha);
+// Não precisamos fazer login automaticamente
+await setDoc(doc(db, "usuarios", email), { avatar: "" });
+alert("Conta criada com sucesso! Agora faça login.");
+
+// Esconde o conteúdo principal do site
+contentContainer.style.display = "none";  // Esconde o conteúdo do site
+registerContainer.style.display = "none";  // Esconde a tela de registro
+loginContainer.style.display = "flex";     // Exibe a tela de login
+
   } catch (e) {
     alert("Erro ao registrar: " + e.message);
   }
 };
+
 btnVoltarLogin.onclick = () => {
   registerContainer.style.display = "none";
   loginContainer.style.display = "flex";
@@ -663,23 +669,26 @@ btnVoltarLogin.onclick = () => {
       }
     }
 
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        await carregarAvatar(user.uid);
-        loadingScreen.style.display = "none";
-        loginContainer.style.display = "none";
-        siteContent.style.display = "block";
-        iconBar.style.display = "flex";
-      } else {
-        loadingScreen.style.display = "none";
-        loginContainer.style.display = "flex";
-        siteContent.style.display = "none";
-        iconBar.style.display = "none";
-        aplicarAvatar(null);
-        inputEmail.value = "";
-        inputSenha.value = "";
-      }
-    });
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    // Se o usuário estiver logado, carrega o avatar e exibe o conteúdo do site
+    await carregarAvatar(user.uid);
+    loadingScreen.style.display = "none";
+    loginContainer.style.display = "none";
+    siteContent.style.display = "block";
+    iconBar.style.display = "flex";
+  } else {
+    // Se o usuário não estiver logado, exibe a tela de login
+    loadingScreen.style.display = "none";
+    loginContainer.style.display = "flex";
+    siteContent.style.display = "none";
+    iconBar.style.display = "none";
+    aplicarAvatar(null);
+    inputEmail.value = "";
+    inputSenha.value = "";
+  }
+});
+
 
     popcornIcon.onclick = criarCampoPesquisa;
 
