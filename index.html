@@ -279,24 +279,6 @@ margin-top: 1 px;
 }
 
 
-
-/* Menu Dropdown - Alinhar ao lado do ícone com itens lado a lado */
-.dropdown-menu {
-  position: absolute;
-  top: 0.5rem; /* Distância do topo do ícone */
-  left: 30px; /* Distância do ícone GIF */
-  background-color: transparent; /* Fundo transparente */
-  border-radius: 8px;
-  padding: 0.5rem;
-  box-shadow: none; /* remove o brilho que cria essa "aura" atrás */
-  z-index: 20;
-  display: none;  /* Inicialmente oculto */
-  flex-direction: row;  /* Itens lado a lado */
-  justify-content: space-between; /* Espaço entre os itens */
-  width: auto;
-  transition: opacity 0.3s ease;
-}
-
 /* Item de menu */
 /* Menu Dropdown - Caixas estilizadas para Home e Categoria */
 .dropdown-menu {
@@ -308,7 +290,7 @@ margin-top: 1 px;
   padding: 0.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   z-index: 20;
-  display: none;
+  display: flex;
   flex-direction: row;
   justify-content: space-between;
   width: auto;
