@@ -6,6 +6,46 @@
   <title>patounic 🍿</title>
   <link rel="icon" href="https://media.discordapp.net/attachments/1381522672558669843/1392046188693553262/1333894209119453256.webp?width=86&height=86" />
   <style>
+.video-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0));
+  padding: 1rem 0.5rem 0.5rem;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  transition: opacity 0.3s ease;
+}
+
+.video-title {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 0.3rem;
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+}
+
+.play-button {
+  background-color: #5865f2;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.play-button:hover {
+  background-color: #4752c4;
+}
+
 .arrow-icon {
   width: 55px;
   height: 55px;
@@ -22,9 +62,13 @@
   height: 100%;
   object-fit: cover;
   border-radius: 8px;
-  pointer-events: none; /* para não bloquear o clique */
+  pointer-events: none;
   z-index: 0;
+  background-color: black; /* <- Evita a borda branca */
+  border: none;
+  outline: none;
 }
+
 
 
 .video-modal {
@@ -626,14 +670,19 @@ html, body {
     <!-- Cards com thumbnails e abertura de vídeo -->
 
 <div class="video-card"
-     onclick="abrirModal('https://cdn.discordapp.com/attachments/1382924288213909536/1392845277034975252/DEBI__LOIDE_2_-_FILME_COMPLETO_DUBLADO_-_MELHOR_FILME_DE_COMEDIA.mp4?ex=687103bf&is=686fb23f&hm=cab6985d577c70e12135dea601563f6497e639cb71d8c71ec44d00dea59f7576&')"
-     onmouseenter="mostrarPreview(this, 'https://cdn.discordapp.com/attachments/1382924288213909536/1392845277034975252/DEBI__LOIDE_2_-_FILME_COMPLETO_DUBLADO_-_MELHOR_FILME_DE_COMEDIA.mp4?ex=687103bf&is=686fb23f&hm=cab6985d577c70e12135dea601563f6497e639cb71d8c71ec44d00dea59f7576&')"
-     onmouseleave="esconderPreview(this)"
+     onmouseenter="mostrarInfo(this); mostrarPreview(this, 'https://cdn.discordapp.com/attachments/1382924288213909536/1392845277034975252/DEBI__LOIDE_2_-_FILME_COMPLETO_DUBLADO_-_MELHOR_FILME_DE_COMEDIA.mp4?ex=687103bf&is=686fb23f&hm=cab6985d577c70e12135dea601563f6497e639cb71d8c71ec44d00dea59f7576&')"
+     onmouseleave="esconderInfo(this); esconderPreview(this)"
      style="background-image: url('https://i.ytimg.com/vi/4qDysqSxG64/maxresdefault.jpg');">
+  
+  <video class="preview-video" muted loop></video>
 
-  <video class="preview-video" muted loop style="display: none;"></video>
-  <span class="video-title">Nome do Vídeo</span>
+  <div class="video-info">
+    <div class="video-title">Debi & Loide 2</div>
+    <button class="play-button" onclick="abrirModal('https://cdn.discordapp.com/attachments/1382924288213909536/1392845277034975252/DEBI__LOIDE_2_-_FILME_COMPLETO_DUBLADO_-_MELHOR_FILME_DE_COMEDIA.mp4?ex=687103bf&is=686fb23f&hm=cab6985d577c70e12135dea601563f6497e639cb71d8c71ec44d00dea59f7576&')">▶ Play</button>
+  </div>
+
 </div>
+
 
     <div class="video-card" onclick="abrirModal('https://www.youtube.com/embed/9bZkp7q19f0')" style="background-image: url('https://img.youtube.com/vi/9bZkp7q19f0/hqdefault.jpg');">
       <span class="video-title">Vídeo 2</span>
@@ -815,7 +864,8 @@ window.abrirModal = abrirModal;
 window.fecharModal = fecharModal;
 window.mostrarPreview = mostrarPreview;
 window.esconderPreview = esconderPreview;
-
+window.mostrarInfo = mostrarInfo;
+window.esconderInfo = esconderInfo;
 
 btnRegistrar.onclick = () => {
   loginContainer.style.display = "none";
@@ -1060,6 +1110,16 @@ function esconderPreview(card) {
     clearTimeout(video.previewTimeout);
   }
 }
+function mostrarInfo(card) {
+  const info = card.querySelector('.video-info');
+  if (info) info.style.display = 'flex';
+}
+
+function esconderInfo(card) {
+  const info = card.querySelector('.video-info');
+  if (info) info.style.display = 'none';
+}
+
 
   </script>
 <div id="video-modal" class="video-modal">
