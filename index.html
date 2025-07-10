@@ -6,6 +6,31 @@
   <title>patounic 🍿</title>
   <link rel="icon" href="https://media.discordapp.net/attachments/1381522672558669843/1392046188693553262/1333894209119453256.webp?width=86&height=86" />
   <style>
+/* Versão mobile */
+@media (max-width: 768px) {
+  .arrow-left, .arrow-right {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 9999;
+    background-color: rgba(0, 0, 0, 0.5); /* fundo semi-transparente */
+    color: white;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 24px;
+    transition: background-color 0.3s ease;
+  }
+
+  .arrow-left {
+    left: 10px;
+  }
+
+  .arrow-right {
+    right: 10px;
+  }
+}
+
 .video-info {
   position: absolute;
   bottom: 0;
