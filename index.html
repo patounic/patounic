@@ -6,7 +6,28 @@
   <title>patounic 🍿</title>
   <link rel="icon" href="https://media.discordapp.net/attachments/1381522672558669843/1392046188693553262/1333894209119453256.webp?width=86&height=86" />
   <style>
+.container-principal {
+  position: relative;
+  padding-top: 100px; /* espaço para o comunicado não sobrepor */
+}
 
+.comunicado {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #222;
+  color: white;
+  padding: 1rem;
+  border-radius: 12px;
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  box-shadow: 0 0 10px rgba(0,0,0,0.4);
+  max-width: 90%;
+  width: fit-content;
+  z-index: 5;
+}
 
 @media (max-width: 768px) {
   .video-wrapper .scroll-arrow {
@@ -185,7 +206,7 @@ margin-top: 1 px;
 
 @media (max-width: 768px) {
   .video-row {
-    padding: 1rem 0.3rem; /* Quase colado — ajuste para 0 se quiser 100% colado */
+    padding: 1rem 0rem; /* Quase colado — ajuste para 0 se quiser 100% colado */
   }
 }
 
@@ -484,22 +505,21 @@ html, body {
 }
 
 .movie-icon {
-  font-size: 1.5rem; /* Tamanho original do ícone */
+  font-size: 1.5rem;
   cursor: pointer;
   opacity: 0.8;
   transition: opacity 0.2s ease;
-  position: fixed; /* Fixa o ícone no topo esquerdo */
-  left: 1rem; /* Distância do lado esquerdo */
-  top: 1rem; /* Distância do topo */
+  left: 1rem;
+  top: 1rem;
+  z-index: 20;
 }
 
 .movie-icon img {
-  width: 1.5rem; /* Tamanho do GIF igual ao tamanho do ícone original */
-  height: auto; /* Ajusta a altura automaticamente para manter a proporção */
-  object-fit: contain; /* Assegura que o conteúdo não distorça */
-  position: fixed; /* Fixa o ícone no topo esquerdo */
-
+  width: 1.5rem;
+  height: auto;
+  object-fit: contain;
 }
+
 
 /* Restante do código permanece o mesmo */
 .search-container {
@@ -634,18 +654,21 @@ html, body {
 </head>
 <body>
 
-  <div id="loading-screen">
-    <img src="https://images-ext-1.discordapp.net/external/JEwRwx1pMS_nwX0t_9q6jA_xWzfaueA-zCgYtIihxC4/%3Fsize%3D96%26animated%3Dtrue/https/cdn.discordapp.com/emojis/1326098477712805918.webp?animated=true&width=81&height=81" alt="Carregando...">
-  </div>
+ <!-- Loading -->
+<div id="loading-screen">
+  <img src="https://images-ext-1.discordapp.net/external/JEwRwx1pMS_nwX0t_9q6jA_xWzfaueA-zCgYtIihxC4/%3Fsize%3D96%26animated%3Dtrue/https/cdn.discordapp.com/emojis/1326098477712805918.webp?animated=true&width=81&height=81" alt="Carregando...">
+</div>
 
-  <div id="login-container" style="display: none;">
-    <h2>Login</h2>
-    <input type="email" id="email" placeholder="Email" />
-    <input type="password" id="senha" placeholder="Senha (mín. 6 caracteres)" />
-    <button id="btn-login">Entrar</button>
-    <button id="btn-registrar">Registrar</button>
-  </div>
+<!-- Login -->
+<div id="login-container" style="display: none;">
+  <h2>Login</h2>
+  <input type="email" id="email" placeholder="Email" />
+  <input type="password" id="senha" placeholder="Senha (mín. 6 caracteres)" />
+  <button id="btn-login">Entrar</button>
+  <button id="btn-registrar">Registrar</button>
+</div>
 
+<!-- Registro -->
 <div id="register-container" style="display: none;">
   <h2>Registrar</h2>
   <input type="email" id="register-email" placeholder="Email" />
@@ -654,47 +677,54 @@ html, body {
   <button id="btn-registrar-conta">Criar Conta</button>
   <button id="btn-voltar-login">Voltar ao Login</button>
 </div>
-  <div id="site-content" style="display: none;">
-    <div class="icon-bar" id="icon-bar">
-<div id="movie-icon" class="movie-icon" title="Filmes 🎬">
-  <img src="https://media.discordapp.net/attachments/1382924288213909536/1392386153495265280/814226494367858728.webp?ex=686f5828&is=686e06a8&hm=48c0ba30b4dc6a5bd0417c022431f299c0dd828aa89675a4438824e5f1d407fd&=&animated=true&width=59&height=86" alt="Filmes">
-</div>
 
-<!-- Menu Dropdown -->
-<div id="dropdown-menu" class="dropdown-menu">
-  <!-- Caixa Home -->
-  <div id="home-menu" class="menu-item">Home</div>
+<!-- Conteúdo principal -->
+<div id="site-content" style="display: none;">
   
-  <!-- Caixa Categoria -->
-  <div id="categoria-menu" class="menu-item">Categoria</div>
-</div>
+  <!-- Barra de ícones fixa no topo -->
+  <div class="icon-bar" id="icon-bar">
+    <div id="movie-icon" class="movie-icon" title="Filmes 🎬">
+      <img src="https://media.discordapp.net/attachments/1382924288213909536/1392386153495265280/814226494367858728.webp?ex=686f5828&is=686e06a8&hm=48c0ba30b4dc6a5bd0417c022431f299c0dd828aa89675a4438824e5f1d407fd&=&animated=true&width=59&height=86" alt="Filmes">
+    </div>
 
-<!-- Lista de Categorias (oculta por padrão) -->
-<div class="categories" id="categorias">
-  <span onclick="filtrarCategoria('anime')">anime</span>
-  <span onclick="filtrarCategoria('comedia')">comedia</span>
-  <span onclick="filtrarCategoria('ação')">ação</span>
-  <span onclick="filtrarCategoria('terror')">terror</span>
-  <span onclick="filtrarCategoria('gospel')">gospel</span>
-  <span onclick="filtrarCategoria('drama')">drama</span>
-  <span onclick="filtrarCategoria('romance')">romance</span>
-  <span onclick="filtrarCategoria('aventura')">aventura</span>
-  <span onclick="filtrarCategoria('ciencia')">ciencia</span>
-</div>
+    <!-- Menu Dropdown -->
+    <div id="dropdown-menu" class="dropdown-menu">
+      <div id="home-menu" class="menu-item">Home</div>
+      <div id="categoria-menu" class="menu-item">Categoria</div>
+    </div>
 
+    <!-- Lista de Categorias -->
+    <div class="categories" id="categorias">
+      <span onclick="filtrarCategoria('anime')">anime</span>
+      <span onclick="filtrarCategoria('comedia')">comedia</span>
+      <span onclick="filtrarCategoria('ação')">ação</span>
+      <span onclick="filtrarCategoria('terror')">terror</span>
+      <span onclick="filtrarCategoria('gospel')">gospel</span>
+      <span onclick="filtrarCategoria('drama')">drama</span>
+      <span onclick="filtrarCategoria('romance')">romance</span>
+      <span onclick="filtrarCategoria('aventura')">aventura</span>
+      <span onclick="filtrarCategoria('ciencia')">ciencia</span>
+    </div>
 
-      <div class="search-container" id="search-container">
-        <div class="popcorn-icon" id="popcorn-icon" title="Pesquisar 🍿">🍿</div>
-      </div>
-      <div class="profile-container">
-        <div class="profile-icon" id="profile-icon" title="Menu de perfil"></div>
-        <div class="profile-menu" id="profile-menu">
-          <div id="trocar-avatar">Avatar</div>
-          <div id="remover-avatar">Remover</div>
-          <div class="logout" id="logout">logout</div>
-        </div>
+    <!-- Busca e perfil -->
+    <div class="search-container" id="search-container">
+      <div class="popcorn-icon" id="popcorn-icon" title="Pesquisar 🍿">🍿</div>
+    </div>
+    <div class="profile-container">
+      <div class="profile-icon" id="profile-icon" title="Menu de perfil"></div>
+      <div class="profile-menu" id="profile-menu">
+        <div id="trocar-avatar">Avatar</div>
+        <div id="remover-avatar">Remover</div>
+        <div class="logout" id="logout">logout</div>
       </div>
     </div>
+  </div>
+
+  <!-- COMUNICADO (Agora fora da icon-bar e fora da video-wrapper) -->
+  <div class="comunicado">
+    📢 <strong>Aviso:</strong> Novo conteúdo disponível hoje!
+  </div>
+
 <div class="video-wrapper">
   <div class="video-row" id="video-row">
     <!-- Cards com thumbnails e abertura de vídeo -->
