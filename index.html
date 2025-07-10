@@ -150,6 +150,22 @@ font-family: 'Inter', sans-serif;
 margin-top: 1 px;
 }
 
+.video-wrapper .scroll-arrow {
+  display: none; /* escondido por padrão */
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.video-wrapper:hover .scroll-arrow {
+  display: block; /* mostra ao passar o mouse */
+}
+
 .video-row {
   display: flex;
   overflow-x: scroll;
