@@ -6,12 +6,48 @@
   <title>patounic 🍿</title>
   <link rel="icon" href="https://media.discordapp.net/attachments/1381522672558669843/1392046188693553262/1333894209119453256.webp?width=86&height=86" />
   <style>
+  .category-toggle {
+      cursor: pointer;
+      font-size: 1.5rem;
+<link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+    }
 
+.categories {
+  display: none;
+  position: absolute; 
+  top: 4rem;
+  left: 0;
+
+  width: 100%;
+  background-color: #111;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  z-index: 9;
+  text-align: center;
+}
+
+.categories span {
+  display: inline-block;
+  margin: 0.2rem;
+  padding: 0.2rem 0.4rem;
+  background-color: transparent;
+  color: white;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.categories span:hover {
+  color: #5865f2;
+}
 .video-wrapper {
   position: relative;
   width: 100%;
   overflow: hidden;
-margin-top: 50px;
+margin-top: 1 px;
 }
 
 .video-row {
@@ -26,20 +62,16 @@ margin-top: 50px;
 .video-row::-webkit-scrollbar {
   display: none; /* Chrome, Safari */
 }
-
 .video-card {
   min-width: 200px;
   height: 120px;
   background-color: #ccc;
   border-radius: 8px;
   flex-shrink: 0;
-}
-
-/* Botão seta lateral */
+}/* Botão seta lateral */
 .scroll-arrow {
   position: absolute;
-  right: 0;
-  top: 50%;
+  top: 50%; /* centraliza verticalmente dentro da .video-wrapper */
   transform: translateY(-50%);
   background-color: rgba(0, 0, 0, 0.5);
   color: white;
@@ -50,6 +82,18 @@ margin-top: 50px;
   cursor: pointer;
   z-index: 10;
 }
+
+.scroll-arrow.left {
+  left: 0;
+  right: auto;
+}
+
+.scroll-arrow.right {
+  right: 0;
+  left: auto;
+}
+
+
 
 /* Menu Dropdown - Alinhar ao lado do ícone com itens lado a lado */
 .dropdown-menu {
@@ -176,13 +220,13 @@ margin-top: 50px;
       box-sizing: border-box;
     }
 
-    html, body {
-      height: 100%;
-      font-family: Arial, sans-serif;
-      color: white;
-      overflow: hidden;
-    }
-
+html, body {
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: #000;
+  color: white;
+}
     body {
       margin: 0;
       padding: 0;
@@ -253,8 +297,10 @@ margin-top: 50px;
     #site-content {
       display: none;
       padding: 2rem;
-      background-color: #000;
-      height: 100vh;
+  padding-top: 8rem; /* isso afasta tudo da barra fixa no topo */
+
+ min-height: 100vh;
+  background-color: #000;
       text-align: center;
     }
 .icon-bar {
@@ -468,6 +514,20 @@ margin-top: 50px;
   <div id="categoria-menu" class="menu-item">Categoria</div>
 </div>
 
+<!-- Lista de Categorias (oculta por padrão) -->
+<div class="categories" id="categorias">
+  <span onclick="filtrarCategoria('anime')">anime</span>
+  <span onclick="filtrarCategoria('comedia')">comedia</span>
+  <span onclick="filtrarCategoria('ação')">ação</span>
+  <span onclick="filtrarCategoria('terror')">terror</span>
+  <span onclick="filtrarCategoria('gospel')">gospel</span>
+  <span onclick="filtrarCategoria('drama')">drama</span>
+  <span onclick="filtrarCategoria('romance')">romance</span>
+  <span onclick="filtrarCategoria('aventura')">aventura</span>
+  <span onclick="filtrarCategoria('ciencia')">ciencia</span>
+</div>
+
+
       <div class="search-container" id="search-container">
         <div class="popcorn-icon" id="popcorn-icon" title="Pesquisar 🍿">🍿</div>
       </div>
@@ -490,11 +550,25 @@ margin-top: 50px;
    <div class="video-card">Vídeo 5</div>
     <div class="video-card">Vídeo 6</div>
     <!-- etc -->
+<button class="scroll-arrow left" onclick="scrollVideos('left')">&lt;</button>
+<button class="scroll-arrow right" onclick="scrollVideos('right')">&gt;</button>
+</div>
+  </div>
+<div class="video-wrapper">
+  <div class="video-row" id="video-row-2">
+    <div class="video-card">Vídeo 7</div>
+    <div class="video-card">Vídeo 8</div>
+    <div class="video-card">Vídeo 9</div>
+    <div class="video-card">Vídeo 10</div>
+    <div class="video-card">Vídeo 11</div>
+    <div class="video-card">Vídeo 12</div>
   </div>
 
-  <!-- Botão de rolagem para a direita -->
-  <button class="scroll-arrow" onclick="scrollVideos()">&gt;</button>
+  <!-- Setas da segunda fileira -->
+  <button class="scroll-arrow left" onclick="scrollVideos('left', 'video-row-2')">&lt;</button>
+  <button class="scroll-arrow right" onclick="scrollVideos('right', 'video-row-2')">&gt;</button>
 </div>
+  <!-- Botão de rolagem para a direita -->
   </div>
 </div>
 
@@ -597,13 +671,17 @@ const inputRegisterConfirmar = document.getElementById("register-confirmar");
         alert("Erro ao logar: " + e.message);
       }
     };
-function scrollVideos() {
-  const row = document.getElementById("video-row");
+function scrollVideos(direction = 'right', rowId = 'video-row') {
+  const row = document.getElementById(rowId);
   const scrollAmount = 220;
-  row.scrollBy({
-    left: scrollAmount,
-    behavior: "smooth"
-  });
+
+  if (row) {
+    row.scrollBy({
+      left: direction === 'right' ? scrollAmount : -scrollAmount,
+      behavior: "smooth"
+    });
+  }
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   const scrollButton = document.getElementById("scroll-button");
@@ -619,8 +697,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-
-}
 
 window.scrollVideos = scrollVideos; // <- isso expõe a função globalmente
 
@@ -785,6 +861,8 @@ const movieIcon = document.getElementById("movie-icon");
 const dropdownMenu = document.getElementById("dropdown-menu");
 const homeMenu = document.getElementById("home-menu");
 const categoriaMenu = document.getElementById("categoria-menu");
+const categoriasDiv = document.getElementById("categorias");
+
 
 // Função para mostrar/ocultar o menu
 movieIcon.onclick = (e) => {
@@ -800,11 +878,15 @@ homeMenu.onclick = () => {
 };
 
 categoriaMenu.onclick = () => {
-  alert("Você clicou em Categoria!");
-  // Não fecha o menu automaticamente
+  const isVisible = categoriasDiv.style.display === "block";
+  categoriasDiv.style.display = isVisible ? "none" : "block";
 };
 
 
+function filtrarCategoria(categoria) {
+  alert(`Você filtrou pela categoria: ${categoria}`);
+  categoriasDiv.style.display = "none"; // Oculta após clique
+}
   </script>
 </body>
 </html>
