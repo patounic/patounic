@@ -103,7 +103,7 @@ margin-top: 1 px;
   background-color: transparent; /* Fundo transparente */
   border-radius: 8px;
   padding: 0.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: none; /* remove o brilho que cria essa "aura" atrás */
   z-index: 20;
   display: none;  /* Inicialmente oculto */
   flex-direction: row;  /* Itens lado a lado */
@@ -161,23 +161,6 @@ margin-top: 1 px;
 
 
 
-
-/* Para garantir que o ícone de filmes não afete o dropdown */
-.movie-icon {
-  position: relative;  /* Relativo para que o dropdown apareça em relação a ele */
-  z-index: 30;
-}
-
-
-/* Para garantir que o ícone de filmes não afete o dropdown */
-.movie-icon {
-  position: relative;  /* Relativo para que o dropdown apareça em relação a ele */
-  z-index: 30;
-}
-
-
-
-
 #register-container {
   background-image: url("https://media.discordapp.net/attachments/1382924288213909536/1392481545780068392/Picsart_25-07-09_14-16-08-080_LE_upscale_balanced_x4_light_ai_30_tone_enhance_30_color_enhance_30.png?ex=686fb0ff&is=686e5f7f&hm=9003b6fbd5ea37fe347145a2e629372c1ae96727110bfb0c3e394762c0e2698c&=&format=webp&quality=lossless&width=967&height=967");
   background-size: cover;
@@ -224,9 +207,9 @@ html, body {
   min-height: 100%;
   overflow-x: hidden;
   overflow-y: auto;
-  background-color: #000;
   color: white;
 }
+
     body {
       margin: 0;
       padding: 0;
@@ -294,21 +277,28 @@ html, body {
       font-weight: bold;
     }
 
-    #site-content {
-      display: none;
-      padding: 2rem;
-  padding-top: 8rem; /* isso afasta tudo da barra fixa no topo */
+#site-content {
+  display: none;
+  padding: 2rem;
+  padding-top: 10rem;
+  min-height: 100vh;
+  text-align: center;
 
- min-height: 100vh;
-  background-color: #000;
-      text-align: center;
-    }
+  background-image:
+    linear-gradient(to bottom, rgba(20, 0, 40, 0.8) 0%, rgba(0, 0, 0, 0.95) 80%),
+    url("https://i.pinimg.com/736x/82/0f/78/820f786fd575678e75e91ec130b572b4.jpg");
+  background-size: cover;
+  background-position: top;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
 .icon-bar {
   display: flex;
   align-items: center;
   justify-content: flex-start; /* Alinha os itens à esquerda */
   padding: 1rem;
-  background-color: #000;
+  background-color: transparent;
   position: absolute; /* Fixa a posição no topo */
   top: 0;
   left: 0; /* Garante que o conteúdo fique no topo esquerdo */
@@ -322,7 +312,7 @@ html, body {
   align-items: center;
   justify-content: space-between; /* Garante que os ícones fiquem separados */
   padding: 1rem;
-  background-color: #000;
+ background-color: transparent;
   position: fixed; /* Barra fixa no topo */
   top: 0; /* Fixa no topo */
   width: 100%; /* Ocupa toda a largura da tela */
@@ -343,6 +333,8 @@ html, body {
   width: 1.5rem; /* Tamanho do GIF igual ao tamanho do ícone original */
   height: auto; /* Ajusta a altura automaticamente para manter a proporção */
   object-fit: contain; /* Assegura que o conteúdo não distorça */
+  position: fixed; /* Fixa o ícone no topo esquerdo */
+
 }
 
 /* Restante do código permanece o mesmo */
@@ -369,7 +361,7 @@ html, body {
       align-items: center;
       justify-content: flex-end;
       padding: 1rem;
-      background-color: #000;
+    background-color: transparent;
       position: absolute;
       top: 0;
       right: 0;
@@ -498,7 +490,6 @@ html, body {
   <button id="btn-registrar-conta">Criar Conta</button>
   <button id="btn-voltar-login">Voltar ao Login</button>
 </div>
-
   <div id="site-content" style="display: none;">
     <div class="icon-bar" id="icon-bar">
 <div id="movie-icon" class="movie-icon" title="Filmes 🎬">
