@@ -6,6 +6,55 @@
   <title>patounic 🍿</title>
   <link rel="icon" href="https://media.discordapp.net/attachments/1381522672558669843/1392046188693553262/1333894209119453256.webp?width=86&height=86" />
   <style>
+.preview-video {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  pointer-events: none; /* para não bloquear o clique */
+  z-index: 0;
+}
+
+
+.video-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.8);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  width: 90%;
+  max-width: 800px;
+  aspect-ratio: 16 / 9;
+  background-color: black;
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 20px #000;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 16px;
+  font-size: 2rem;
+  color: white;
+  cursor: pointer;
+  z-index: 10;
+}
+
+
   .category-toggle {
       cursor: pointer;
       font-size: 1.5rem;
@@ -65,16 +114,21 @@ margin-top: 1 px;
 .video-card {
   width: 200px;
   height: 120px;
-  background-color: #ccc;
+  background-color: #000;
+  background-size: cover;
+  background-position: center;
   border-radius: 8px;
   flex-shrink: 0;
-  transition: background-color 0.3s ease, transform 0.3s ease;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
-  font-family: 'Inter', sans-serif;
+  padding: 0.5rem;
+  color: white;
   font-weight: bold;
-  color: black;
+  font-family: 'Inter', sans-serif;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  position: relative;
 }
 
 .video-card:hover {
@@ -565,18 +619,40 @@ html, body {
     </div>
 <div class="video-wrapper">
   <div class="video-row" id="video-row">
-    <!-- Vídeos aqui -->
-    <div class="video-card">Vídeo 1</div>
-    <div class="video-card">Vídeo 2</div>
-    <div class="video-card">Vídeo 3</div>
-    <div class="video-card">Vídeo 4</div>
-   <div class="video-card">Vídeo 5</div>
-    <div class="video-card">Vídeo 6</div>
-    <!-- etc -->
-<button class="scroll-arrow left" onclick="scrollVideos('left')">&lt;</button>
-<button class="scroll-arrow right" onclick="scrollVideos('right')">&gt;</button>
+    <!-- Cards com thumbnails e abertura de vídeo -->
+
+<div class="video-card"
+     onclick="abrirModal('https://cdn.discordapp.com/attachments/1382924288213909536/1392845277034975252/DEBI__LOIDE_2_-_FILME_COMPLETO_DUBLADO_-_MELHOR_FILME_DE_COMEDIA.mp4?ex=687103bf&is=686fb23f&hm=cab6985d577c70e12135dea601563f6497e639cb71d8c71ec44d00dea59f7576&')"
+     onmouseenter="mostrarPreview(this, 'https://cdn.discordapp.com/attachments/1382924288213909536/1392845277034975252/DEBI__LOIDE_2_-_FILME_COMPLETO_DUBLADO_-_MELHOR_FILME_DE_COMEDIA.mp4?ex=687103bf&is=686fb23f&hm=cab6985d577c70e12135dea601563f6497e639cb71d8c71ec44d00dea59f7576&')"
+     onmouseleave="esconderPreview(this)"
+     style="background-image: url('https://i.ytimg.com/vi/4qDysqSxG64/maxresdefault.jpg');">
+
+  <video class="preview-video" muted loop style="display: none;"></video>
+  <span class="video-title">Nome do Vídeo</span>
 </div>
+
+    <div class="video-card" onclick="abrirModal('https://www.youtube.com/embed/9bZkp7q19f0')" style="background-image: url('https://img.youtube.com/vi/9bZkp7q19f0/hqdefault.jpg');">
+      <span class="video-title">Vídeo 2</span>
+    </div>
+    <div class="video-card" onclick="abrirModal('https://www.youtube.com/embed/kJQP7kiw5Fk')" style="background-image: url('https://img.youtube.com/vi/kJQP7kiw5Fk/hqdefault.jpg');">
+      <span class="video-title">Vídeo 3</span>
+    </div>
+    <div class="video-card" onclick="abrirModal('https://www.youtube.com/embed/L_jWHffIx5E')" style="background-image: url('https://img.youtube.com/vi/L_jWHffIx5E/hqdefault.jpg');">
+      <span class="video-title">Vídeo 4</span>
+    </div>
+    <div class="video-card" onclick="abrirModal('https://www.youtube.com/embed/OPf0YbXqDm0')" style="background-image: url('https://img.youtube.com/vi/OPf0YbXqDm0/hqdefault.jpg');">
+      <span class="video-title">Vídeo 5</span>
+    </div>
+    <div class="video-card" onclick="abrirModal('https://www.youtube.com/embed/tVj0ZTS4WF4')" style="background-image: url('https://img.youtube.com/vi/tVj0ZTS4WF4/hqdefault.jpg');">
+      <span class="video-title">Vídeo 6</span>
+    </div>
+
+    <!-- Setas -->
+    <button class="scroll-arrow left" onclick="scrollVideos('left')">&lt;</button>
+    <button class="scroll-arrow right" onclick="scrollVideos('right')">&gt;</button>
   </div>
+</div>
+
 <div class="video-wrapper">
   <div class="video-row" id="video-row-2">
     <div class="video-card">Vídeo 7</div>
@@ -722,7 +798,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 window.scrollVideos = scrollVideos; // <- isso expõe a função globalmente
-
+window.abrirModal = abrirModal;
+window.fecharModal = fecharModal;
+window.mostrarPreview = mostrarPreview;
+window.esconderPreview = esconderPreview;
 
 
 btnRegistrar.onclick = () => {
@@ -910,6 +989,71 @@ function filtrarCategoria(categoria) {
   alert(`Você filtrou pela categoria: ${categoria}`);
   categoriasDiv.style.display = "none"; // Oculta após clique
 }
+
+function abrirModal(videoUrl) {
+  // Para todos os previews visíveis
+  document.querySelectorAll(".preview-video").forEach(video => {
+    video.pause();
+    video.currentTime = 0;
+    video.style.display = "none";
+    if (video.previewTimeout) clearTimeout(video.previewTimeout);
+  });
+
+
+  const modal = document.getElementById("video-modal");
+  const video = document.getElementById("video-frame");
+  video.src = videoUrl;
+  video.load();
+  video.play();
+  modal.style.display = "flex";
+}
+
+
+function fecharModal() {
+  const modal = document.getElementById("video-modal");
+  const video = document.getElementById("video-frame");
+  video.pause();
+  video.currentTime = 0;
+  video.src = "";
+  modal.style.display = "none";
+}
+
+function mostrarPreview(card, videoUrl) {
+  const video = card.querySelector('.preview-video');
+  if (!video) return;
+
+  video.src = videoUrl;
+  video.style.display = 'block';
+  video.currentTime = 0;
+  video.play();
+
+  // para o preview após 10 segundos
+  video.previewTimeout = setTimeout(() => {
+    video.pause();
+    video.currentTime = 0;
+    video.style.display = 'none';
+  }, 10000); // 10 segundos = 10000ms
+}
+
+function esconderPreview(card) {
+  const video = card.querySelector('.preview-video');
+  if (!video) return;
+
+  video.pause();
+  video.currentTime = 0;
+  video.style.display = 'none';
+  
+  if (video.previewTimeout) {
+    clearTimeout(video.previewTimeout);
+  }
+}
+
   </script>
+<div id="video-modal" class="video-modal">
+  <div class="modal-content">
+    <span class="close-button" onclick="fecharModal()">&times;</span>
+<video id="video-frame" width="100%" height="100%" controls autoplay controlsList="nodownload" style="border-radius: 8px; background: black;"></video>
+  </div>
+</div>
 </body>
 </html>
