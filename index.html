@@ -6,6 +6,13 @@
   <title>patounic 🍿</title>
   <link rel="icon" href="https://media.discordapp.net/attachments/1381522672558669843/1392046188693553262/1333894209119453256.webp?width=86&height=86" />
   <style>
+.arrow-icon {
+  width: 55px;
+  height: 55px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
 .preview-video {
   display: none;
   position: absolute;
@@ -157,25 +164,22 @@ margin-top: 1 px;
 
 .scroll-arrow {
   position: absolute;
-  top: 50%; /* centraliza verticalmente dentro da .video-wrapper */
+  top: 50%;
   transform: translateY(-50%);
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
+  background: transparent; /* Remove o fundo */
   border: none;
-  font-size: 2rem;
-  padding: 0.3rem 0.6rem;
-  border-radius: 50%;
+  padding: 0;
   cursor: pointer;
   z-index: 10;
 }
 
 .scroll-arrow.left {
-  left: 0;
+  left: -5px;
   right: auto;
 }
 
 .scroll-arrow.right {
-  right: 0;
+  right: -5px;
   left: auto;
 }
 
@@ -648,8 +652,13 @@ html, body {
     </div>
 
     <!-- Setas -->
-    <button class="scroll-arrow left" onclick="scrollVideos('left')">&lt;</button>
-    <button class="scroll-arrow right" onclick="scrollVideos('right')">&gt;</button>
+   <button class="scroll-arrow left" onclick="scrollVideos('left')">
+  <img src="https://images-ext-1.discordapp.net/external/5I9l_aV2usJiejAlqrPa1vMClhSw8uAU4aC7lsJFDl8/%3Fsize%3D96/https/cdn.discordapp.com/emojis/878689330296680459.webp?format=webp&width=86&height=86" alt="Anterior" class="arrow-icon" />
+</button>
+
+<button class="scroll-arrow right" onclick="scrollVideos('right')">
+  <img src="https://images-ext-1.discordapp.net/external/lJHezHUb-87G72093K_C72bEzxXRPmGO3a5BPC266fI/%3Fsize%3D96/https/cdn.discordapp.com/emojis/861984565300297738.webp?format=webp&width=86&height=86" alt="Próximo" class="arrow-icon" />
+</button>
   </div>
 </div>
 
@@ -664,8 +673,12 @@ html, body {
   </div>
 
   <!-- Setas da segunda fileira -->
-  <button class="scroll-arrow left" onclick="scrollVideos('left', 'video-row-2')">&lt;</button>
-  <button class="scroll-arrow right" onclick="scrollVideos('right', 'video-row-2')">&gt;</button>
+<button class="scroll-arrow left" onclick="scrollVideos('left', 'video-row-2')">
+  <img src="https://images-ext-1.discordapp.net/external/5I9l_aV2usJiejAlqrPa1vMClhSw8uAU4aC7lsJFDl8/%3Fsize%3D96/https/cdn.discordapp.com/emojis/878689330296680459.webp?format=webp&width=86&height=86" alt="Anterior" class="arrow-icon" />
+</button>
+<button class="scroll-arrow right" onclick="scrollVideos('right', 'video-row-2')">
+  <img src="https://images-ext-1.discordapp.net/external/lJHezHUb-87G72093K_C72bEzxXRPmGO3a5BPC266fI/%3Fsize%3D96/https/cdn.discordapp.com/emojis/861984565300297738.webp?format=webp&width=86&height=86" alt="Próximo" class="arrow-icon" />
+</button>
 </div>
   <!-- Botão de rolagem para a direita -->
   </div>
