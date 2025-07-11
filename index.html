@@ -916,9 +916,7 @@ btnLogin.onclick = async () => {
     await user.reload(); // Atualiza o status do e-mail
 
     if (!user.emailVerified) {
-    await sendEmailVerification(user, {
-  handleCodeInApp: true,
-  url: 'https://patounic.github.io/patounic'
+await sendEmailVerification(user);
 });
 
 
@@ -1005,9 +1003,7 @@ btnRegistrarConta.onclick = async () => {
     const user = userCredential.user;
 
     // Enviar verificação de e-mail
-    await sendEmailVerification(user, {
-      handleCodeInApp: true,
-      url: 'https://patounic.github.io/patounic'
+await sendEmailVerification(user);
     });
 
     // Criar entrada no Firestore com avatar vazio
