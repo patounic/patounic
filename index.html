@@ -991,7 +991,7 @@ btnRegistrarConta.onclick = async () => {
     registerContainer.style.display = "none";
     loginContainer.style.display = "flex";
   } catch (e) {
-    alert("Erro ao registrar: " + e.message);
+    
   }
 };
 
@@ -1120,15 +1120,25 @@ document.body.addEventListener("click", () => {
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    await user.reload(); // <- Garante que a verificação esteja atualizada
+    await user.reload(); // Garante estado atualizado
 
     if (!user.emailVerified) {
-      alert("Por favor, verifique seu email antes de acessar o site.");
-      await signOut(auth); // Desloga o usuário
+      try {
+        await sendEmailVerification(user, {
+          handleCodeInApp: true,
+          url: 'https://patounic.github.io/patounic/confirmado'
+        });
+        alert("Seu e-mail ainda não foi verificado.\nReenviamos o link de verificação. Verifique sua caixa de entrada ou spam.");
+      } catch (error) {
+        console.error("Erro ao reenviar e-mail:", error.message);
+        alert("Erro ao reenviar e-mail de verificação.");
+      }
+
+      await signOut(auth); // Desloga
       return;
     }
 
-    // Se verificado, continua normalmente
+    // Se email estiver verificado, carrega normalmente
     await carregarAvatar(user.uid);
     loadingScreen.style.display = "none";
     loginContainer.style.display = "none";
@@ -1145,6 +1155,7 @@ onAuthStateChanged(auth, async (user) => {
     inputSenha.value = "";
   }
 });
+
 
 
     popcornIcon.onclick = criarCampoPesquisa;
