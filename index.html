@@ -8,6 +8,8 @@
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/Picsart_25-07-09_14-16-08-080_LE_upscale_balanced_x4_light_ai_30_tone_enhance_30_color_enhance_30 (1).webp">
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/wallpaper.png.webp">
   <style>
+
+
 .section {
   margin: 1rem 0;
 }
@@ -617,8 +619,8 @@ html, body {
     }
 
     .profile-icon {
-      width: 32px;
-      height: 32px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       background-color: white;
       cursor: pointer;
@@ -627,6 +629,8 @@ html, body {
       display: block;
       background-size: cover;
       background-position: center;
+  transition: transform 0.2s ease;
+  will-change: transform;
     }
 
     .profile-menu {
@@ -986,6 +990,7 @@ btnVoltarLogin.onclick = () => {
   registerContainer.style.display = "none";
   loginContainer.style.display = "flex";
 };
+let menuAberto = false;
 
 
     btnLogout.onclick = async () => {
@@ -1014,10 +1019,35 @@ btnVoltarLogin.onclick = () => {
       input.click();
     };
 
-    profileIcon.onclick = (e) => {
-      e.stopPropagation();
-      profileMenu.style.display = profileMenu.style.display === "block" ? "none" : "block";
-    };
+  profileIcon.addEventListener("mouseenter", () => {
+  iniciarRotacao(-1);
+});
+
+profileIcon.addEventListener("mouseleave", () => {
+  if (!menuAberto) pararRotacao();
+});
+
+profileIcon.addEventListener("click", (e) => {
+  e.stopPropagation();
+  menuAberto = !menuAberto;
+
+  profileMenu.style.display = menuAberto ? "block" : "none";
+
+  if (menuAberto) {
+    iniciarRotacao(1); // gira para a direita
+  } else {
+    pararRotacao();
+  }
+});
+
+document.body.addEventListener("click", () => {
+  if (menuAberto) {
+    menuAberto = false;
+    profileMenu.style.display = "none";
+    pararRotacao();
+  }
+});
+
 
     document.body.onclick = () => {
       profileMenu.style.display = "none";
@@ -1196,6 +1226,50 @@ function esconderInfo(card) {
   const info = card.querySelector('.video-info');
   if (info) info.style.display = 'none';
 }
+
+let rotation = 0; // ângulo atual em graus
+let rotating = false;
+let direction = 0; // -1: esquerda, +1: direita, 0: parado
+let animationFrame;
+
+const updateRotation = () => {
+  if (direction !== 0) {
+    rotation += direction * 0.5; // velocidade da rotação
+    profileIcon.style.transform = `rotate(${rotation}deg)`;
+  }
+  animationFrame = requestAnimationFrame(updateRotation);
+};
+
+// Inicia rotação com direção específica
+const iniciarRotacao = (dir) => {
+  direction = dir;
+  if (!rotating) {
+    rotating = true;
+    animationFrame = requestAnimationFrame(updateRotation);
+  }
+};
+
+// Para rotação suavemente
+const pararRotacao = () => {
+  direction = 0;
+  rotating = false;
+  cancelAnimationFrame(animationFrame);
+  profileIcon.style.transition = 'transform 0.4s ease';
+  profileIcon.style.transform = 'rotate(0deg)';
+  rotation = 0;
+};
+
+// Hover = girar para a esquerda
+profileIcon.addEventListener("mouseenter", () => {
+  iniciarRotacao(-1);
+});
+
+// Sai do hover = parar se menu não estiver aberto
+profileIcon.addEventListener("mouseleave", () => {
+  if (!menuAberto) {
+    pararRotacao();
+  }
+});
 
 
   </script>
