@@ -953,55 +953,52 @@ btnRegistrar.onclick = () => {
   registerContainer.style.display = "flex";
 };
 
-btnRegistrarConta.onclick = async () => {
-  const email = inputRegisterEmail.value.trim();
-  const senha = inputRegisterSenha.value.trim();
-  const confirmar = inputRegisterConfirmar.value.trim();
+// Mostra mensagem personalizada após registro
+registerContainer.style.display = "none";
 
-  if (!email || !senha || !confirmar) {
-    alert("Preencha todos os campos.");
-    return;
-  }
+// Cria container estilizado
+const mensagemVerificacao = document.createElement("div");
+mensagemVerificacao.style.cssText = `
+  max-width: 500px;
+  margin: 8rem auto;
+  padding: 2rem;
+  background-color: rgba(0,0,0,0.7);
+  border-radius: 16px;
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+  box-shadow: 0 0 20px rgba(0,0,0,0.6);
+`;
 
-  if (senha.length < 6) {
-    alert("Senha deve ter ao menos 6 caracteres.");
-    return;
-  }
+// Adiciona conteúdo interno
+mensagemVerificacao.innerHTML = `
+  <h2 style="color: #fff; margin-bottom: 1rem;">Verifique seu e-mail 📬</h2>
+  <p style="color: #ccc; font-size: 1rem;">Enviamos um link de verificação para:</p>
+  <p style="color: #fff; font-weight: bold; margin: 0.5rem 0;">${email}</p>
+  <p style="color: #aaa; margin-top: 1rem;">Ele pode estar na sua <strong>caixa de spam</strong> ou <strong>promoções</strong>.</p>
+  <p style="color: #999; margin-top: 1rem;">Após verificar, volte aqui e faça login normalmente.</p>
+  <button id="voltarLoginBtn" style="
+    margin-top: 2rem;
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    background-color: #5865f2;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+  ">Voltar ao Login</button>
+`;
 
-  if (senha !== confirmar) {
-    alert("As senhas não coincidem.");
-    return;
-  }
+siteContent.innerHTML = '';
+siteContent.appendChild(mensagemVerificacao);
+siteContent.style.display = "block";
+iconBar.style.display = "none";
 
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-    const user = userCredential.user;
-
-    // Enviar verificação de e-mail
-    await sendEmailVerification(user, {
-      handleCodeInApp: true,
-      url: 'https://patounic.github.io/patounic/confirmado'
-    });
-
-    // Criar entrada no Firestore com avatar vazio
-    await setDoc(doc(db, "usuarios", user.uid), { avatar: "" });
-
-    alert("Conta criada com sucesso! Um link de verificação foi enviado para seu email.");
-
-    registerContainer.style.display = "none";
-    loginContainer.style.display = "flex";
-  } catch (e) {
-    alert("Erro ao registrar: " + e.message);
-  }
-};
-
-
-
-
-btnVoltarLogin.onclick = () => {
-  registerContainer.style.display = "none";
+// Evento do botão "Voltar ao Login"
+document.getElementById("voltarLoginBtn").onclick = () => {
+  siteContent.style.display = "none";
   loginContainer.style.display = "flex";
 };
+
 let menuAberto = false;
 
 
