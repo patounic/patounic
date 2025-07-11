@@ -900,19 +900,38 @@ const inputRegisterConfirmar = document.getElementById("register-confirmar");
     }
 
 
-    btnLogin.onclick = async () => {
-      const email = inputEmail.value.trim();
-      const senha = inputSenha.value.trim();
-      if (!email || !senha) {
-        alert("Preencha email e senha.");
-        return;
-      }
-      try {
-        await signInWithEmailAndPassword(auth, email, senha);
-      } catch (e) {
-        alert("Erro ao logar: " + e.message);
-      }
-    };
+btnLogin.onclick = async () => {
+  const email = inputEmail.value.trim();
+  const senha = inputSenha.value.trim();
+
+  if (!email || !senha) {
+    alert("Preencha email e senha.");
+    return;
+  }
+
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+    const user = userCredential.user;
+
+    await user.reload(); // Atualiza o status do e-mail
+
+    if (!user.emailVerified) {
+      await sendEmailVerification(user, {
+        handleCodeInApp: true,
+        url: 'https://patounic.github.io/patounic/confirmado'
+      });
+
+      alert("Seu e-mail ainda não foi verificado.\nReenviamos um novo link de verificação.\nVerifique sua caixa de entrada ou spam.");
+      await signOut(auth); // Impede acesso antes da verificação
+      return;
+    }
+
+    // Se verificado, o restante será tratado por onAuthStateChanged
+  } catch (e) {
+    alert("Erro ao logar: " + e.message);
+  }
+};
+
 function scrollVideos(direction = 'right', rowId = 'video-row') {
   const row = document.getElementById(rowId);
   const scrollAmount = 220;
