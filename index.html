@@ -703,9 +703,8 @@ html, body {
   
   <!-- Barra de ícones fixa no topo -->
   <div class="icon-bar" id="icon-bar">
-    <div id="movie-icon" class="movie-icon" title="Filmes 🎬">
-      <img src="https://images-ext-1.discordapp.net/external/vD9l_ynVFznVhvpcuwUQdraBe7lTlDDXe6-gooXePoA/%3Fsize%3D96%26animated%3Dtrue/https/cdn.discordapp.com/emojis/1388155536951738483.webp?animated=true&width=86&height=86" alt="Filmes">
-    </div>
+    <div id="movie-icon" class="movie-icon" title="">
+          </div>
 
     <!-- Menu Dropdown -->
     <div id="dropdown-menu" class="dropdown-menu">
@@ -1129,19 +1128,11 @@ onAuthStateChanged(auth, async (user) => {
 
     popcornIcon.onclick = criarCampoPesquisa;
 
-const movieIcon = document.getElementById("movie-icon");
 const dropdownMenu = document.getElementById("dropdown-menu");
 const homeMenu = document.getElementById("home-menu");
 const categoriaMenu = document.getElementById("categoria-menu");
 const categoriasDiv = document.getElementById("categorias");
 
-
-// Função para mostrar/ocultar o menu
-movieIcon.onclick = (e) => {
-  e.stopPropagation(); // Impede que o clique no ícone feche o menu logo após abrir
-  // Alterna entre mostrar e esconder o menu
-  dropdownMenu.style.display = dropdownMenu.style.display === "block" ? "none" : "block";
-};
 
 // Comportamento para as opções de menu
 homeMenu.onclick = () => {
