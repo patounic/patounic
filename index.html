@@ -7,7 +7,9 @@
   <link rel="icon" href="https://media.discordapp.net/attachments/1381522672558669843/1392046188693553262/1333894209119453256.webp?width=86&height=86" />
   <style>
 .section {
-  margin: 1rem 0;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
 }
 
 .section-title {
@@ -206,9 +208,10 @@ font-family: 'Inter', sans-serif;
 }
 .video-wrapper {
   position: relative;
-  width: 100%;
-  overflow: hidden;
-margin-top: 1 px;
+  width: 100vw; /* força ocupar a tela toda */
+  overflow: visible; /* permite que o conteúdo "vaze" */
+  margin: 0; /* garante que nada desloque */
+  padding: 0; /* limpa espaços extras */
 }
 
 .video-wrapper .scroll-arrow {
@@ -229,11 +232,10 @@ margin-top: 1 px;
 
 .video-row {
   display: flex;
-  overflow-x: scroll;
-  scroll-behavior: smooth;
+  overflow-x: auto;
   gap: 1rem;
-  padding: 1rem 3rem;
-  scrollbar-width: none; /* Firefox */
+  padding: 0 0.5rem; /* só um espacinho se quiser */
+  margin: 0;
 }
 
 @media (max-width: 768px) {
