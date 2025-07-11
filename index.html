@@ -926,13 +926,17 @@ btnLogin.onclick = async () => {
       return;
     }
 
-    // ✅ Se o e-mail for verificado, recarrega a página
-    location.reload();
+    // Recarrega a página uma única vez se ainda não foi recarregada
+    if (!localStorage.getItem("recarregadoAposLogin")) {
+      localStorage.setItem("recarregadoAposLogin", "true");
+      location.reload();
+    }
 
   } catch (e) {
     alert("Erro ao logar: " + e.message);
   }
 };
+
 
 
 function scrollVideos(direction = 'right', rowId = 'video-row') {
@@ -1167,6 +1171,11 @@ onAuthStateChanged(auth, async (user) => {
     siteContent.style.display = "block";
     iconBar.style.display = "flex";
 
+    // Limpa flag de recarregamento após login verificado
+    if (localStorage.getItem("recarregadoAposLogin")) {
+      localStorage.removeItem("recarregadoAposLogin");
+    }
+
   } else {
     loadingScreen.style.display = "none";
     loginContainer.style.display = "flex";
@@ -1177,6 +1186,7 @@ onAuthStateChanged(auth, async (user) => {
     inputSenha.value = "";
   }
 });
+
 
 
 
