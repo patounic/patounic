@@ -820,7 +820,8 @@ html, body {
       signInWithEmailAndPassword,
       createUserWithEmailAndPassword,
       signOut,
-      onAuthStateChanged
+      onAuthStateChanged,
+sendEmailVerification
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import {
       getFirestore,
@@ -951,6 +952,7 @@ btnRegistrar.onclick = () => {
   loginContainer.style.display = "none";
   registerContainer.style.display = "flex";
 };
+
 btnRegistrarConta.onclick = async () => {
   const email = inputRegisterEmail.value.trim();
   const senha = inputRegisterSenha.value.trim();
@@ -960,30 +962,39 @@ btnRegistrarConta.onclick = async () => {
     alert("Preencha todos os campos.");
     return;
   }
+
   if (senha.length < 6) {
     alert("Senha deve ter ao menos 6 caracteres.");
     return;
   }
+
   if (senha !== confirmar) {
     alert("As senhas não coincidem.");
     return;
   }
 
   try {
-await createUserWithEmailAndPassword(auth, email, senha);
-// Não precisamos fazer login automaticamente
-await setDoc(doc(db, "usuarios", email), { avatar: "" });
-alert("Conta criada com sucesso! Agora faça login.");
+    const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+    const user = userCredential.user;
 
-// Esconde o conteúdo principal do site
-contentContainer.style.display = "none";  // Esconde o conteúdo do site
-registerContainer.style.display = "none";  // Esconde a tela de registro
-loginContainer.style.display = "flex";     // Exibe a tela de login
+    // ✅ Enviar verificação de e-mail de forma simples (mais confiável)
+    await sendEmailVerification(user);
 
+    // Criar entrada no Firestore com avatar vazio
+    await setDoc(doc(db, "usuarios", user.uid), { avatar: "" });
+
+    alert("Conta criada com sucesso! Um link de verificação foi enviado para seu email.");
+
+    registerContainer.style.display = "none";
+    loginContainer.style.display = "flex";
   } catch (e) {
     alert("Erro ao registrar: " + e.message);
   }
 };
+
+
+
+
 
 btnVoltarLogin.onclick = () => {
   registerContainer.style.display = "none";
@@ -1107,14 +1118,22 @@ document.body.addEventListener("click", () => {
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    // Se o usuário estiver logado, carrega o avatar e exibe o conteúdo do site
+    await user.reload(); // <- Garante que a verificação esteja atualizada
+
+    if (!user.emailVerified) {
+      alert("Por favor, verifique seu email antes de acessar o site.");
+      await signOut(auth); // Desloga o usuário
+      return;
+    }
+
+    // Se verificado, continua normalmente
     await carregarAvatar(user.uid);
     loadingScreen.style.display = "none";
     loginContainer.style.display = "none";
     siteContent.style.display = "block";
     iconBar.style.display = "flex";
+
   } else {
-    // Se o usuário não estiver logado, exibe a tela de login
     loadingScreen.style.display = "none";
     loginContainer.style.display = "flex";
     siteContent.style.display = "none";
