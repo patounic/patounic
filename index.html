@@ -926,13 +926,14 @@ btnLogin.onclick = async () => {
       return;
     }
 
+    // ✅ Se o e-mail for verificado, recarrega a página
+    location.reload();
 
-
-    // Se verificado, o restante será tratado por onAuthStateChanged
   } catch (e) {
     alert("Erro ao logar: " + e.message);
   }
 };
+
 
 function scrollVideos(direction = 'right', rowId = 'video-row') {
   const row = document.getElementById(rowId);
