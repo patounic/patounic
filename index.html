@@ -1151,17 +1151,14 @@ onAuthStateChanged(auth, async (user) => {
 
     if (!user.emailVerified) {
       try {
-        await sendEmailVerification(user, {
-          handleCodeInApp: true,
-          url: 'https://patounic.github.io/patounic/confirmado'
-        });
+        await sendEmailVerification(user);
         alert("Seu e-mail ainda não foi verificado.\nReenviamos o link de verificação. Verifique sua caixa de entrada ou spam.");
       } catch (error) {
         console.error("Erro ao reenviar e-mail:", error.message);
         alert("Erro ao reenviar e-mail de verificação.");
       }
 
-      await signOut(auth); // Desloga
+      await signOut(auth); // Desloga o usuário
       return;
     }
 
@@ -1187,6 +1184,7 @@ onAuthStateChanged(auth, async (user) => {
     inputSenha.value = "";
   }
 });
+
 
 
 
