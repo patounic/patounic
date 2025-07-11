@@ -977,8 +977,11 @@ btnRegistrarConta.onclick = async () => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
     const user = userCredential.user;
 
-    // ✅ Enviar verificação de e-mail de forma simples (mais confiável)
-    await sendEmailVerification(user);
+    // Enviar verificação de e-mail
+    await sendEmailVerification(user, {
+      handleCodeInApp: true,
+      url: 'https://patounic.github.io/patounic/confirmado'
+    });
 
     // Criar entrada no Firestore com avatar vazio
     await setDoc(doc(db, "usuarios", user.uid), { avatar: "" });
@@ -991,7 +994,6 @@ btnRegistrarConta.onclick = async () => {
     alert("Erro ao registrar: " + e.message);
   }
 };
-
 
 
 
