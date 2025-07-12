@@ -935,6 +935,7 @@ const inputRegisterConfirmar = document.getElementById("register-confirmar");
 
 import { fetchSignInMethodsForEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+
 btnLogin.onclick = async () => {
   const email = inputEmail.value.trim();
   const senha = inputSenha.value.trim();
@@ -949,67 +950,55 @@ btnLogin.onclick = async () => {
   }
 
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, senha);
-    const user = userCredential.user;
+    const cred = await signInWithEmailAndPassword(auth, email, senha);
+    const user = cred.user;
+
     await user.reload();
 
     if (!user.emailVerified) {
       await sendEmailVerification(user);
-
       loginContainer.style.display = "none";
       registerContainer.style.display = "none";
       document.getElementById("verificacao-container").style.display = "flex";
-
       localStorage.setItem("verificacao_enviada", "true");
-
       await signOut(auth);
       return;
     }
 
-    // Login com sucesso e email verificado
     if (!localStorage.getItem("recarregadoAposLogin")) {
       localStorage.setItem("recarregadoAposLogin", "true");
       location.reload();
     }
 
   } catch (e) {
-    // Se for erro de muitas tentativas
     if (e.code === "auth/too-many-requests") {
+      // Tentamos forçar login falso para pegar o user e verificar se é não verificado
       try {
-        // Verifica se o e-mail existe
-        const methods = await fetchSignInMethodsForEmail(auth, email);
+        const fakeCred = await signInWithEmailAndPassword(auth, email, "senhaErrada123");
+        const fakeUser = fakeCred.user;
+        await fakeUser.reload();
 
-        if (methods.length > 0) {
-          // E-mail existe: tenta login novamente
-          const cred = await signInWithEmailAndPassword(auth, email, senha);
-          const user = cred.user;
-          await user.reload();
-
-          if (!user.emailVerified) {
-            await sendEmailVerification(user);
-
-            loginContainer.style.display = "none";
-            registerContainer.style.display = "none";
-            document.getElementById("verificacao-container").style.display = "flex";
-
-            localStorage.setItem("verificacao_enviada", "true");
-
-            await signOut(auth);
-            return;
-          }
+        if (!fakeUser.emailVerified) {
+          await sendEmailVerification(fakeUser);
+          loginContainer.style.display = "none";
+          registerContainer.style.display = "none";
+          document.getElementById("verificacao-container").style.display = "flex";
+          localStorage.setItem("verificacao_enviada", "true");
+          await signOut(auth);
+          return;
         }
-
-        // E-mail existe, mas erro não é de verificação
-        aviso.textContent = "Muitas tentativas. Aguarde antes de tentar novamente.";
-      } catch (innerErr) {
-        // Se não conseguir nem checar, mostra aviso
-        aviso.textContent = "Muitas tentativas. Aguarde antes de tentar novamente.";
+      } catch {
+        // Não faz nada aqui, cai para o aviso padrão
       }
+
+      aviso.textContent = "Muitas tentativas. Aguarde antes de tentar novamente.";
+      aviso.style.display = "block";
+      return;
     }
 
     // Outros erros
-    else if (e.code === "auth/user-not-found") {
-      aviso.textContent = "Este e-mail não está registrado.";
+    if (e.code === "auth/user-not-found") {
+      aviso.textContent = "Usuário não encontrado. Verifique o email.";
     } else if (e.code === "auth/wrong-password") {
       aviso.textContent = "Senha incorreta.";
     } else if (e.code === "auth/invalid-email") {
@@ -1023,6 +1012,7 @@ btnLogin.onclick = async () => {
     aviso.style.display = "block";
   }
 };
+
 
 function scrollVideos(direction = 'right', rowId = 'video-row') {
   const row = document.getElementById(rowId);
@@ -1238,34 +1228,37 @@ document.body.addEventListener("click", () => {
     }
 
 onAuthStateChanged(auth, async (user) => {
-  await user?.reload?.();
+  const verificacaoContainer = document.getElementById("verificacao-container");
+  const loadingScreen = document.getElementById("loading-screen");
 
-  if (user && user.emailVerified) {
-    emVerificacao = false;
+  if (user) {
+    await user.reload();
 
-    document.getElementById("verificacao-container").style.display = "none";
-    loginContainer.style.display = "none";
-    registerContainer.style.display = "none";
-    loadingScreen.style.display = "none";
-    siteContent.style.display = "block";
-    iconBar.style.display = "flex";
+    if (user.emailVerified) {
+      emVerificacao = false;
+      localStorage.removeItem("verificacao_enviada");
+      localStorage.removeItem("recarregadoAposLogin");
 
-    await carregarAvatar(user.uid);
-    localStorage.removeItem("recarregadoAposLogin");
-
-  } else if (user && !user.emailVerified) {
-    // Só mostra verificação se ainda não mostramos
-    if (!emVerificacao) {
-      emVerificacao = true;
-
-      document.getElementById("verificacao-container").style.display = "flex";
+      // ✅ Mostra conteúdo do site
+      verificacaoContainer.style.display = "none";
+      loadingScreen.style.display = "none";
       loginContainer.style.display = "none";
       registerContainer.style.display = "none";
+      siteContent.style.display = "block";
+      iconBar.style.display = "flex";
+
+      await carregarAvatar(user.uid);
+    } else {
+      // 🔁 Mostra a tela preta de verificação
+      emVerificacao = true;
+
+      verificacaoContainer.style.display = "flex";
       loadingScreen.style.display = "none";
+      loginContainer.style.display = "none";
+      registerContainer.style.display = "none";
       siteContent.style.display = "none";
       iconBar.style.display = "none";
     }
-
   } else {
     // Usuário não logado
     if (!emVerificacao) {
@@ -1274,12 +1267,16 @@ onAuthStateChanged(auth, async (user) => {
       registerContainer.style.display = "none";
       siteContent.style.display = "none";
       iconBar.style.display = "none";
+
       aplicarAvatar(null);
       inputEmail.value = "";
       inputSenha.value = "";
+      document.getElementById("login-aviso").style.display = "none";
     }
   }
 });
+
+
 
 
 
@@ -1433,21 +1430,35 @@ document.getElementById("btn-voltar-login-verificacao").onclick = async () => {
 
     if (user.emailVerified) {
       localStorage.removeItem("verificacao_enviada");
+      emVerificacao = false;
 
+      // ✅ Mostra conteúdo do site
       document.getElementById("verificacao-container").style.display = "none";
       siteContent.style.display = "block";
       iconBar.style.display = "flex";
       await carregarAvatar(user.uid);
     } else {
+      // ⛔ Ainda não verificado → exibe aviso, NÃO volta pro login
       aviso.textContent = "Ainda não verificamos seu e-mail. Aguarde alguns segundos após clicar no link.";
       aviso.style.display = "block";
     }
+
   } else {
-    // Se estiver deslogado, volta ao login
+    // ⚠️ Se usuário foi deslogado, então sim → volta para login
     document.getElementById("verificacao-container").style.display = "none";
     loginContainer.style.display = "flex";
+    inputEmail.value = "";
+    inputSenha.value = "";
+    document.getElementById("login-aviso").style.display = "none";
+    emVerificacao = false;
   }
 };
+
+
+
+
+
+
 
 
 document.getElementById("btn-reenviar-email").onclick = async () => {
@@ -1476,10 +1487,13 @@ document.getElementById("btn-reenviar-email").onclick = async () => {
   } else {
     aviso.textContent = "Usuário não encontrado. Faça login novamente.";
     aviso.style.display = "block";
-    document.getElementById("verificacao-container").style.display = "none";
-    loginContainer.style.display = "flex";
+
+    // ❌ REMOVIDO: não sair da tela preta
+    // document.getElementById("verificacao-container").style.display = "none";
+    // loginContainer.style.display = "flex";
   }
 };
+
 
 
 const btnVoltarRegistro = document.getElementById("btn-voltar-registro");
