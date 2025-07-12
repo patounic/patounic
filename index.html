@@ -416,6 +416,7 @@ html, body {
     body {
       margin: 0;
       padding: 0;
+
     }
 
     #loading-screen {
@@ -1239,17 +1240,27 @@ onAuthStateChanged(auth, async (user) => {
       localStorage.removeItem("verificacao_enviada");
       localStorage.removeItem("recarregadoAposLogin");
 
-      // ✅ Mostra conteúdo do site
+      // ⛔️ Oculta tudo antes de mostrar
       verificacaoContainer.style.display = "none";
-      loadingScreen.style.display = "none";
       loginContainer.style.display = "none";
       registerContainer.style.display = "none";
+      siteContent.style.display = "none";
+      iconBar.style.display = "none";
+
+      // ✅ Mostra o loader (mantém visível enquanto carrega avatar)
+      loadingScreen.style.display = "flex";
+
+      // 👇 Espera o avatar carregar
+      await carregarAvatar(user.uid);
+
+      // ✅ Agora sim mostra o conteúdo e oculta o loader
       siteContent.style.display = "block";
       iconBar.style.display = "flex";
+      loadingScreen.style.display = "none";
+      document.body.style.visibility = "visible";
 
-      await carregarAvatar(user.uid);
     } else {
-      // 🔁 Mostra a tela preta de verificação
+      // 🔁 Tela de verificação (email não verificado)
       emVerificacao = true;
 
       verificacaoContainer.style.display = "flex";
@@ -1258,23 +1269,27 @@ onAuthStateChanged(auth, async (user) => {
       registerContainer.style.display = "none";
       siteContent.style.display = "none";
       iconBar.style.display = "none";
+      document.body.style.visibility = "visible"; // ← Aqui também
     }
+
   } else {
-    // Usuário não logado
     if (!emVerificacao) {
+      // Usuário deslogado
       loadingScreen.style.display = "none";
       loginContainer.style.display = "flex";
       registerContainer.style.display = "none";
       siteContent.style.display = "none";
       iconBar.style.display = "none";
-
       aplicarAvatar(null);
       inputEmail.value = "";
       inputSenha.value = "";
       document.getElementById("login-aviso").style.display = "none";
+      document.body.style.visibility = "visible";
     }
   }
 });
+
+
 
 
 
