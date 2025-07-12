@@ -1237,40 +1237,41 @@ document.body.addEventListener("click", () => {
       }
     }
 
-let emVerificacao = false;
-
 onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    await user.reload();
+  await user?.reload?.();
 
-    if (user.emailVerified) {
-      emVerificacao = false;
-      document.getElementById("verificacao-container").style.display = "none";
+  if (user && user.emailVerified) {
+    emVerificacao = false;
 
-      // ✅ Email verificado → entra no site
-      await carregarAvatar(user.uid);
-      loadingScreen.style.display = "none";
+    document.getElementById("verificacao-container").style.display = "none";
+    loginContainer.style.display = "none";
+    registerContainer.style.display = "none";
+    loadingScreen.style.display = "none";
+    siteContent.style.display = "block";
+    iconBar.style.display = "flex";
+
+    await carregarAvatar(user.uid);
+    localStorage.removeItem("recarregadoAposLogin");
+
+  } else if (user && !user.emailVerified) {
+    // Só mostra verificação se ainda não mostramos
+    if (!emVerificacao) {
+      emVerificacao = true;
+
+      document.getElementById("verificacao-container").style.display = "flex";
       loginContainer.style.display = "none";
-      siteContent.style.display = "block";
-      iconBar.style.display = "flex";
-      localStorage.removeItem("recarregadoAposLogin");
-    } else {
-      if (!emVerificacao) {
-        // Se não estamos vindo da verificação, mostra a tela preta
-        document.getElementById("verificacao-container").style.display = "flex";
-        loadingScreen.style.display = "none";
-        loginContainer.style.display = "none";
-        registerContainer.style.display = "none";
-        siteContent.style.display = "none";
-        iconBar.style.display = "none";
-        emVerificacao = true;
-      }
+      registerContainer.style.display = "none";
+      loadingScreen.style.display = "none";
+      siteContent.style.display = "none";
+      iconBar.style.display = "none";
     }
+
   } else {
-    // ⚠️ Só mostra o login se não estiver na verificação
+    // Usuário não logado
     if (!emVerificacao) {
       loadingScreen.style.display = "none";
       loginContainer.style.display = "flex";
+      registerContainer.style.display = "none";
       siteContent.style.display = "none";
       iconBar.style.display = "none";
       aplicarAvatar(null);
@@ -1279,6 +1280,7 @@ onAuthStateChanged(auth, async (user) => {
     }
   }
 });
+
 
 
 
