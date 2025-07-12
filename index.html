@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Patounic Watch</title>
@@ -8,6 +10,7 @@
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/Picsart_25-07-09_14-16-08-080_LE_upscale_balanced_x4_light_ai_30_tone_enhance_30_color_enhance_30 (1).webp">
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/wallpaper.png.webp">
   <style>
+
 
 
 .section {
@@ -171,11 +174,10 @@
 }
 
 
-  .category-toggle {
-      cursor: pointer;
-      font-size: 1.5rem;
-<link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
-    }
+.category-toggle {
+  cursor: pointer;
+  font-size: 1.5rem;
+}
 
 .categories {
   display: none;
@@ -765,6 +767,43 @@ html, body {
       <span onclick="filtrarCategoria('aventura')">aventura</span>
       <span onclick="filtrarCategoria('ciencia')">ciencia</span>
     </div>
+<!-- Botão de chat -->
+<div id="chat-button" style="
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  font-size: 2rem;
+  cursor: pointer;
+  background-color: #5865f2;
+  color: white;
+  border-radius: 50%;
+  padding: 10px 15px;
+  box-shadow: 0 0 10px black;
+  z-index: 9999;
+">
+  💬
+</div>
+
+<!-- Caixa do chat -->
+<div id="chat-box" style="
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 300px;
+  max-height: 400px;
+  background-color: #111;
+  color: white;
+  border-radius: 10px;
+  display: none;
+  flex-direction: column;
+  z-index: 9999;
+  overflow: hidden;
+  box-shadow: 0 0 10px black;
+">
+  <div style="padding: 10px; border-bottom: 1px solid #222;">Chat Global</div>
+  <div id="chat-messages" style="flex: 1; padding: 10px; overflow-y: auto;"></div>
+  <input id="chat-input" type="text" placeholder="Digite uma mensagem..." style="padding: 10px; border: none; width: 100%; background-color: #222; color: white; outline: none;">
+</div>
 
     <!-- Busca e perfil -->
     <div class="search-container" id="search-container">
@@ -864,12 +903,18 @@ html, body {
       onAuthStateChanged,
 sendEmailVerification
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import {
-      getFirestore,
-      doc,
-      setDoc,
-      getDoc,
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  onSnapshot,
+  collection,
+  query,
+  orderBy,
+  addDoc  // ✅ adicione esta linha
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
 
     const firebaseConfig = {
       apiKey: "AIzaSyAmgCrKUu8_YrIQwn59gZ9bq97YVWOqF6w",
@@ -939,7 +984,86 @@ const inputRegisterConfirmar = document.getElementById("register-confirmar");
       const avatarPadrao = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDwmG52pVI5JZfn04j9gdtsd8pAGbqjjLswg&s";
       profileIcon.style.backgroundImage = `url(${url || avatarPadrao})`;
     }
+const chatButton = document.getElementById("chat-button");
+const chatBox = document.getElementById("chat-box");
+const chatInput = document.getElementById("chat-input");
+const chatMessages = document.getElementById("chat-messages");
 
+// Alterna exibição
+chatButton.onclick = () => {
+  chatBox.style.display = chatBox.style.display === "flex" ? "none" : "flex";
+};
+
+// Enviar mensagem
+chatInput.addEventListener("keydown", async (e) => {
+  if (e.key === "Enter") {
+    const text = chatInput.value.trim();
+    if (!text) return;
+
+    const user = auth.currentUser;
+    if (!user) {
+      alert("Você precisa estar logado para usar o chat.");
+      return;
+    }
+
+    let avatar = "";
+    try {
+      const docSnap = await getDoc(doc(db, "usuarios", user.uid));
+      if (docSnap.exists()) {
+        avatar = docSnap.data().avatar || "";
+      }
+    } catch (err) {
+      console.error("Erro ao buscar avatar:", err.message);
+    }
+
+    await addDoc(collection(db, "chat-global"), {
+      uid: user.uid,
+      email: user.email,
+      text,
+      avatar: avatar,
+      timestamp: new Date()
+    });
+
+    chatInput.value = "";
+  }
+});
+
+// Receber mensagens em tempo real
+const q = query(collection(db, "chat-global"), orderBy("timestamp"));
+onSnapshot(q, (snapshot) => {
+  chatMessages.innerHTML = "";
+  snapshot.forEach((doc) => {
+    const msg = doc.data();
+
+  const div = document.createElement("div");
+  div.style.display = "flex";
+  div.style.alignItems = "flex-start";
+  div.style.justifyContent = "flex-start"; // 🔧 garante alinhamento à esquerda
+  div.style.marginBottom = "10px";
+  div.style.gap = "10px";
+  div.style.textAlign = "left"; // 🔧 força texto à esquerda
+
+  const avatar = document.createElement("img");
+  avatar.src = msg.avatar || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDwmG52pVI5JZfn04j9gdtsd8pAGbqjjLswg&s";
+  avatar.style.width = "32px";
+  avatar.style.height = "32px";
+  avatar.style.borderRadius = "50%";
+  avatar.style.objectFit = "cover";
+
+  const texto = document.createElement("div");
+  texto.innerHTML = `<strong style="color:#5865f2">${msg.email}</strong><br>${msg.text}`;
+  texto.style.fontSize = "0.9rem";
+  texto.style.textAlign = "left"; // 🔧 força alinhamento à esquerda
+  texto.style.wordBreak = "break-word"; // 🔧 evita quebra estranha
+
+  div.appendChild(avatar);
+  div.appendChild(texto);
+  chatMessages.appendChild(div);
+  });
+
+  // Scroll automático para o fim
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+});
 
 import { fetchSignInMethodsForEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
