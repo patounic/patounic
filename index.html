@@ -710,7 +710,7 @@ html, body {
   <h2>Verifique seu e-mail 📩</h2>
   <p>Enviamos um link de verificação para o seu e-mail.<br>Verifique sua caixa de entrada ou spam.</p>
 
-<h2>Vai para caixa de spam, por conta da host. 😞</h2>
+<h2>Vai para caixa de spam, por contada host. 😞</h2>
 
   <!-- 🔴 Aviso de erro/feedback -->
   <div id="verificacao-aviso" style="color: #ff6b6b; font-weight: bold; margin-top: 0.8rem; display: none;"></div>
@@ -1237,11 +1237,16 @@ document.body.addEventListener("click", () => {
       }
     }
 
+let emVerificacao = false;
+
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     await user.reload();
 
     if (user.emailVerified) {
+      emVerificacao = false;
+      document.getElementById("verificacao-container").style.display = "none";
+
       // ✅ Email verificado → entra no site
       await carregarAvatar(user.uid);
       loadingScreen.style.display = "none";
@@ -1274,6 +1279,7 @@ onAuthStateChanged(auth, async (user) => {
     }
   }
 });
+
 
 
 
