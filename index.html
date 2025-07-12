@@ -710,6 +710,11 @@ html, body {
   <h2>Verifique seu e-mail 📩</h2>
   <p>Enviamos um link de verificação para o seu e-mail.<br>Verifique sua caixa de entrada ou spam.</p>
 
+<h2>Vai para caixa de spam, por contada host. 😞</h2>
+
+  <!-- 🔴 Aviso de erro/feedback -->
+  <div id="verificacao-aviso" style="color: #ff6b6b; font-weight: bold; margin-top: 0.8rem; display: none;"></div>
+
   <button id="btn-voltar-login-verificacao" style="margin-top: 1rem; background-color: #5865f2; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
     Já me verifiquei / Voltar ao login
   </button>
@@ -722,6 +727,7 @@ html, body {
     Corrigir e-mail / Voltar ao cadastro ✏️
   </button>
 </div>
+
 
 
 
@@ -1408,52 +1414,65 @@ profileIcon.addEventListener("mouseleave", () => {
   }
 });
 document.getElementById("btn-voltar-login-verificacao").onclick = async () => {
+  const aviso = document.getElementById("verificacao-aviso");
+  aviso.style.display = "none";
+  aviso.textContent = "";
+
   const user = auth.currentUser;
+
   if (user) {
     await user.reload();
 
     if (user.emailVerified) {
-      // ✅ Limpa o controle de reenvio
       localStorage.removeItem("verificacao_enviada");
 
-      // ✅ Redireciona para o conteúdo principal
       document.getElementById("verificacao-container").style.display = "none";
       siteContent.style.display = "block";
       iconBar.style.display = "flex";
       await carregarAvatar(user.uid);
-
     } else {
-      alert("Ainda não verificamos seu e-mail. Aguarde alguns segundos após clicar no link.");
+      aviso.textContent = "Ainda não verificamos seu e-mail. Aguarde alguns segundos após clicar no link.";
+      aviso.style.display = "block";
     }
   } else {
-    // 🔁 Usuário foi deslogado — volta para o login
+    // Se estiver deslogado, volta ao login
     document.getElementById("verificacao-container").style.display = "none";
     loginContainer.style.display = "flex";
   }
 };
 
+
 document.getElementById("btn-reenviar-email").onclick = async () => {
+  const aviso = document.getElementById("verificacao-aviso");
+  aviso.style.display = "none";
+  aviso.textContent = "";
+
   const user = auth.currentUser;
   if (user) {
     if (localStorage.getItem("verificacao_enviada") === "true") {
-      alert("Já enviamos um e-mail de verificação. Aguarde alguns minutos e verifique sua caixa de entrada ou spam.");
+      aviso.textContent = "Já enviamos um e-mail de verificação. Aguarde alguns minutos e verifique sua caixa de entrada ou spam.";
+      aviso.style.display = "block";
       return;
     }
 
     try {
       await sendEmailVerification(user);
-      localStorage.setItem("verificacao_enviada", "true"); // evita múltiplos envios
-      alert("Novo e-mail de verificação enviado com sucesso.");
+      localStorage.setItem("verificacao_enviada", "true");
+      aviso.textContent = "Novo e-mail de verificação enviado com sucesso.";
+      aviso.style.display = "block";
     } catch (error) {
       console.error("Erro ao reenviar:", error.message);
-      alert("Erro ao reenviar: " + error.message);
+      aviso.textContent = "Erro ao reenviar: " + error.message;
+      aviso.style.display = "block";
     }
   } else {
-    alert("Usuário não encontrado. Faça login novamente.");
+    aviso.textContent = "Usuário não encontrado. Faça login novamente.";
+    aviso.style.display = "block";
     document.getElementById("verificacao-container").style.display = "none";
     loginContainer.style.display = "flex";
   }
 };
+
 
 const btnVoltarRegistro = document.getElementById("btn-voltar-registro");
 
