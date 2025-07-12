@@ -1088,15 +1088,11 @@ btnLogin.onclick = async () => {
     await user.reload();
 
     if (!user.emailVerified) {
-      await sendEmailVerification(user);
-
-      // ✅ Mostra a tela preta de verificação SPAM
+      // ✅ NÃO reenviar email aqui — só redireciona
       loginContainer.style.display = "none";
       registerContainer.style.display = "none";
-localStorage.setItem("verificacao_origem", "login");
-document.getElementById("verificacao-spam").style.display = "flex";
-
-      localStorage.setItem("verificacao_enviada", "true");
+      localStorage.setItem("verificacao_origem", "login");
+      document.getElementById("verificacao-spam").style.display = "flex";
       await signOut(auth);
       return;
     }
@@ -1107,38 +1103,47 @@ document.getElementById("verificacao-spam").style.display = "flex";
     }
 
   } catch (e) {
-    // 🔁 Tentar detectar se é só um e-mail não verificado mesmo com erro
+    // Detectar tentativa de login em conta existente mas com erro de verificação
     if (e.code === "auth/too-many-requests" || e.code === "auth/invalid-credential") {
       try {
         const methods = await fetchSignInMethodsForEmail(auth, email);
-        if (methods.includes("password")) {
-          // tenta logar com senha errada só pra pegar o user
-          const fakeCred = await signInWithEmailAndPassword(auth, email, "senhaErrada123");
-          const fakeUser = fakeCred.user;
-          await fakeUser.reload();
 
-          if (!fakeUser.emailVerified) {
-            await sendEmailVerification(fakeUser);
-            document.getElementById("verificacao-spam").style.display = "flex";
-            loginContainer.style.display = "none";
-            registerContainer.style.display = "none";
-            localStorage.setItem("verificacao_enviada", "true");
-            await signOut(auth);
-            return;
+        if (!methods || methods.length === 0) {
+          aviso.textContent = "Conta não encontrada. Clique em Criar Conta para se registrar.";
+          aviso.style.display = "block";
+          return;
+        }
+
+        if (methods.includes("password")) {
+          try {
+            const fakeCred = await signInWithEmailAndPassword(auth, email, "senhaErrada123");
+            const fakeUser = fakeCred.user;
+            await fakeUser.reload();
+
+            if (!fakeUser.emailVerified) {
+              document.getElementById("verificacao-spam").style.display = "flex";
+              loginContainer.style.display = "none";
+              registerContainer.style.display = "none";
+              localStorage.setItem("verificacao_origem", "login");
+              await signOut(auth);
+              return;
+            }
+          } catch {
+            // Se falhar ao simular login com senha errada, não fazer nada
           }
         }
-      } catch (err2) {
-        // Ignora erro secundário
+      } catch {
+        // falha ao consultar métodos — assume erro genérico
       }
 
-      aviso.textContent = "Recarregue a página!";
+      aviso.textContent = "Email ou senha incorretos.";
       aviso.style.display = "block";
       return;
     }
 
-    // Outros erros normais
+    // Outros erros comuns
     if (e.code === "auth/user-not-found") {
-      aviso.textContent = "Usuário não encontrado. Verifique o email.";
+      aviso.textContent = "Conta não encontrada. Clique em Criar Conta para se registrar.";
     } else if (e.code === "auth/wrong-password") {
       aviso.textContent = "Senha incorreta.";
     } else if (e.code === "auth/invalid-email") {
