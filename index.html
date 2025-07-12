@@ -693,14 +693,7 @@ html, body {
   <button id="btn-registrar">Registrar</button>
 </div>
 
-<div id="verificacao-spam" style="display: none; background-color: black; color: white; width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem;">
-  <h2>📬 Verifique sua caixa de spam</h2>
-  <p>Não encontramos sua verificação ainda.<br>Verifique sua caixa de entrada e spam.<br>O e-mail pode levar alguns segundos para chegar.</p>
 
-  <button id="btn-voltar-login-spam" style="margin-top: 1rem; background-color: #5865f2; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-    Voltar ao Login
-  </button>
-</div>
 <!-- Registro -->
 <div id="register-container" style="display: none;">
   <h2>Registrar</h2>
@@ -736,6 +729,13 @@ html, body {
   </button>
 </div>
 
+<div id="verificacao-spam" style="display: none; background-color: black; color: white; width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem;">
+  <h2>📬 Verifique sua caixa de spam</h2>
+  <p>Não encontramos sua verificação ainda.<br>Verifique sua caixa de entrada e spam.<br>O e-mail pode levar alguns segundos para chegar.</p>
+<button id="btn-voltar-login-spam" style="margin-top: 1rem; background-color: #5865f2; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+    Voltar para verificação
+  </button>
+</div>
 
 
 
@@ -966,10 +966,11 @@ btnLogin.onclick = async () => {
     if (!user.emailVerified) {
       await sendEmailVerification(user);
 
-      // ✅ Vai para a tela de SPAM
+      // ✅ Mostra a tela preta de verificação SPAM
       loginContainer.style.display = "none";
       registerContainer.style.display = "none";
-      document.getElementById("verificacao-spam").style.display = "flex";
+localStorage.setItem("verificacao_origem", "login");
+document.getElementById("verificacao-spam").style.display = "flex";
 
       localStorage.setItem("verificacao_enviada", "true");
       await signOut(auth);
@@ -982,26 +983,28 @@ btnLogin.onclick = async () => {
     }
 
   } catch (e) {
-    if (e.code === "auth/too-many-requests") {
+    // 🔁 Tentar detectar se é só um e-mail não verificado mesmo com erro
+    if (e.code === "auth/too-many-requests" || e.code === "auth/invalid-credential") {
       try {
-        // ⚠️ Tenta detectar se o e-mail está só não verificado
-        const fakeCred = await signInWithEmailAndPassword(auth, email, "senhaErrada123");
-        const fakeUser = fakeCred.user;
-        await fakeUser.reload();
+        const methods = await fetchSignInMethodsForEmail(auth, email);
+        if (methods.includes("password")) {
+          // tenta logar com senha errada só pra pegar o user
+          const fakeCred = await signInWithEmailAndPassword(auth, email, "senhaErrada123");
+          const fakeUser = fakeCred.user;
+          await fakeUser.reload();
 
-        if (!fakeUser.emailVerified) {
-          await sendEmailVerification(fakeUser);
-
-          loginContainer.style.display = "none";
-          registerContainer.style.display = "none";
-          document.getElementById("verificacao-spam").style.display = "flex";
-
-          localStorage.setItem("verificacao_enviada", "true");
-          await signOut(auth);
-          return;
+          if (!fakeUser.emailVerified) {
+            await sendEmailVerification(fakeUser);
+            document.getElementById("verificacao-spam").style.display = "flex";
+            loginContainer.style.display = "none";
+            registerContainer.style.display = "none";
+            localStorage.setItem("verificacao_enviada", "true");
+            await signOut(auth);
+            return;
+          }
         }
-      } catch {
-        // Se falhar, mostra o aviso padrão
+      } catch (err2) {
+        // Ignora erro secundário
       }
 
       aviso.textContent = "Recarregue a página!";
@@ -1009,7 +1012,7 @@ btnLogin.onclick = async () => {
       return;
     }
 
-    // Outros erros
+    // Outros erros normais
     if (e.code === "auth/user-not-found") {
       aviso.textContent = "Usuário não encontrado. Verifique o email.";
     } else if (e.code === "auth/wrong-password") {
@@ -1025,6 +1028,7 @@ btnLogin.onclick = async () => {
     aviso.style.display = "block";
   }
 };
+
 
 
 
@@ -1100,8 +1104,10 @@ btnRegistrarConta.onclick = async () => {
     await sendEmailVerification(user);
     await setDoc(doc(db, "usuarios", user.uid), { avatar: "" });
 
-    registerContainer.style.display = "none";
-    document.getElementById("verificacao-container").style.display = "flex";
+    localStorage.setItem("verificacao_origem", "registro");
+registerContainer.style.display = "none";
+document.getElementById("verificacao-container").style.display = "flex";
+
 
   } catch (e) {
     console.error("Erro ao registrar:", e.code);
@@ -1244,53 +1250,51 @@ document.body.addEventListener("click", () => {
 let authReady = false;
 
 onAuthStateChanged(auth, async (user) => {
-  const verificacaoContainer = document.getElementById("verificacao-container");
-  const loadingScreen = document.getElementById("loading-screen");
+  authReady = true;
 
   if (user) {
-    try {
-      await user.reload(); // 🔄 Garante status atualizado
+    await user.reload();
 
-      if (user.emailVerified) {
-        emVerificacao = false;
-        localStorage.removeItem("verificacao_enviada");
-        localStorage.removeItem("recarregadoAposLogin");
+    if (user.emailVerified) {
+      emVerificacao = false;
+      localStorage.removeItem("verificacao_enviada");
+      localStorage.removeItem("recarregadoAposLogin");
+      localStorage.removeItem("verificacao_origem");
 
-        // 👇 OCULTA tudo antes de exibir
-        verificacaoContainer.style.display = "none";
-const spamDiv = document.getElementById("verificacao-spam");
-if (spamDiv) spamDiv.style.display = "none";
-        loginContainer.style.display = "none";
-        registerContainer.style.display = "none";
-        loadingScreen.style.display = "none";
-        siteContent.style.display = "none";
-        iconBar.style.display = "none";
+      await carregarAvatar(user.uid);
 
-        // ⏳ Espera avatar antes de mostrar o site
-        await carregarAvatar(user.uid);
+      document.getElementById("verificacao-container").style.display = "none";
+      document.getElementById("verificacao-spam").style.display = "none";
+      document.getElementById("loading-screen").style.display = "none";
+      loginContainer.style.display = "none";
+      registerContainer.style.display = "none";
+      siteContent.style.display = "block";
+      iconBar.style.display = "flex";
 
-        // ✅ Mostra o conteúdo agora que o avatar foi carregado
-        siteContent.style.display = "block";
-        iconBar.style.display = "flex";
-
-        document.body.style.visibility = "visible";
-      } else {
-        // 🚫 Ainda não verificado → mostra tela preta
+    } else {
+      if (!emVerificacao) {
         emVerificacao = true;
-        verificacaoContainer.style.display = "flex";
-        loadingScreen.style.display = "none";
+
+        const origem = localStorage.getItem("verificacao_origem");
+
+        if (origem === "login") {
+          document.getElementById("verificacao-spam").style.display = "flex";
+          document.getElementById("verificacao-container").style.display = "none";
+        } else {
+          document.getElementById("verificacao-spam").style.display = "none";
+          document.getElementById("verificacao-container").style.display = "flex";
+        }
+
+        document.getElementById("loading-screen").style.display = "none";
         loginContainer.style.display = "none";
         registerContainer.style.display = "none";
         siteContent.style.display = "none";
         iconBar.style.display = "none";
       }
-    } catch (error) {
-      console.error("Erro ao processar authStateChanged:", error);
     }
   } else {
-    // 👤 Não logado
     if (!emVerificacao) {
-      loadingScreen.style.display = "none";
+      document.getElementById("loading-screen").style.display = "none";
       loginContainer.style.display = "flex";
       registerContainer.style.display = "none";
       siteContent.style.display = "none";
@@ -1303,18 +1307,6 @@ if (spamDiv) spamDiv.style.display = "none";
     }
   }
 });
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     popcornIcon.onclick = criarCampoPesquisa;
@@ -1534,13 +1526,10 @@ btnVoltarRegistro.onclick = () => {
 document.getElementById("btn-voltar-login-spam").onclick = () => {
   document.getElementById("verificacao-spam").style.display = "none";
   loginContainer.style.display = "flex";
-
   inputEmail.value = "";
   inputSenha.value = "";
-  document.getElementById("login-aviso").style.display = "none";
   emVerificacao = false;
 };
-
 
   </script>
 <div id="video-modal" class="video-modal">
