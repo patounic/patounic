@@ -864,10 +864,28 @@ html, body {
   </div>
 </div>
 
-  <!-- Botão do chat -->
-  <div id="chat-button" title="Chat global" style="font-size: 1.6rem; cursor: pointer; margin-right: 10px;">
+<!-- Botão do chat com alerta ❗️ -->
+<div id="chat-button-wrapper" style="position: relative; margin-right: 10px;">
+  <div id="chat-button" title="Chat global" style="font-size: 1.6rem; cursor: pointer;">
     💡
   </div>
+<div id="chat-alerta" style="
+  display: none;
+  position: absolute;
+  top: -2px;
+  right: -0px;
+  width: 14px;
+  height: 14px;
+  z-index: 9999;
+">
+  <img src="https://cdn.discordapp.com/emojis/1207609773152014376.webp?size=96" alt="alerta" style="
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  ">
+</div>
+</div>
+
     <!-- Busca e perfil -->
     <div class="search-container" id="search-container">
       <div class="popcorn-icon" id="popcorn-icon" title="Pesquisar 🍿">🍿</div>
@@ -1060,8 +1078,22 @@ const chatMessages = document.getElementById("chat-messages");
 
 // Alterna a visibilidade do chat
 chatButton.onclick = () => {
-  chatBox.style.display = chatBox.style.display === "flex" ? "none" : "flex";
+  const isOpen = chatBox.style.display === "flex";
+  chatBox.style.display = isOpen ? "none" : "flex";
+
+  if (!isOpen) {
+    const ultima = localStorage.getItem("ultima_msg_zeus");
+    if (ultima) {
+      localStorage.setItem("ultima_msg_zeus_vista", ultima); // ✅ MARCA COMO VISTA
+    }
+    document.getElementById("chat-alerta").style.display = "none";
+  }
 };
+
+
+
+
+
 
 // Enviar mensagem ao pressionar Enter
 chatInput.addEventListener("keydown", async (e) => {
@@ -1426,7 +1458,6 @@ document.body.addEventListener("click", () => {
         searchInputWrapper = null;
       }
     }
-
 let authReady = false;
 
 onAuthStateChanged(auth, async (user) => {
@@ -1451,12 +1482,41 @@ onAuthStateChanged(auth, async (user) => {
       siteContent.style.display = "block";
       iconBar.style.display = "flex";
 
+      // 🔄 Chat realtime
       const q = query(collection(db, "chat-global"), orderBy("timestamp"));
       onSnapshot(q, (snapshot) => {
         chatMessages.innerHTML = "";
+let alertaZeus = false;
+const ultimaMensagemZeus = localStorage.getItem("ultima_msg_zeus");
 
-        snapshot.forEach((docSnap) => {
-          const msg = docSnap.data();
+snapshot.forEach((docSnap) => {
+  const msg = docSnap.data();
+  const id = docSnap.id;
+
+  // ✅ Só ativa alerta se for uma nova mensagem do ZEUS
+  if (msg.email === "zeuszeuz007@gmail.com") {
+    if (id !== ultimaMensagemZeus) {
+      alertaZeus = true;
+      localStorage.setItem("ultima_msg_zeus", id); // guarda novo ID
+      localStorage.setItem("alerta_zeus_visto", "false"); // ativa alerta
+    }
+  }
+
+const chatAlerta = document.getElementById("chat-alerta");
+const ultimaMsg = localStorage.getItem("ultima_msg_zeus");
+const ultimaVista = localStorage.getItem("ultima_msg_zeus_vista");
+
+const novaMensagemNaoVista =
+  ultimaMsg &&
+  ultimaMsg !== ultimaVista &&
+  chatBox.style.display !== "flex" &&
+  user.email !== "zeuszeuz007@gmail.com";
+
+if (novaMensagemNaoVista) {
+  chatAlerta.style.display = "block";
+} else {
+  chatAlerta.style.display = "none";
+}
           const div = document.createElement("div");
           div.style.display = "flex";
           div.style.alignItems = "flex-start";
@@ -1472,17 +1532,15 @@ onAuthStateChanged(auth, async (user) => {
           avatar.style.objectFit = "cover";
 
           const texto = document.createElement("div");
-let nomeExibido = msg.nome || msg.email;
+          let nomeExibido = msg.nome || msg.email;
 
-if (msg.email === "zeuszeuz007@gmail.com") {
-  nomeExibido = `<strong style="color:#5865f2">${nomeExibido} <span class="coroa-brilhante">👑</span></strong>`;
-} else {
-  nomeExibido = `<strong style="color:#5865f2">${nomeExibido}</strong>`;
-}
+          if (msg.email === "zeuszeuz007@gmail.com") {
+            nomeExibido = `<strong style="color:#5865f2">${nomeExibido} <span class="coroa-brilhante">👑</span></strong>`;
+          } else {
+            nomeExibido = `<strong style="color:#5865f2">${nomeExibido}</strong>`;
+          }
 
-
-texto.innerHTML = `${nomeExibido}<br>${msg.text}`;
-
+          texto.innerHTML = `${nomeExibido}<br>${msg.text}`;
           texto.style.fontSize = "0.9rem";
           texto.style.textAlign = "left";
           texto.style.wordBreak = "break-word";
@@ -1491,7 +1549,7 @@ texto.innerHTML = `${nomeExibido}<br>${msg.text}`;
           div.appendChild(avatar);
           div.appendChild(texto);
 
-if (msg.uid === user.uid || user.email === "zeuszeuz007@gmail.com") {
+          if (msg.uid === user.uid || user.email === "zeuszeuz007@gmail.com") {
             const btnDelete = document.createElement("button");
             btnDelete.textContent = "🗑️";
             btnDelete.title = "Apagar mensagem";
@@ -1523,8 +1581,22 @@ if (msg.uid === user.uid || user.email === "zeuszeuz007@gmail.com") {
         });
 
         chatMessages.scrollTop = chatMessages.scrollHeight;
-      });
 
+        // ❗️ Alerta visual se for mensagem nova do ZEUS
+        const chatAlerta = document.getElementById("chat-alerta");
+        const alertaVisto = localStorage.getItem("alerta_zeus_visto") === "true";
+
+        if (
+          alertaZeus &&
+          chatBox.style.display !== "flex" &&
+          user.email !== "zeuszeuz007@gmail.com" &&
+          !alertaVisto
+        ) {
+          chatAlerta.style.display = "block";
+        } else {
+          chatAlerta.style.display = "none";
+        }
+      });
     } else {
       if (!emVerificacao) {
         emVerificacao = true;
@@ -1561,7 +1633,6 @@ if (msg.uid === user.uid || user.email === "zeuszeuz007@gmail.com") {
     }
   }
 });
-
 
     popcornIcon.onclick = criarCampoPesquisa;
 
