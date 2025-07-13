@@ -1076,21 +1076,18 @@ const chatBox = document.getElementById("chat-box");
 const chatInput = document.getElementById("chat-input");
 const chatMessages = document.getElementById("chat-messages");
 
-// Alterna a visibilidade do chat
 chatButton.onclick = () => {
   const isOpen = chatBox.style.display === "flex";
   chatBox.style.display = isOpen ? "none" : "flex";
 
   if (!isOpen) {
-    const ultima = localStorage.getItem("ultima_msg_zeus");
-    if (ultima) {
-      localStorage.setItem("ultima_msg_zeus_vista", ultima); // ✅ MARCA COMO VISTA
+    const nova = localStorage.getItem("ultima_msg_zeus");
+    if (nova) {
+      localStorage.setItem("ultima_msg_zeus_vista", nova);
     }
     document.getElementById("chat-alerta").style.display = "none";
   }
 };
-
-
 
 
 
@@ -1484,119 +1481,104 @@ onAuthStateChanged(auth, async (user) => {
 
       // 🔄 Chat realtime
       const q = query(collection(db, "chat-global"), orderBy("timestamp"));
-      onSnapshot(q, (snapshot) => {
-        chatMessages.innerHTML = "";
-let alertaZeus = false;
-const ultimaMensagemZeus = localStorage.getItem("ultima_msg_zeus");
+onSnapshot(q, (snapshot) => {
+  chatMessages.innerHTML = "";
+  let novaMensagemZeusId = "";
+  const ultimaMsgVista = localStorage.getItem("ultima_msg_zeus_vista") || "";
 
-snapshot.forEach((docSnap) => {
-  const msg = docSnap.data();
-  const id = docSnap.id;
+  snapshot.forEach((docSnap) => {
+    const msg = docSnap.data();
+    const id = docSnap.id;
 
-  // ✅ Só ativa alerta se for uma nova mensagem do ZEUS
-  if (msg.email === "zeuszeuz007@gmail.com") {
-    if (id !== ultimaMensagemZeus) {
-      alertaZeus = true;
-      localStorage.setItem("ultima_msg_zeus", id); // guarda novo ID
-      localStorage.setItem("alerta_zeus_visto", "false"); // ativa alerta
+    // Detecta nova mensagem do Zeus
+    if (msg.email === "zeuszeuz007@gmail.com") {
+      novaMensagemZeusId = id;
+      localStorage.setItem("ultima_msg_zeus", id);
     }
+
+    // Criação e exibição da mensagem
+    const div = document.createElement("div");
+    div.style.display = "flex";
+    div.style.alignItems = "flex-start";
+    div.style.gap = "10px";
+    div.style.marginBottom = "10px";
+    div.style.position = "relative";
+
+    const avatar = document.createElement("img");
+    avatar.src = msg.avatar || "https://i.imgur.com/8Km9tLL.png";
+    avatar.style.width = "32px";
+    avatar.style.height = "32px";
+    avatar.style.borderRadius = "50%";
+    avatar.style.objectFit = "cover";
+
+    const texto = document.createElement("div");
+    let nomeExibido = msg.nome || msg.email;
+
+    if (msg.email === "zeuszeuz007@gmail.com") {
+      nomeExibido = `<strong style="color:#5865f2">${nomeExibido} <span class="coroa-brilhante">👑</span></strong>`;
+    } else {
+      nomeExibido = `<strong style="color:#5865f2">${nomeExibido}</strong>`;
+    }
+
+    texto.innerHTML = `${nomeExibido}<br>${msg.text}`;
+    texto.style.fontSize = "0.9rem";
+    texto.style.textAlign = "left";
+    texto.style.wordBreak = "break-word";
+    texto.style.flex = "1";
+
+    div.appendChild(avatar);
+    div.appendChild(texto);
+
+    if (msg.uid === user.uid || user.email === "zeuszeuz007@gmail.com") {
+      const btnDelete = document.createElement("button");
+      btnDelete.textContent = "🗑️";
+      btnDelete.title = "Apagar mensagem";
+      btnDelete.style.border = "none";
+      btnDelete.style.background = "transparent";
+      btnDelete.style.cursor = "pointer";
+      btnDelete.style.color = "#f55";
+      btnDelete.style.fontSize = "1rem";
+      btnDelete.style.position = "absolute";
+      btnDelete.style.top = "0";
+      btnDelete.style.right = "0";
+
+      btnDelete.onclick = async () => {
+        const confirmar = confirm("Deseja apagar esta mensagem?");
+        if (confirmar) {
+          try {
+            await deleteDoc(docSnap.ref);
+          } catch (err) {
+            console.error("Erro ao apagar:", err.message);
+            alert("Erro ao apagar mensagem.");
+          }
+        }
+      };
+
+      div.appendChild(btnDelete);
+    }
+
+    chatMessages.appendChild(div);
+  });
+
+  // Verifica se deve mostrar o alerta
+  const chatAlerta = document.getElementById("chat-alerta");
+  const chatBoxAberto = chatBox.style.display === "flex";
+
+  const novaNaoVista =
+    novaMensagemZeusId &&
+    novaMensagemZeusId !== ultimaMsgVista &&
+    !chatBoxAberto &&
+    user.email !== "zeuszeuz007@gmail.com";
+
+  if (novaNaoVista) {
+    chatAlerta.style.display = "block";
+  } else {
+    chatAlerta.style.display = "none";
   }
 
-const chatAlerta = document.getElementById("chat-alerta");
-const ultimaMsg = localStorage.getItem("ultima_msg_zeus");
-const ultimaVista = localStorage.getItem("ultima_msg_zeus_vista");
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+});
 
-const novaMensagemNaoVista =
-  ultimaMsg &&
-  ultimaMsg !== ultimaVista &&
-  chatBox.style.display !== "flex" &&
-  user.email !== "zeuszeuz007@gmail.com";
-
-if (novaMensagemNaoVista) {
-  chatAlerta.style.display = "block";
-} else {
-  chatAlerta.style.display = "none";
-}
-          const div = document.createElement("div");
-          div.style.display = "flex";
-          div.style.alignItems = "flex-start";
-          div.style.gap = "10px";
-          div.style.marginBottom = "10px";
-          div.style.position = "relative";
-
-          const avatar = document.createElement("img");
-          avatar.src = msg.avatar || "https://i.imgur.com/8Km9tLL.png";
-          avatar.style.width = "32px";
-          avatar.style.height = "32px";
-          avatar.style.borderRadius = "50%";
-          avatar.style.objectFit = "cover";
-
-          const texto = document.createElement("div");
-          let nomeExibido = msg.nome || msg.email;
-
-          if (msg.email === "zeuszeuz007@gmail.com") {
-            nomeExibido = `<strong style="color:#5865f2">${nomeExibido} <span class="coroa-brilhante">👑</span></strong>`;
-          } else {
-            nomeExibido = `<strong style="color:#5865f2">${nomeExibido}</strong>`;
-          }
-
-          texto.innerHTML = `${nomeExibido}<br>${msg.text}`;
-          texto.style.fontSize = "0.9rem";
-          texto.style.textAlign = "left";
-          texto.style.wordBreak = "break-word";
-          texto.style.flex = "1";
-
-          div.appendChild(avatar);
-          div.appendChild(texto);
-
-          if (msg.uid === user.uid || user.email === "zeuszeuz007@gmail.com") {
-            const btnDelete = document.createElement("button");
-            btnDelete.textContent = "🗑️";
-            btnDelete.title = "Apagar mensagem";
-            btnDelete.style.border = "none";
-            btnDelete.style.background = "transparent";
-            btnDelete.style.cursor = "pointer";
-            btnDelete.style.color = "#f55";
-            btnDelete.style.fontSize = "1rem";
-            btnDelete.style.position = "absolute";
-            btnDelete.style.top = "0";
-            btnDelete.style.right = "0";
-
-            btnDelete.onclick = async () => {
-              const confirmar = confirm("Deseja apagar esta mensagem?");
-              if (confirmar) {
-                try {
-                  await deleteDoc(docSnap.ref);
-                } catch (err) {
-                  console.error("Erro ao apagar:", err.message);
-                  alert("Erro ao apagar mensagem.");
-                }
-              }
-            };
-
-            div.appendChild(btnDelete);
-          }
-
-          chatMessages.appendChild(div);
-        });
-
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-
-        // ❗️ Alerta visual se for mensagem nova do ZEUS
-        const chatAlerta = document.getElementById("chat-alerta");
-        const alertaVisto = localStorage.getItem("alerta_zeus_visto") === "true";
-
-        if (
-          alertaZeus &&
-          chatBox.style.display !== "flex" &&
-          user.email !== "zeuszeuz007@gmail.com" &&
-          !alertaVisto
-        ) {
-          chatAlerta.style.display = "block";
-        } else {
-          chatAlerta.style.display = "none";
-        }
-      });
     } else {
       if (!emVerificacao) {
         emVerificacao = true;
