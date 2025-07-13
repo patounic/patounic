@@ -10,7 +10,16 @@
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/Picsart_25-07-09_14-16-08-080_LE_upscale_balanced_x4_light_ai_30_tone_enhance_30_color_enhance_30 (1).webp">
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/wallpaper.png.webp">
   <style>
-
+  @media (max-width: 600px) {
+    #chat-box {
+      top: 50% !important;
+      left: 50% !important;
+      right: auto !important;
+      transform: translate(-50%, -50%) !important;
+      width: 90% !important;
+      height: 75vh !important;
+    }
+  }
   .coroa-brilhante {
     animation: brilhoCoroa 1.5s infinite alternate;
     display: inline-block;
