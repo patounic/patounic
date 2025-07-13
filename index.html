@@ -748,7 +748,35 @@ html, body {
   <div class="icon-bar" id="icon-bar">
     <div id="movie-icon" class="movie-icon" title="">
           </div>
-
+<div id="modal-nome" style="
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+">
+  <div style="
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 0 10px black;
+    display: flex;
+    flex-direction: column;
+  ">
+    <h3 style="margin-top: 0;">Definir Nome</h3>
+    <input id="input-nome-modal" type="text" placeholder="Digite seu nome"
+      style="padding: 10px; border-radius: 5px; border: none; margin-bottom: 10px;" />
+    <div style="display: flex; justify-content: flex-end; gap: 10px;">
+      <button id="cancelar-nome" style="padding: 8px 12px; background: #555; color: white; border: none; border-radius: 4px;">Cancelar</button>
+      <button id="confirmar-nome" style="padding: 8px 12px; background: #5865f2; color: white; border: none; border-radius: 4px;">Salvar</button>
+    </div>
+  </div>
+</div>
     <!-- Menu Dropdown -->
     <div id="dropdown-menu" class="dropdown-menu">
       <div id="home-menu" class="menu-item">Home</div>
@@ -814,8 +842,13 @@ html, body {
       <div class="profile-menu" id="profile-menu">
         <div id="trocar-avatar">Avatar</div>
         <div id="remover-avatar">Remover</div>
-        <div class="logout" id="logout">logout</div>
-      </div>
+  <div id="definir-nome">Definir Nome</div>
+  <div id="campo-nome" style="display: none; padding: 0.5rem;">
+    <input id="input-nome" type="text" placeholder="Seu nome" style="width: 100%; padding: 5px; border-radius: 4px; margin-top: 4px;" />
+    <button id="salvar-nome" style="width: 100%; padding: 5px; background: #5865f2; color: white; border: none; border-radius: 4px; margin-top: 5px; cursor: pointer;">Salvar</button>
+  </div>
+  <div class="logout" id="logout">logout</div>
+</div>
     </div>
   </div>
 <div class="section">
@@ -989,12 +1022,12 @@ const chatBox = document.getElementById("chat-box");
 const chatInput = document.getElementById("chat-input");
 const chatMessages = document.getElementById("chat-messages");
 
-// Alterna exibição
+// Alterna a visibilidade do chat
 chatButton.onclick = () => {
   chatBox.style.display = chatBox.style.display === "flex" ? "none" : "flex";
 };
 
-// Enviar mensagem
+// Enviar mensagem ao pressionar Enter
 chatInput.addEventListener("keydown", async (e) => {
   if (e.key === "Enter") {
     const text = chatInput.value.trim();
@@ -1007,29 +1040,75 @@ chatInput.addEventListener("keydown", async (e) => {
     }
 
     let avatar = "";
+    let nome = user.email; // fallback
+
     try {
       const docSnap = await getDoc(doc(db, "usuarios", user.uid));
       if (docSnap.exists()) {
-        avatar = docSnap.data().avatar || "";
+        const dados = docSnap.data();
+        avatar = dados.avatar || "";
+        nome = dados.nome || user.email;
       }
     } catch (err) {
-      console.error("Erro ao buscar avatar:", err.message);
+      console.error("Erro ao buscar perfil:", err.message);
     }
 
-    await addDoc(collection(db, "chat-global"), {
-      uid: user.uid,
-      email: user.email,
-      text,
-      avatar: avatar,
-      timestamp: new Date()
-    });
-
-    chatInput.value = "";
+    try {
+      await addDoc(collection(db, "chat-global"), {
+        uid: user.uid,
+        email: user.email,
+        nome: nome, // ✅ salva o nome
+        text: text,
+        avatar: avatar,
+        timestamp: new Date()
+      });
+      chatInput.value = "";
+    } catch (err) {
+      console.error("Erro ao enviar mensagem:", err.message);
+      alert("Erro ao enviar mensagem.");
+    }
   }
 });
 
-// Receber mensagens em tempo real
+// Exibir mensagens em tempo real
 const q = query(collection(db, "chat-global"), orderBy("timestamp"));
+onSnapshot(q, (snapshot) => {
+  chatMessages.innerHTML = "";
+
+  snapshot.forEach((doc) => {
+    const msg = doc.data();
+
+    const div = document.createElement("div");
+    div.style.display = "flex";
+    div.style.alignItems = "flex-start";
+    div.style.gap = "10px";
+    div.style.marginBottom = "10px";
+
+    const avatar = document.createElement("img");
+    avatar.src = msg.avatar || "https://i.imgur.com/8Km9tLL.png";
+    avatar.style.width = "32px";
+    avatar.style.height = "32px";
+    avatar.style.borderRadius = "50%";
+    avatar.style.objectFit = "cover";
+
+    const texto = document.createElement("div");
+    const nomeExibido = msg.nome || msg.email;
+    texto.innerHTML = `<strong style="color:#5865f2">${nomeExibido}</strong><br>${msg.text}`;
+    texto.style.fontSize = "0.9rem";
+    texto.style.textAlign = "left";
+    texto.style.wordBreak = "break-word";
+
+    div.appendChild(avatar);
+    div.appendChild(texto);
+    chatMessages.appendChild(div);
+  });
+
+  // rolar para o fim
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+});
+
+
+// Receber mensagens em tempo real
 onSnapshot(q, (snapshot) => {
   chatMessages.innerHTML = "";
   snapshot.forEach((doc) => {
@@ -1051,7 +1130,8 @@ onSnapshot(q, (snapshot) => {
   avatar.style.objectFit = "cover";
 
   const texto = document.createElement("div");
-  texto.innerHTML = `<strong style="color:#5865f2">${msg.email}</strong><br>${msg.text}`;
+  const nomeExibido = msg.nome || msg.email;
+texto.innerHTML = `<strong style="color:#5865f2">${nomeExibido}</strong><br>${msg.text}`;
   texto.style.fontSize = "0.9rem";
   texto.style.textAlign = "left"; // 🔧 força alinhamento à esquerda
   texto.style.wordBreak = "break-word"; // 🔧 evita quebra estranha
@@ -1659,6 +1739,56 @@ document.getElementById("btn-voltar-login-spam").onclick = () => {
   inputSenha.value = "";
   emVerificacao = false;
 };
+const btnDefinirNome = document.getElementById("definir-nome");
+const modalNome = document.getElementById("modal-nome");
+const inputModal = document.getElementById("input-nome-modal");
+const btnCancelar = document.getElementById("cancelar-nome");
+const btnSalvarNome = document.getElementById("confirmar-nome");
+
+// Abrir modal
+btnDefinirNome.onclick = async () => {
+  modalNome.style.display = "flex";
+  inputModal.value = "";
+
+  const user = auth.currentUser;
+  if (user) {
+    const snap = await getDoc(doc(db, "usuarios", user.uid));
+    if (snap.exists() && snap.data().nome) {
+      inputModal.value = snap.data().nome;
+    }
+  }
+};
+
+// Cancelar modal
+btnCancelar.onclick = () => {
+  modalNome.style.display = "none";
+};
+
+// Salvar nome
+btnSalvarNome.onclick = async () => {
+  const nome = inputModal.value.trim();
+  const user = auth.currentUser;
+
+  if (!user) {
+    alert("Você precisa estar logado.");
+    return;
+  }
+
+  if (!nome || nome.length < 2) {
+    alert("Digite um nome válido.");
+    return;
+  }
+
+  try {
+    await setDoc(doc(db, "usuarios", user.uid), { nome }, { merge: true });
+    alert("Nome salvo com sucesso!");
+    modalNome.style.display = "none";
+  } catch (e) {
+    console.error("Erro ao salvar nome:", e.message);
+    alert("Erro ao salvar nome.");
+  }
+};
+
 
   </script>
 <div id="video-modal" class="video-modal">
