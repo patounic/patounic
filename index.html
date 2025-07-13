@@ -11,7 +11,16 @@
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/wallpaper.png.webp">
   <style>
 
+  .coroa-brilhante {
+    animation: brilhoCoroa 1.5s infinite alternate;
+    display: inline-block;
+    filter: drop-shadow(0 0 3px gold);
+  }
 
+  @keyframes brilhoCoroa {
+    0%   { transform: scale(1);   filter: drop-shadow(0 0 3px gold); }
+    100% { transform: scale(1.1); filter: drop-shadow(0 0 8px yellow); }
+  }
 
 .section {
   margin: 1rem 0;
@@ -831,8 +840,10 @@ html, body {
   <div style="padding: 10px; border-bottom: 1px solid #222;">Chat Global</div>
   <div id="chat-messages" style="flex: 1; padding: 10px; overflow-y: auto;"></div>
   <input id="chat-input" type="text" placeholder="Digite uma mensagem..." style="padding: 10px; border: none; width: 100%; background-color: #222; color: white; outline: none;">
+<div id="chat-aviso-nome" style="color: red; font-size: 0.85rem; display: none; margin: 5px 10px;">
+  Defina seu nome clicando no avatar antes de enviar mensagens.
 </div>
-
+</div>
     <!-- Busca e perfil -->
     <div class="search-container" id="search-container">
       <div class="popcorn-icon" id="popcorn-icon" title="Pesquisar 🍿">🍿</div>
@@ -945,6 +956,7 @@ import {
   collection,
   query,
   orderBy,
+deleteDoc,
   addDoc  // ✅ adicione esta linha
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -1034,30 +1046,39 @@ chatInput.addEventListener("keydown", async (e) => {
     if (!text) return;
 
     const user = auth.currentUser;
+    const avisoNome = document.getElementById("chat-aviso-nome");
+
     if (!user) {
       alert("Você precisa estar logado para usar o chat.");
       return;
     }
 
     let avatar = "";
-    let nome = user.email; // fallback
+    let nome = "";
 
     try {
       const docSnap = await getDoc(doc(db, "usuarios", user.uid));
       if (docSnap.exists()) {
         const dados = docSnap.data();
         avatar = dados.avatar || "";
-        nome = dados.nome || user.email;
+        nome = dados.nome || "";
       }
     } catch (err) {
       console.error("Erro ao buscar perfil:", err.message);
     }
 
+    if (!nome || nome.length < 2) {
+      avisoNome.style.display = "block"; // 🔴 Mostra o aviso
+      return;
+    }
+
+    avisoNome.style.display = "none"; // ✅ Oculta o aviso se o nome for válido
+
     try {
       await addDoc(collection(db, "chat-global"), {
         uid: user.uid,
         email: user.email,
-        nome: nome, // ✅ salva o nome
+        nome: nome,
         text: text,
         avatar: avatar,
         timestamp: new Date()
@@ -1070,80 +1091,6 @@ chatInput.addEventListener("keydown", async (e) => {
   }
 });
 
-// Exibir mensagens em tempo real
-const q = query(collection(db, "chat-global"), orderBy("timestamp"));
-onSnapshot(q, (snapshot) => {
-  chatMessages.innerHTML = "";
-
-  snapshot.forEach((doc) => {
-    const msg = doc.data();
-
-    const div = document.createElement("div");
-    div.style.display = "flex";
-    div.style.alignItems = "flex-start";
-    div.style.gap = "10px";
-    div.style.marginBottom = "10px";
-
-    const avatar = document.createElement("img");
-    avatar.src = msg.avatar || "https://i.imgur.com/8Km9tLL.png";
-    avatar.style.width = "32px";
-    avatar.style.height = "32px";
-    avatar.style.borderRadius = "50%";
-    avatar.style.objectFit = "cover";
-
-    const texto = document.createElement("div");
-    const nomeExibido = msg.nome || msg.email;
-    texto.innerHTML = `<strong style="color:#5865f2">${nomeExibido}</strong><br>${msg.text}`;
-    texto.style.fontSize = "0.9rem";
-    texto.style.textAlign = "left";
-    texto.style.wordBreak = "break-word";
-
-    div.appendChild(avatar);
-    div.appendChild(texto);
-    chatMessages.appendChild(div);
-  });
-
-  // rolar para o fim
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-});
-
-
-// Receber mensagens em tempo real
-onSnapshot(q, (snapshot) => {
-  chatMessages.innerHTML = "";
-  snapshot.forEach((doc) => {
-    const msg = doc.data();
-
-  const div = document.createElement("div");
-  div.style.display = "flex";
-  div.style.alignItems = "flex-start";
-  div.style.justifyContent = "flex-start"; // 🔧 garante alinhamento à esquerda
-  div.style.marginBottom = "10px";
-  div.style.gap = "10px";
-  div.style.textAlign = "left"; // 🔧 força texto à esquerda
-
-  const avatar = document.createElement("img");
-  avatar.src = msg.avatar || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDwmG52pVI5JZfn04j9gdtsd8pAGbqjjLswg&s";
-  avatar.style.width = "32px";
-  avatar.style.height = "32px";
-  avatar.style.borderRadius = "50%";
-  avatar.style.objectFit = "cover";
-
-  const texto = document.createElement("div");
-  const nomeExibido = msg.nome || msg.email;
-texto.innerHTML = `<strong style="color:#5865f2">${nomeExibido}</strong><br>${msg.text}`;
-  texto.style.fontSize = "0.9rem";
-  texto.style.textAlign = "left"; // 🔧 força alinhamento à esquerda
-  texto.style.wordBreak = "break-word"; // 🔧 evita quebra estranha
-
-  div.appendChild(avatar);
-  div.appendChild(texto);
-  chatMessages.appendChild(div);
-  });
-
-  // Scroll automático para o fim
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-});
 
 import { fetchSignInMethodsForEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
@@ -1479,6 +1426,80 @@ onAuthStateChanged(auth, async (user) => {
       registerContainer.style.display = "none";
       siteContent.style.display = "block";
       iconBar.style.display = "flex";
+
+      const q = query(collection(db, "chat-global"), orderBy("timestamp"));
+      onSnapshot(q, (snapshot) => {
+        chatMessages.innerHTML = "";
+
+        snapshot.forEach((docSnap) => {
+          const msg = docSnap.data();
+          const div = document.createElement("div");
+          div.style.display = "flex";
+          div.style.alignItems = "flex-start";
+          div.style.gap = "10px";
+          div.style.marginBottom = "10px";
+          div.style.position = "relative";
+
+          const avatar = document.createElement("img");
+          avatar.src = msg.avatar || "https://i.imgur.com/8Km9tLL.png";
+          avatar.style.width = "32px";
+          avatar.style.height = "32px";
+          avatar.style.borderRadius = "50%";
+          avatar.style.objectFit = "cover";
+
+          const texto = document.createElement("div");
+let nomeExibido = msg.nome || msg.email;
+
+if (msg.email === "zeuszeuz007@gmail.com") {
+  nomeExibido = `<strong style="color:#5865f2">${nomeExibido} <span class="coroa-brilhante">👑</span></strong>`;
+} else {
+  nomeExibido = `<strong style="color:#5865f2">${nomeExibido}</strong>`;
+}
+
+
+texto.innerHTML = `${nomeExibido}<br>${msg.text}`;
+
+          texto.style.fontSize = "0.9rem";
+          texto.style.textAlign = "left";
+          texto.style.wordBreak = "break-word";
+          texto.style.flex = "1";
+
+          div.appendChild(avatar);
+          div.appendChild(texto);
+
+if (msg.uid === user.uid || user.email === "zeuszeuz007@gmail.com") {
+            const btnDelete = document.createElement("button");
+            btnDelete.textContent = "🗑️";
+            btnDelete.title = "Apagar mensagem";
+            btnDelete.style.border = "none";
+            btnDelete.style.background = "transparent";
+            btnDelete.style.cursor = "pointer";
+            btnDelete.style.color = "#f55";
+            btnDelete.style.fontSize = "1rem";
+            btnDelete.style.position = "absolute";
+            btnDelete.style.top = "0";
+            btnDelete.style.right = "0";
+
+            btnDelete.onclick = async () => {
+              const confirmar = confirm("Deseja apagar esta mensagem?");
+              if (confirmar) {
+                try {
+                  await deleteDoc(docSnap.ref);
+                } catch (err) {
+                  console.error("Erro ao apagar:", err.message);
+                  alert("Erro ao apagar mensagem.");
+                }
+              }
+            };
+
+            div.appendChild(btnDelete);
+          }
+
+          chatMessages.appendChild(div);
+        });
+
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      });
 
     } else {
       if (!emVerificacao) {
