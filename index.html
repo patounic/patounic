@@ -804,30 +804,15 @@ html, body {
       <span onclick="filtrarCategoria('aventura')">aventura</span>
       <span onclick="filtrarCategoria('ciencia')">ciencia</span>
     </div>
-<!-- Botão de chat -->
-<div id="chat-button" style="
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  font-size: 2rem;
-  cursor: pointer;
-  background-color: #5865f2;
-  color: white;
-  border-radius: 50%;
-  padding: 10px 15px;
-  box-shadow: 0 0 10px black;
-  z-index: 9999;
-">
-  💬
-</div>
 
 <!-- Caixa do chat -->
 <div id="chat-box" style="
   position: fixed;
-  bottom: 80px;
+  top: 50%;
   right: 20px;
-  width: 300px;
-  max-height: 400px;
+  transform: translateY(-50%);
+  width: 380px;
+  height: 75vh;
   background-color: #111;
   color: white;
   border-radius: 10px;
@@ -835,15 +820,41 @@ html, body {
   flex-direction: column;
   z-index: 9999;
   overflow: hidden;
-  box-shadow: 0 0 10px black;
+  box-shadow: 0 0 12px black;
 ">
+
+
+
+  <!-- Botão de fechar -->
+  <div id="chat-fechar" style="
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: #aaa;
+    z-index: 10000;
+  " title="Fechar">❌</div>
+
+  <!-- Título -->
   <div style="padding: 10px; border-bottom: 1px solid #222;">Chat Global</div>
+
+  <!-- Mensagens -->
   <div id="chat-messages" style="flex: 1; padding: 10px; overflow-y: auto;"></div>
+
+  <!-- Campo de digitação -->
   <input id="chat-input" type="text" placeholder="Digite uma mensagem..." style="padding: 10px; border: none; width: 100%; background-color: #222; color: white; outline: none;">
-<div id="chat-aviso-nome" style="color: red; font-size: 0.85rem; display: none; margin: 5px 10px;">
-  Defina seu nome clicando no avatar antes de enviar mensagens.
+
+  <!-- Aviso -->
+  <div id="chat-aviso-nome" style="color: red; font-size: 0.85rem; display: none; margin: 5px 10px;">
+    Defina seu nome clicando no avatar antes de enviar mensagens.
+  </div>
 </div>
-</div>
+
+  <!-- Botão do chat -->
+  <div id="chat-button" title="Chat global" style="font-size: 1.6rem; cursor: pointer; margin-right: 10px;">
+    💡
+  </div>
     <!-- Busca e perfil -->
     <div class="search-container" id="search-container">
       <div class="popcorn-icon" id="popcorn-icon" title="Pesquisar 🍿">🍿</div>
@@ -1810,6 +1821,11 @@ btnSalvarNome.onclick = async () => {
   }
 };
 
+const btnFecharChat = document.getElementById("chat-fechar");
+
+btnFecharChat.addEventListener("click", () => {
+  chatBox.style.display = "none";
+});
 
   </script>
 <div id="video-modal" class="video-modal">
