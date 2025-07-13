@@ -824,7 +824,7 @@ html, body {
 <!-- Caixa do chat -->
 <div id="chat-box" style="
   position: fixed;
-  top: 47%;
+  top: 50%;
   right: 20px;
   transform: translateY(-50%);
   width: 380px;
@@ -841,16 +841,20 @@ html, body {
   <!-- Botão de fechar -->
   <div id="chat-fechar" style="
     position: absolute;
-    top: 8px;
-    right: 12px;
-    font-size: 1.2rem;
+    top: 5px;
+    right: 10px;
+    font-size: 0.85rem;
     cursor: pointer;
     color: #aaa;
     z-index: 10000;
   " title="Fechar">❌</div>
 
-  <!-- Título -->
-  <div style="padding: 10px; border-bottom: 1px solid #222;">Chat Global</div>
+<div style="padding: 10px; border-bottom: 1px solid #222;">
+  <h3 style="margin: 0; font-size: 1.1rem; color: white;">Chat Global</h3>
+  <p style="margin: 3px 0 0; font-size: 0.8rem; color: #ccc;">
+    Converse com outros usuários ou envie sugestões ao criador do site.
+  </p>
+</div>
 
   <!-- Mensagens -->
   <div id="chat-messages" style="flex: 1; padding: 10px; overflow-y: auto;"></div>
@@ -866,7 +870,7 @@ html, body {
 
 <!-- Botão do chat com alerta ❗️ -->
 <div id="chat-button-wrapper" style="position: relative; margin-right: 10px;">
-  <div id="chat-button" title="Chat global" style="font-size: 1.6rem; cursor: pointer;">
+  <div id="chat-button" title="Avisos e Sugestões" style="font-size: 1.6rem; cursor: pointer;">
     💡
   </div>
 <div id="chat-alerta" style="
