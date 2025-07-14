@@ -10,66 +10,6 @@
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/Picsart_25-07-09_14-16-08-080_LE_upscale_balanced_x4_light_ai_30_tone_enhance_30_color_enhance_30 (1).webp">
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/wallpaper.png.webp">
   <style>
-
-.play-button:hover {
-  transform: scale(1.05);
-}
-
-.play-icon {
-  width: 60px;   /* ajuste conforme o tamanho desejado */
-  height: 60px;
-  object-fit: contain;
-  opacity: 0.9;
-  transition: opacity 0.3s ease;
-}
-.play-button img,
-.play-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 0;
-  display: block;
-}
-
-.play-button:hover .play-icon {
-  opacity: 1;
-}
-.video-card {
-  position: relative;
-  overflow: visible;
- z-index: 100;
-}
-.section,
-.video-wrapper,
-.video-row {
-  overflow: visible !important;
-  position: relative;
-  z-index: 1;
-}
-
-/* Título que aparece acima do card */
-.hover-title {
-  position: absolute;
-   top: -2.2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #7b2ff7;
-  color: white;
-  padding: 0.3rem 1rem;
-  border-radius: 0.5rem;
-  font-weight: bold;
-  font-size: 1rem;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-   z-index: 99999;
-}
-
-.video-card:hover .hover-title {
-  opacity: 1;
-}
-
-
   @media (max-width: 600px) {
     #chat-box {
       top: 50% !important;
@@ -92,20 +32,13 @@
   }
 
 .section {
-margin-bottom: 4rem;
-  margin: 3.5rem 0 2rem;
-  position: relative;
-  z-index: 1;
-  overflow: visible; /* adiciona segurança */
+  margin: 1rem 0;
 }
 
 .section-title {
   margin-top: 1.2rem;
   margin-bottom: 0.8rem;
   text-align: center;
-  position: relative;
-  z-index: 1;
-  overflow: visible;
 }
 
 .section-title {
@@ -164,14 +97,15 @@ margin-bottom: 4rem;
   bottom: 0;
   left: 0;
   width: 100%;
-  background: transparent;
-  padding: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0));
+  padding: 1rem 0.5rem 0.5rem;
   display: none;
   flex-direction: column;
   align-items: center;
-justify-content: center;
+  justify-content: flex-end;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
   transition: opacity 0.3s ease;
-top: 0;
 }
 
 .video-title {
@@ -184,18 +118,18 @@ top: 0;
 }
 
 .play-button {
-  background: transparent !important;
+  background-color: #5865f2;
+  color: white;
   border: none;
-  border-radius: 0 !important;
-  padding: 0;
-  box-shadow: none;
-  outline: none;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
 }
 
-
 .play-button:hover {
-background-color: rgba(88, 101, 242, 0.6);
-  opacity: 1;
+  background-color: #4752c4;
 }
 
 .arrow-icon {
@@ -321,7 +255,6 @@ margin-top: 1 px;
   display: flex;
   overflow-x: auto;
   scroll-behavior: smooth;
- overflow-y: visible;
   gap: 1rem;
   scrollbar-width: none; /* Firefox */
   padding: 1rem 5.2rem;   /* 2rem nas laterais */
@@ -356,7 +289,6 @@ margin-top: 1 px;
   transition: transform 0.3s ease;
   cursor: pointer;
   position: relative;
-  overflow: visible;
 }
 
 .video-card:hover {
@@ -981,25 +913,25 @@ html, body {
 <div class="section">
   <div class="section-title">
     Aleatórios 
-</div>
+  </div>
 <div class="video-wrapper">
   <div class="video-row" id="video-row">
+    <!-- Cards com thumbnails e abertura de vídeo -->
+
 <div class="video-card"
      onmouseenter="mostrarInfo(this); mostrarPreview(this, 'https://cdn.discordapp.com/attachments/1382924288213909536/1392845277034975252/DEBI__LOIDE_2_-_FILME_COMPLETO_DUBLADO_-_MELHOR_FILME_DE_COMEDIA.mp4?ex=687103bf&is=686fb23f&hm=cab6985d577c70e12135dea601563f6497e639cb71d8c71ec44d00dea59f7576&')"
      onmouseleave="esconderInfo(this); esconderPreview(this)"
      style="background-image: url('https://i.ytimg.com/vi/4qDysqSxG64/maxresdefault.jpg');">
-
+  
   <video class="preview-video" muted loop></video>
 
-  <!-- ✅ TÍTULO FLUTUANTE -->
-  <div class="hover-title">Debi & Loide 2</div>
+  <div class="video-info">
+    <div class="video-title">Debi & Loide 2</div>
+    <button class="play-button" onclick="abrirModal('https://cdn.discordapp.com/attachments/1382924288213909536/1392845277034975252/DEBI__LOIDE_2_-_FILME_COMPLETO_DUBLADO_-_MELHOR_FILME_DE_COMEDIA.mp4?ex=687103bf&is=686fb23f&hm=cab6985d577c70e12135dea601563f6497e639cb71d8c71ec44d00dea59f7576&')">▶ Play</button>
+  </div>
 
-<div class="video-info">
-  <button class="play-button" onclick="abrirModal('https://cdn.discordapp.com/attachments/1382924288213909536/1392845277034975252/DEBI__LOIDE_2_-_FILME_COMPLETO_DUBLADO_-_MELHOR_FILME_DE_COMEDIA.mp4?ex=687103bf&is=686fb23f&hm=cab6985d577c70e12135dea601563f6497e639cb71d8c71ec44d00dea59f7576&')">
-    <img src="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/Picsart_25-07-12_07-40-16-432.png" alt="Play" class="play-icon">
-  </button>
 </div>
-</div>
+
 
     <div class="video-card" onclick="abrirModal('https://www.youtube.com/embed/9bZkp7q19f0')" style="background-image: url('https://img.youtube.com/vi/9bZkp7q19f0/hqdefault.jpg');">
       <span class="video-title">Vídeo 2</span>
