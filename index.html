@@ -10,6 +10,7 @@
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/Picsart_25-07-09_14-16-08-080_LE_upscale_balanced_x4_light_ai_30_tone_enhance_30_color_enhance_30 (1).webp">
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/wallpaper.png.webp">
   <style>
+
 .video-hover-title {
   position: absolute;
   top: -12px; 
@@ -890,11 +891,47 @@ html, body {
 </div>
 
   <!-- Mensagens -->
-  <div id="chat-messages" style="flex: 1; padding: 10px; overflow-y: auto;"></div>
+  <div id="chat-messages" style="
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 10px;
+"></div>
 
   <!-- Campo de digitação -->
-  <input id="chat-input" type="text" placeholder="Digite uma mensagem..." style="padding: 10px; border: none; width: 100%; background-color: #222; color: white; outline: none;">
+<div style="
+  display: flex;
+  align-items: center;
+  border-top: 1px solid #222;
+  padding: 0 5px;
+  background-color: #222;
+">
+  <input id="chat-input" type="text" placeholder="Digite uma mensagem..." style="
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background-color: transparent;
+    color: white;
+    outline: none;
+    font-size: 1rem;
+  border-radius: 15px;
+  ">
+<button id="chat-enviar" style="
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.4rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  transform: translateY(-6px); /* ⬅️ Sobe o botão */
+">📨</button>
 
+</div>
   <!-- Aviso -->
   <div id="chat-aviso-nome" style="color: red; font-size: 0.85rem; display: none; margin: 5px 10px;">
     Defina seu nome clicando no avatar antes de enviar mensagens.
@@ -1130,59 +1167,95 @@ chatButton.onclick = () => {
   }
 };
 
+let podeEnviar = true;
+let tempoRestante = 0;
+let intervaloCooldown = null;
 
-
-
-// Enviar mensagem ao pressionar Enter
 chatInput.addEventListener("keydown", async (e) => {
-  if (e.key === "Enter") {
-    const text = chatInput.value.trim();
-    if (!text) return;
+  if (e.key !== "Enter") return;
 
-    const user = auth.currentUser;
-    const avisoNome = document.getElementById("chat-aviso-nome");
+  const text = chatInput.value.trim();
+  if (!text) return;
 
-    if (!user) {
-      alert("Você precisa estar logado para usar o chat.");
-      return;
-    }
+  const avisoNome = document.getElementById("chat-aviso-nome");
 
-    let avatar = "";
-    let nome = "";
-
-    try {
-      const docSnap = await getDoc(doc(db, "usuarios", user.uid));
-      if (docSnap.exists()) {
-        const dados = docSnap.data();
-        avatar = dados.avatar || "";
-        nome = dados.nome || "";
-      }
-    } catch (err) {
-      console.error("Erro ao buscar perfil:", err.message);
-    }
-
-    if (!nome || nome.length < 2) {
-      avisoNome.style.display = "block"; // 🔴 Mostra o aviso
-      return;
-    }
-
-    avisoNome.style.display = "none"; // ✅ Oculta o aviso se o nome for válido
-
-    try {
-      await addDoc(collection(db, "chat-global"), {
-        uid: user.uid,
-        email: user.email,
-        nome: nome,
-        text: text,
-        avatar: avatar,
-        timestamp: new Date()
-      });
-      chatInput.value = "";
-    } catch (err) {
-      console.error("Erro ao enviar mensagem:", err.message);
-      alert("Erro ao enviar mensagem.");
-    }
+  if (!podeEnviar) {
+    avisoNome.style.display = "block";
+    avisoNome.textContent = `⏳ Espere ${tempoRestante}s...`;
+    return;
   }
+
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Você precisa estar logado para usar o chat.");
+    return;
+  }
+
+  let avatar = "";
+  let nome = "";
+
+  try {
+    const docSnap = await getDoc(doc(db, "usuarios", user.uid));
+    if (docSnap.exists()) {
+      const dados = docSnap.data();
+      avatar = dados.avatar || "";
+      nome = dados.nome || "";
+    }
+  } catch (err) {
+    console.error("Erro ao buscar perfil:", err.message);
+  }
+
+  if (!nome || nome.length < 2) {
+    avisoNome.style.display = "block";
+    return;
+  }
+
+  avisoNome.style.display = "none";
+
+  try {
+    // ✅ 1. Envia a mensagem
+    await addDoc(collection(db, "chat-global"), {
+      uid: user.uid,
+      email: user.email,
+      nome: nome,
+      text: text,
+      avatar: avatar,
+      timestamp: new Date()
+    });
+
+    // ✅ 2. Apaga o texto imediatamente após o envio
+    chatInput.value = "";
+
+    // ✅ 3. Inicia o cooldown logo depois
+    tempoRestante = 10;
+    podeEnviar = false;
+    avisoNome.style.display = "block";
+    avisoNome.textContent = `⏳ Espere ${tempoRestante}s...`;
+
+    intervaloCooldown = setInterval(() => {
+      tempoRestante--;
+      if (tempoRestante > 0) {
+        avisoNome.textContent = `⏳ Espere ${tempoRestante}s...`;
+      } else {
+        clearInterval(intervaloCooldown);
+        podeEnviar = true;
+        avisoNome.style.display = "none";
+        avisoNome.textContent = "Defina seu nome clicando no avatar antes de enviar mensagens.";
+      }
+    }, 1000);
+
+  } catch (err) {
+    console.error("Erro ao enviar mensagem:", err.message);
+    alert("Erro ao enviar mensagem.");
+  }
+});
+
+
+const botaoEnviar = document.getElementById("chat-enviar");
+
+botaoEnviar.addEventListener("click", async () => {
+  const enterEvent = new KeyboardEvent("keydown", { key: "Enter" });
+  chatInput.dispatchEvent(enterEvent);
 });
 
 
@@ -1598,7 +1671,7 @@ onSnapshot(q, (snapshot) => {
       div.appendChild(btnDelete);
     }
 
-    chatMessages.appendChild(div);
+    chatMessages.prepend(div);
   });
 
   // Verifica se deve mostrar o alerta
