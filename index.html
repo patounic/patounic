@@ -10,6 +10,29 @@
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/Picsart_25-07-09_14-16-08-080_LE_upscale_balanced_x4_light_ai_30_tone_enhance_30_color_enhance_30 (1).webp">
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/wallpaper.png.webp">
   <style>
+.video-hover-title {
+  position: absolute;
+  top: -12px; 
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #7c3aed; /* Roxo vibrante */
+  color: white;
+  padding: 4px 12px;
+  font-size: 0.85rem;
+ flex-wrap: nowrap; 
+  font-family: 'Inter', sans-serif;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.video-card:hover .video-hover-title {
+  opacity: 1;
+}
+
   @media (max-width: 600px) {
     #chat-box {
       top: 50% !important;
@@ -94,17 +117,16 @@
 
 .video-info {
   position: absolute;
-  bottom: 0;
+  top: 0;
   left: 0;
   width: 100%;
-  background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0));
-  padding: 1rem 0.5rem 0.5rem;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
+  height: 100%; /* ✅ cobre todo o card */
+  background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0)); /* ou 0.9 pra mais escuro */
+  display: flex;
+  align-items: center;     /* centraliza verticalmente */
+  justify-content: center; /* centraliza horizontalmente */
+  pointer-events: none;    /* se quiser que clique passe por baixo */
+  border-radius: inherit;  /* opcional, herda borda do card */
   transition: opacity 0.3s ease;
 }
 
@@ -233,6 +255,8 @@ font-family: 'Inter', sans-serif;
   width: 100%;
   overflow: visible;
 margin-top: 1 px;
+ flex-direction: row; /* força os vídeos em linha */
+  flex-wrap: nowrap; 
 }
 
 .video-wrapper .scroll-arrow {
@@ -253,13 +277,14 @@ margin-top: 1 px;
 
 .video-row {
   display: flex;
-  overflow-x: auto;
-  scroll-behavior: smooth;
+  overflow-x: auto;      /* ✅ permite ultrapassar pra cima */
   gap: 1rem;
   scrollbar-width: none; /* Firefox */
   padding: 1rem 5.2rem;   /* 2rem nas laterais */
   margin-left: -2rem; 
   margin-right: -2rem;
+  flex-wrap: nowrap; 
+ align-items: flex-start;
 }
 
 @media (max-width: 768px) {
@@ -289,6 +314,7 @@ margin-top: 1 px;
   transition: transform 0.3s ease;
   cursor: pointer;
   position: relative;
+  overflow: visible;
 }
 
 .video-card:hover {
@@ -910,79 +936,83 @@ html, body {
 </div>
     </div>
   </div>
+<!-- Seção 1: Aleatórios -->
 <div class="section">
-  <div class="section-title">
-    Aleatórios 
+  <div class="section-title">Aleatórios</div>
+
+  <div class="video-wrapper">
+    <div class="video-row" id="video-row">
+
+      <div class="video-card"
+        onmouseenter="mostrarInfo(this); mostrarPreview(this, 'https://cdn.discordapp.com/attachments/1382924288213909536/1392845277034975252/DEBI__LOIDE_2_-_FILME_COMPLETO_DUBLADO_-_MELHOR_FILME_DE_COMEDIA.mp4?ex=687103bf&is=686fb23f&hm=cab6985d577c70e12135dea601563f6497e639cb71d8c71ec44d00dea59f7576&')"
+        onmouseleave="esconderInfo(this); esconderPreview(this)"
+        style="background-image: url('https://i.ytimg.com/vi/4qDysqSxG64/maxresdefault.jpg');">
+        <div class="video-hover-title">Debi & Loide 2</div>
+        <video class="preview-video" muted loop></video>
+        <div class="video-info">
+          <div class="video-title"></div>
+          <button class="play-button" onclick="abrirModal('https://cdn.discordapp.com/attachments/1382924288213909536/1392845277034975252/DEBI__LOIDE_2_-_FILME_COMPLETO_DUBLADO_-_MELHOR_FILME_DE_COMEDIA.mp4?ex=687103bf&is=686fb23f&hm=cab6985d577c70e12135dea601563f6497e639cb71d8c71ec44d00dea59f7576&')">
+            ▶ Play
+          </button>
+        </div>
+      </div>
+
+      <div class="video-card" onclick="abrirModal('https://www.youtube.com/embed/9bZkp7q19f0')" style="background-image: url('https://img.youtube.com/vi/9bZkp7q19f0/hqdefault.jpg');">
+        <span class="video-title">Vídeo 2</span>
+      </div>
+
+      <div class="video-card" onclick="abrirModal('https://www.youtube.com/embed/kJQP7kiw5Fk')" style="background-image: url('https://img.youtube.com/vi/kJQP7kiw5Fk/hqdefault.jpg');">
+        <span class="video-title">Vídeo 3</span>
+      </div>
+
+      <div class="video-card" onclick="abrirModal('https://www.youtube.com/embed/L_jWHffIx5E')" style="background-image: url('https://img.youtube.com/vi/L_jWHffIx5E/hqdefault.jpg');">
+        <span class="video-title">Vídeo 4</span>
+      </div>
+
+      <div class="video-card" onclick="abrirModal('https://www.youtube.com/embed/OPf0YbXqDm0')" style="background-image: url('https://img.youtube.com/vi/OPf0YbXqDm0/hqdefault.jpg');">
+        <span class="video-title">Vídeo 5</span>
+      </div>
+
+      <div class="video-card" onclick="abrirModal('https://www.youtube.com/embed/tVj0ZTS4WF4')" style="background-image: url('https://img.youtube.com/vi/tVj0ZTS4WF4/hqdefault.jpg');">
+        <span class="video-title">Vídeo 6</span>
+      </div>
+
+    </div>
+
+    <!-- Setas da primeira fileira -->
+    <button class="scroll-arrow left" onclick="scrollVideos('left')">
+      <img src="https://images-ext-1.discordapp.net/external/5I9l_aV2usJiejAlqrPa1vMClhSw8uAU4aC7lsJFDl8/%3Fsize%3D96/https/cdn.discordapp.com/emojis/878689330296680459.webp?format=webp&width=86&height=86" alt="Anterior" class="arrow-icon" />
+    </button>
+
+    <button class="scroll-arrow right" onclick="scrollVideos('right')">
+      <img src="https://images-ext-1.discordapp.net/external/lJHezHUb-87G72093K_C72bEzxXRPmGO3a5BPC266fI/%3Fsize%3D96/https/cdn.discordapp.com/emojis/861984565300297738.webp?format=webp&width=86&height=86" alt="Próximo" class="arrow-icon" />
+    </button>
   </div>
-<div class="video-wrapper">
-  <div class="video-row" id="video-row">
-    <!-- Cards com thumbnails e abertura de vídeo -->
-
-<div class="video-card"
-     onmouseenter="mostrarInfo(this); mostrarPreview(this, 'https://cdn.discordapp.com/attachments/1382924288213909536/1392845277034975252/DEBI__LOIDE_2_-_FILME_COMPLETO_DUBLADO_-_MELHOR_FILME_DE_COMEDIA.mp4?ex=687103bf&is=686fb23f&hm=cab6985d577c70e12135dea601563f6497e639cb71d8c71ec44d00dea59f7576&')"
-     onmouseleave="esconderInfo(this); esconderPreview(this)"
-     style="background-image: url('https://i.ytimg.com/vi/4qDysqSxG64/maxresdefault.jpg');">
-  
-  <video class="preview-video" muted loop></video>
-
-  <div class="video-info">
-    <div class="video-title">Debi & Loide 2</div>
-    <button class="play-button" onclick="abrirModal('https://cdn.discordapp.com/attachments/1382924288213909536/1392845277034975252/DEBI__LOIDE_2_-_FILME_COMPLETO_DUBLADO_-_MELHOR_FILME_DE_COMEDIA.mp4?ex=687103bf&is=686fb23f&hm=cab6985d577c70e12135dea601563f6497e639cb71d8c71ec44d00dea59f7576&')">▶ Play</button>
-  </div>
-
 </div>
 
-
-    <div class="video-card" onclick="abrirModal('https://www.youtube.com/embed/9bZkp7q19f0')" style="background-image: url('https://img.youtube.com/vi/9bZkp7q19f0/hqdefault.jpg');">
-      <span class="video-title">Vídeo 2</span>
-    </div>
-    <div class="video-card" onclick="abrirModal('https://www.youtube.com/embed/kJQP7kiw5Fk')" style="background-image: url('https://img.youtube.com/vi/kJQP7kiw5Fk/hqdefault.jpg');">
-      <span class="video-title">Vídeo 3</span>
-    </div>
-    <div class="video-card" onclick="abrirModal('https://www.youtube.com/embed/L_jWHffIx5E')" style="background-image: url('https://img.youtube.com/vi/L_jWHffIx5E/hqdefault.jpg');">
-      <span class="video-title">Vídeo 4</span>
-    </div>
-    <div class="video-card" onclick="abrirModal('https://www.youtube.com/embed/OPf0YbXqDm0')" style="background-image: url('https://img.youtube.com/vi/OPf0YbXqDm0/hqdefault.jpg');">
-      <span class="video-title">Vídeo 5</span>
-    </div>
-    <div class="video-card" onclick="abrirModal('https://www.youtube.com/embed/tVj0ZTS4WF4')" style="background-image: url('https://img.youtube.com/vi/tVj0ZTS4WF4/hqdefault.jpg');">
-      <span class="video-title">Vídeo 6</span>
-    </div>
-
-    <!-- Setas -->
-   <button class="scroll-arrow left" onclick="scrollVideos('left')">
-  <img src="https://images-ext-1.discordapp.net/external/5I9l_aV2usJiejAlqrPa1vMClhSw8uAU4aC7lsJFDl8/%3Fsize%3D96/https/cdn.discordapp.com/emojis/878689330296680459.webp?format=webp&width=86&height=86" alt="Anterior" class="arrow-icon" />
-</button>
-
-<button class="scroll-arrow right" onclick="scrollVideos('right')">
-  <img src="https://images-ext-1.discordapp.net/external/lJHezHUb-87G72093K_C72bEzxXRPmGO3a5BPC266fI/%3Fsize%3D96/https/cdn.discordapp.com/emojis/861984565300297738.webp?format=webp&width=86&height=86" alt="Próximo" class="arrow-icon" />
-</button>
-  </div>
-</div>
+<!-- Seção 2: Aleatórios 2 -->
 <div class="section">
-  <div class="section-title">
-    Aleatórios 2
-</div>
-<div class="video-wrapper">
-  <div class="video-row" id="video-row-2">
-    <div class="video-card">Vídeo 7</div>
-    <div class="video-card">Vídeo 8</div>
-    <div class="video-card">Vídeo 9</div>
-    <div class="video-card">Vídeo 10</div>
-    <div class="video-card">Vídeo 11</div>
-    <div class="video-card">Vídeo 12</div>
-  </div>
+  <div class="section-title">Aleatórios 2</div>
 
-  <!-- Setas da segunda fileira -->
-<button class="scroll-arrow left" onclick="scrollVideos('left', 'video-row-2')">
-  <img src="https://images-ext-1.discordapp.net/external/5I9l_aV2usJiejAlqrPa1vMClhSw8uAU4aC7lsJFDl8/%3Fsize%3D96/https/cdn.discordapp.com/emojis/878689330296680459.webp?format=webp&width=86&height=86" alt="Anterior" class="arrow-icon" />
-</button>
-<button class="scroll-arrow right" onclick="scrollVideos('right', 'video-row-2')">
-  <img src="https://images-ext-1.discordapp.net/external/lJHezHUb-87G72093K_C72bEzxXRPmGO3a5BPC266fI/%3Fsize%3D96/https/cdn.discordapp.com/emojis/861984565300297738.webp?format=webp&width=86&height=86" alt="Próximo" class="arrow-icon" />
-</button>
-</div>
-  <!-- Botão de rolagem para a direita -->
+  <div class="video-wrapper">
+    <div class="video-row" id="video-row-2">
+      <div class="video-card">Vídeo 7</div>
+      <div class="video-card">Vídeo 8</div>
+      <div class="video-card">Vídeo 9</div>
+      <div class="video-card">Vídeo 10</div>
+      <div class="video-card">Vídeo 11</div>
+      <div class="video-card">Vídeo 12</div>
+    </div>
+
+    <!-- Setas da segunda fileira -->
+    <button class="scroll-arrow left" onclick="scrollVideos('left', 'video-row-2')">
+      <img src="https://images-ext-1.discordapp.net/external/5I9l_aV2usJiejAlqrPa1vMClhSw8uAU4aC7lsJFDl8/%3Fsize%3D96/https/cdn.discordapp.com/emojis/878689330296680459.webp?format=webp&width=86&height=86" alt="Anterior" class="arrow-icon" />
+    </button>
+    <button class="scroll-arrow right" onclick="scrollVideos('right', 'video-row-2')">
+      <img src="https://images-ext-1.discordapp.net/external/lJHezHUb-87G72093K_C72bEzxXRPmGO3a5BPC266fI/%3Fsize%3D96/https/cdn.discordapp.com/emojis/861984565300297738.webp?format=webp&width=86&height=86" alt="Próximo" class="arrow-icon" />
+    </button>
   </div>
+</div>
 </div>
 
   <script type="module">
