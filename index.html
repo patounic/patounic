@@ -1185,6 +1185,23 @@ chatInput.addEventListener("keydown", async (e) => {
     return;
   }
 
+  // ⛔ BLOQUEIA envio imediatamente!
+  podeEnviar = false;
+  tempoRestante = 10;
+  avisoNome.style.display = "block";
+  avisoNome.textContent = `⏳ Espere ${tempoRestante}s...`;
+
+  intervaloCooldown = setInterval(() => {
+    tempoRestante--;
+    if (tempoRestante > 0) {
+      avisoNome.textContent = `⏳ Espere ${tempoRestante}s...`;
+    } else {
+      clearInterval(intervaloCooldown);
+      podeEnviar = true;
+      avisoNome.style.display = "none";
+    }
+  }, 1000);
+
   const user = auth.currentUser;
   if (!user) {
     alert("Você precisa estar logado para usar o chat.");
@@ -1210,10 +1227,7 @@ chatInput.addEventListener("keydown", async (e) => {
     return;
   }
 
-  avisoNome.style.display = "none";
-
   try {
-    // ✅ 1. Envia a mensagem
     await addDoc(collection(db, "chat-global"), {
       uid: user.uid,
       email: user.email,
@@ -1223,32 +1237,14 @@ chatInput.addEventListener("keydown", async (e) => {
       timestamp: new Date()
     });
 
-    // ✅ 2. Apaga o texto imediatamente após o envio
     chatInput.value = "";
-
-    // ✅ 3. Inicia o cooldown logo depois
-    tempoRestante = 10;
-    podeEnviar = false;
-    avisoNome.style.display = "block";
-    avisoNome.textContent = `⏳ Espere ${tempoRestante}s...`;
-
-    intervaloCooldown = setInterval(() => {
-      tempoRestante--;
-      if (tempoRestante > 0) {
-        avisoNome.textContent = `⏳ Espere ${tempoRestante}s...`;
-      } else {
-        clearInterval(intervaloCooldown);
-        podeEnviar = true;
-        avisoNome.style.display = "none";
-        avisoNome.textContent = "Defina seu nome clicando no avatar antes de enviar mensagens.";
-      }
-    }, 1000);
 
   } catch (err) {
     console.error("Erro ao enviar mensagem:", err.message);
     alert("Erro ao enviar mensagem.");
   }
 });
+
 
 
 const botaoEnviar = document.getElementById("chat-enviar");
