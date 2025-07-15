@@ -900,6 +900,19 @@ html, body {
   gap: 10px;
 "></div>
 
+<div id="resposta-preview" style="
+  display: none;
+  padding: 5px 10px;
+  background-color: #222;
+  color: #ccc;
+  font-size: 0.8rem;
+  border-left: 3px solid #5865f2;
+  margin: 5px;
+  border-radius: 4px;
+">
+  ↪️ Respondendo <strong id="resposta-nome"></strong>: <em id="resposta-texto"></em>
+  <span style="float: right; cursor: pointer;" onclick="cancelarResposta()">❌</span>
+</div>
   <!-- Campo de digitação -->
 <div style="
   display: flex;
@@ -1228,14 +1241,22 @@ chatInput.addEventListener("keydown", async (e) => {
   }
 
   try {
-    await addDoc(collection(db, "chat-global"), {
-      uid: user.uid,
-      email: user.email,
-      nome: nome,
-      text: text,
-      avatar: avatar,
-      timestamp: new Date()
-    });
+await addDoc(collection(db, "chat-global"), {
+  uid: user.uid,
+  email: user.email,
+  nome: nome,
+  text: text,
+  avatar: avatar,
+  timestamp: new Date(),
+  respostaDe: responderPara
+    ? {
+        nome: responderPara.nome,
+        text: responderPara.text,
+        uid: responderPara.uid // <- necessário para identificação
+      }
+    : null
+});
+
 
     chatInput.value = "";
 
@@ -1606,13 +1627,31 @@ onSnapshot(q, (snapshot) => {
       localStorage.setItem("ultima_msg_zeus", id);
     }
 
-    // Criação e exibição da mensagem
-    const div = document.createElement("div");
-    div.style.display = "flex";
-    div.style.alignItems = "flex-start";
-    div.style.gap = "10px";
-    div.style.marginBottom = "10px";
-    div.style.position = "relative";
+    // Criação do container da mensagem
+const div = document.createElement("div");
+div.style.display = "flex";
+div.style.alignItems = "flex-start";
+div.style.gap = "10px";
+div.style.marginBottom = "10px";
+div.style.position = "relative";
+
+// Estilo padrão
+div.style.borderRadius = "8px";
+div.style.padding = "6px 10px";
+
+// 2. Esta mensagem É uma resposta para o usuário atual
+if (
+  msg.respostaDe &&
+  typeof msg.respostaDe === "object" &&
+  msg.respostaDe.uid &&
+  msg.respostaDe.uid === user.uid
+) {
+  div.style.backgroundColor = "#29304c"; // azul escuro
+  div.style.border = "none";
+  div.style.borderRadius = "0";
+div.style.marginLeft = "calc(-1 * 10px)";
+div.style.marginRight = "calc(-1 * 10px)";
+}
 
     const avatar = document.createElement("img");
     avatar.src = msg.avatar || "https://i.imgur.com/8Km9tLL.png";
@@ -1622,23 +1661,40 @@ onSnapshot(q, (snapshot) => {
     avatar.style.objectFit = "cover";
 
     const texto = document.createElement("div");
-    let nomeExibido = msg.nome || msg.email;
+    texto.style.fontSize = "0.9rem";
+    texto.style.textAlign = "left";
+    texto.style.wordBreak = "break-word";
+    texto.style.flex = "1";
 
+    let nomeExibido = msg.nome || msg.email;
     if (msg.email === "zeuszeuz007@gmail.com") {
       nomeExibido = `<strong style="color:#5865f2">${nomeExibido} <span class="coroa-brilhante">👑</span></strong>`;
     } else {
       nomeExibido = `<strong style="color:#5865f2">${nomeExibido}</strong>`;
     }
 
-    texto.innerHTML = `${nomeExibido}<br>${msg.text}`;
-    texto.style.fontSize = "0.9rem";
-    texto.style.textAlign = "left";
-    texto.style.wordBreak = "break-word";
-    texto.style.flex = "1";
+    // 🔁 Se estiver respondendo alguém, mostra a caixinha
+    if (msg.respostaDe) {
+      const resp = document.createElement("div");
+      resp.style.fontSize = "0.75rem";
+      resp.style.color = "#aaa";
+      resp.style.borderLeft = "2px solid #5865f2";
+      resp.style.paddingLeft = "6px";
+      resp.style.marginBottom = "4px";
+      resp.style.opacity = "0.8";
+      resp.textContent = `↪️ ${msg.respostaDe.nome}: "${msg.respostaDe.text}"`;
+      texto.appendChild(resp);
+    }
+
+    // Texto principal
+    const corpoMsg = document.createElement("div");
+    corpoMsg.innerHTML = `${nomeExibido}<br>${msg.text}`;
+    texto.appendChild(corpoMsg);
 
     div.appendChild(avatar);
     div.appendChild(texto);
 
+    // 🗑️ botão de deletar (para o autor ou Zeus)
     if (msg.uid === user.uid || user.email === "zeuszeuz007@gmail.com") {
       const btnDelete = document.createElement("button");
       btnDelete.textContent = "🗑️";
@@ -1667,8 +1723,38 @@ onSnapshot(q, (snapshot) => {
       div.appendChild(btnDelete);
     }
 
+    // ↩️ botão de responder (para mensagens de outros)
+    if (msg.uid !== user.uid) {
+      const btnReply = document.createElement("button");
+      btnReply.textContent = "↩️";
+      btnReply.title = "Responder mensagem";
+      btnReply.style.border = "none";
+      btnReply.style.background = "transparent";
+      btnReply.style.cursor = "pointer";
+      btnReply.style.color = "#ccc";
+      btnReply.style.fontSize = "1rem";
+      btnReply.style.position = "absolute";
+      btnReply.style.bottom = "0";
+      btnReply.style.right = "28px";
+
+      btnReply.onclick = () => {
+responderPara = {
+  nome: msg.nome || msg.email,
+  text: msg.text,
+  id: docSnap.id,
+  uid: msg.uid // <- novo campo
+};
+
+        exibirMensagemRespondida();
+        chatInput.focus();
+      };
+
+      div.appendChild(btnReply);
+    }
+
     chatMessages.prepend(div);
   });
+
 
   // Verifica se deve mostrar o alerta
   const chatAlerta = document.getElementById("chat-alerta");
@@ -2007,6 +2093,27 @@ const btnFecharChat = document.getElementById("chat-fechar");
 btnFecharChat.addEventListener("click", () => {
   chatBox.style.display = "none";
 });
+
+let responderPara = null;
+
+function exibirMensagemRespondida() {
+  if (!responderPara) return;
+
+  document.getElementById("resposta-preview").style.display = "block";
+  document.getElementById("resposta-nome").textContent = responderPara.nome;
+  document.getElementById("resposta-texto").textContent = responderPara.text;
+}
+
+// ✅ Coloque aqui:
+function cancelarResposta() {
+  responderPara = null;
+  const preview = document.getElementById("resposta-preview");
+  if (preview) {
+    preview.style.display = "none";
+  }
+}
+
+window.cancelarResposta = cancelarResposta;
 
   </script>
 <div id="video-modal" class="video-modal">
