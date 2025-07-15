@@ -10,6 +10,22 @@
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/Picsart_25-07-09_14-16-08-080_LE_upscale_balanced_x4_light_ai_30_tone_enhance_30_color_enhance_30 (1).webp">
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/wallpaper.png.webp">
   <style>
+.logo-login {
+  position: absolute;
+  top: 0;
+  left: 0px;
+  width: 200px; /* ou outro tamanho que desejar */
+  height: auto;
+  z-index: 10;
+}
+.logo-superior-esquerda {
+  position: absolute;
+  top: 0;
+  left: 0px;
+  width: 200px; /* ou outro tamanho que desejar */
+  height: auto;
+  z-index: 10;
+}
 
 .video-hover-title {
   position: absolute;
@@ -505,6 +521,7 @@ html, body {
       padding: 2rem;
       background-color: rgba(0, 0, 0, 0.6);
       background-blend-mode: overlay;
+position: relative;
     }
 
     #login-container h2 {
@@ -736,6 +753,8 @@ html, body {
 
 <!-- Login -->
 <div id="login-container" style="display: none;">
+  <img src="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/Picsart_25-07-14_21-36-27-382.png" alt="Logo" class="logo-login">
+
   <h2>Login</h2>
 
   <!-- Aviso de erro -->
@@ -750,6 +769,8 @@ html, body {
 
 <!-- Registro -->
 <div id="register-container" style="display: none;">
+<img src="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/Picsart_25-07-14_21-36-27-382.png" alt="Logo" class="logo-superior-esquerda">
+
   <h2>Registrar</h2>
   <input type="email" id="register-email" placeholder="Email" />
   <input type="password" id="register-senha" placeholder="Senha (mín. 6 caracteres)" />
