@@ -10,6 +10,29 @@
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/Picsart_25-07-09_14-16-08-080_LE_upscale_balanced_x4_light_ai_30_tone_enhance_30_color_enhance_30 (1).webp">
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/wallpaper.png.webp">
   <style>
+.nome-que-me-respondeu {
+  background: linear-gradient(270deg, #ffe600, #ffcc00, #fff700, #ffe600);
+  background-size: 400% 400%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-weight: bold;
+  font-size: 0.9rem;
+  animation: animarGradient 3s ease infinite;
+}
+
+@keyframes animarGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 .logo-login {
   position: absolute;
   top: 11px; 
@@ -1273,7 +1296,8 @@ await addDoc(collection(db, "chat-global"), {
     ? {
         nome: responderPara.nome,
         text: responderPara.text,
-        uid: responderPara.uid // <- necessário para identificação
+        uid: responderPara.uid,
+avatar: responderPara.avatar || "" // <- necessário para identificação
       }
     : null
 });
@@ -1667,11 +1691,8 @@ if (
   msg.respostaDe.uid &&
   msg.respostaDe.uid === user.uid
 ) {
-  div.style.backgroundColor = "#29304c"; // azul escuro
   div.style.border = "none";
   div.style.borderRadius = "0";
-div.style.marginLeft = "calc(-1 * 10px)";
-div.style.marginRight = "calc(-1 * 10px)";
 }
 
     const avatar = document.createElement("img");
@@ -1688,24 +1709,43 @@ div.style.marginRight = "calc(-1 * 10px)";
     texto.style.flex = "1";
 
     let nomeExibido = msg.nome || msg.email;
-    if (msg.email === "zeuszeuz007@gmail.com") {
-      nomeExibido = `<strong style="color:#5865f2">${nomeExibido} <span class="coroa-brilhante">👑</span></strong>`;
-    } else {
-      nomeExibido = `<strong style="color:#5865f2">${nomeExibido}</strong>`;
-    }
 
-    // 🔁 Se estiver respondendo alguém, mostra a caixinha
-    if (msg.respostaDe) {
-      const resp = document.createElement("div");
-      resp.style.fontSize = "0.75rem";
-      resp.style.color = "#aaa";
-      resp.style.borderLeft = "2px solid #5865f2";
-      resp.style.paddingLeft = "6px";
-      resp.style.marginBottom = "4px";
-      resp.style.opacity = "0.8";
-      resp.textContent = `↪️ ${msg.respostaDe.nome}: "${msg.respostaDe.text}"`;
-      texto.appendChild(resp);
-    }
+if (msg.email === "zeuszeuz007@gmail.com") {
+  nomeExibido = `<strong style="color:#5865f2">${nomeExibido} <span class="coroa-brilhante">👑</span></strong>`;
+} else if (msg.respostaDe && msg.respostaDe.uid === user.uid) {
+  // Essa pessoa está me respondendo
+  nomeExibido = `<span class="nome-que-me-respondeu">${msg.nome}</span>`;
+} else {
+  nomeExibido = `<strong style="color:#5865f2">${msg.nome}</strong>`;
+}
+
+
+if (msg.respostaDe) {
+  const resp = document.createElement("div");
+  resp.style.display = "flex";
+  resp.style.alignItems = "center";
+  resp.style.marginBottom = "4px";
+
+  const avatarResp = document.createElement("img");
+  avatarResp.src = msg.respostaDe.avatar || "https://i.imgur.com/8Km9tLL.png";
+  avatarResp.alt = msg.respostaDe.nome;
+  avatarResp.style.width = "20px";
+  avatarResp.style.height = "20px";
+  avatarResp.style.borderRadius = "50%";
+  avatarResp.style.objectFit = "cover";
+  avatarResp.style.marginRight = "8px";
+  avatarResp.style.flexShrink = "0";
+
+  const textoResp = document.createElement("div");
+  textoResp.textContent = `${msg.respostaDe.nome}: "${msg.respostaDe.text}"`;
+  textoResp.style.fontSize = "0.75rem";
+  textoResp.style.color = "#aaa";
+  textoResp.style.opacity = "0.8";
+
+  resp.appendChild(avatarResp);
+  resp.appendChild(textoResp);
+  texto.appendChild(resp);
+}
 
     // Texto principal
     const corpoMsg = document.createElement("div");
@@ -1763,7 +1803,8 @@ responderPara = {
   nome: msg.nome || msg.email,
   text: msg.text,
   id: docSnap.id,
-  uid: msg.uid // <- novo campo
+  uid: msg.uid,
+    avatar: msg.avatar || ""
 };
 
         exibirMensagemRespondida();
