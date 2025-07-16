@@ -954,7 +954,7 @@ position: relative;
   margin: 5px;
   border-radius: 4px;
 ">
-  ↪️ Respondendo <strong id="resposta-nome"></strong>: <em id="resposta-texto"></em>
+↪️ Respondendo <strong id="resposta-nome" class="nome-que-me-respondeu"></strong> <em id="resposta-texto"></em>
   <span style="float: right; cursor: pointer;" onclick="cancelarResposta()">❌</span>
 </div>
   <!-- Campo de digitação -->
@@ -1711,10 +1711,7 @@ if (
     let nomeExibido = msg.nome || msg.email;
 
 if (msg.email === "zeuszeuz007@gmail.com") {
-  nomeExibido = `<strong style="color:#5865f2">${nomeExibido} <span class="coroa-brilhante">👑</span></strong>`;
-} else if (msg.respostaDe && msg.respostaDe.uid === user.uid) {
-  // Essa pessoa está me respondendo
-  nomeExibido = `<span class="nome-que-me-respondeu">${msg.nome}</span>`;
+  nomeExibido = `<strong style="color:#5865f2">${msg.nome} <span class="coroa-brilhante">👑</span></strong>`;
 } else {
   nomeExibido = `<strong style="color:#5865f2">${msg.nome}</strong>`;
 }
@@ -1737,7 +1734,16 @@ if (msg.respostaDe) {
   avatarResp.style.flexShrink = "0";
 
   const textoResp = document.createElement("div");
-  textoResp.textContent = `${msg.respostaDe.nome}: "${msg.respostaDe.text}"`;
+
+  // 👇 Verifica se o usuário atual foi o mencionado
+  const nomeRespHtml =
+    msg.respostaDe.uid === user.uid
+      ? `<span class="nome-que-me-respondeu">${msg.respostaDe.nome}</span>`
+      : `<span>${msg.respostaDe.nome}</span>`;
+
+  const mensagemOriginal = msg.respostaDe.text || "(mensagem não encontrada)";
+
+  textoResp.innerHTML = `${nomeRespHtml} ${mensagemOriginal}`;
   textoResp.style.fontSize = "0.75rem";
   textoResp.style.color = "#aaa";
   textoResp.style.opacity = "0.8";
@@ -1746,6 +1752,7 @@ if (msg.respostaDe) {
   resp.appendChild(textoResp);
   texto.appendChild(resp);
 }
+
 
     // Texto principal
     const corpoMsg = document.createElement("div");
