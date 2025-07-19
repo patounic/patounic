@@ -10,6 +10,27 @@
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/Picsart_25-07-09_14-16-08-080_LE_upscale_balanced_x4_light_ai_30_tone_enhance_30_color_enhance_30 (1).webp">
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/wallpaper.png.webp">
   <style>
+.nome-zeus {
+  font-weight: bold;
+  font-size: 0.9rem;
+  background: linear-gradient(45deg, #00ffff, #cc00ff, #ff00cc);
+  background-size: 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+@keyframes brilhoZeus {
+  0% {
+    text-shadow: 0 0 4px #cc00ff, 0 0 8px #00ffff, 0 0 12px #ff00cc;
+    transform: scale(1);
+  }
+  100% {
+    text-shadow: 0 0 10px #cc00ff, 0 0 18px #00ffff, 0 0 24px #ff00cc;
+    transform: scale(1.03);
+  }
+}
+
 .nome-que-me-respondeu {
   background: linear-gradient(270deg, #ffe600, #ffcc00, #fff700, #ffe600);
   background-size: 400% 400%;
@@ -1711,7 +1732,7 @@ if (
     let nomeExibido = msg.nome || msg.email;
 
 if (msg.email === "zeuszeuz007@gmail.com") {
-  nomeExibido = `<strong style="color:#5865f2">${msg.nome} <span class="coroa-brilhante">👑</span></strong>`;
+nomeExibido = `<strong class="nome-zeus">${msg.nome}</strong> <span class="coroa-brilhante">👑</span>`;
 } else {
   nomeExibido = `<strong style="color:#5865f2">${msg.nome}</strong>`;
 }
