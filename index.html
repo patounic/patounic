@@ -10,6 +10,31 @@
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/Picsart_25-07-09_14-16-08-080_LE_upscale_balanced_x4_light_ai_30_tone_enhance_30_color_enhance_30 (1).webp">
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/wallpaper.png.webp">
   <style>
+#chat-input::placeholder {
+  font-weight: 500;
+  font-size: 14px;
+  background: linear-gradient(270deg, #FFD700, #8B0000, #FFD700, #8B0000, #FFD700);
+  background-size: 800% 800%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+          background-clip: text;
+          text-fill-color: transparent;
+  animation: gradientAnim 6s ease infinite;
+  opacity: 1;
+}
+
+@keyframes gradientAnim {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 #chat-box {
   background-image: url('https://i.pinimg.com/1200x/f5/4d/3d/f54d3d1c4cf257077643b0275290c8fc.jpg');
   background-size: cover;
@@ -962,7 +987,7 @@ position: relative;
   " title="Fechar">❌</div>
 
 <div style="padding: 10px; border-bottom: 1px solid #222;">
-  <h3 style="margin: 0; font-size: 1.1rem; color: white;">Chat Global</h3>
+  <h3 style="margin: 0; font-size: 1.1rem; color: white;">🥡 Chat Global 🥢</h3>
   <p style="margin: 3px 0 0; font-size: 0.8rem; color: #ccc;">
     Converse com outros usuários ou envie sugestões ao criador do site.
   </p>
@@ -995,11 +1020,22 @@ position: relative;
 <div style="
   display: flex;
   align-items: center;
-  border-top: 1px solid #222;
   padding: 0 5px;
-  background-color: #222;
+  border: none;
+
+  /* Gradiente escuro no topo + imagem de fundo */
+  background-image:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0)),
+    url('https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/740F9C0F-6D28-4F89-B094-C620FCE5D9EB.png');
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  background-color: rgba(0, 0, 0, 0.4);
+  background-blend-mode: overlay;
 ">
-  <input id="chat-input" type="text" placeholder="Digite uma mensagem..." style="
+  <input id="chat-input" type="text" placeholder="🍜 Digite uma mensagem..." style="
     flex: 1;
     padding: 10px;
     border: none;
