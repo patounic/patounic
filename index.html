@@ -1442,22 +1442,28 @@ chatInput.addEventListener("keydown", async (e) => {
     return;
   }
 
-  try {
-    await addDoc(collection(db, "chat-global"), {
-      uid: user.uid,
-      email: user.email,
-      nome: nome,
-      text: text,
-      avatar: avatar,
-      timestamp: new Date(),
-      respostaDe: responderPara
-        ? { id: responderPara.id }
-        : null
-    });
-  } catch (err) {
-    console.error("Erro ao enviar mensagem:", err.message);
-    alert("Erro ao enviar mensagem.");
-  }
+document.getElementById("resposta-preview").style.display = "none";
+
+try {
+  await addDoc(collection(db, "chat-global"), {
+    uid: user.uid,
+    email: user.email,
+    nome: nome,
+    text: text,
+    avatar: avatar,
+    timestamp: new Date(),
+    respostaDe: responderPara
+      ? { id: responderPara.id }
+      : null
+  });
+
+  // 🔁 Após enviar, cancelar modo de resposta:
+  responderPara = null;
+
+} catch (err) {
+  console.error("Erro ao enviar mensagem:", err.message);
+  alert("Erro ao enviar mensagem.");
+}
 });
 
 
