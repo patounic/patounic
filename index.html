@@ -10,6 +10,82 @@
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/Picsart_25-07-09_14-16-08-080_LE_upscale_balanced_x4_light_ai_30_tone_enhance_30_color_enhance_30 (1).webp">
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/wallpaper.png.webp">
   <style>
+
+.botao-apagar {
+  position: relative;
+  overflow: hidden;
+  background-color: rgba(255, 102, 102, 0.8) !important; /* vermelho claro e brilhante */
+  color: white !important;
+  opacity: 1 !important;
+}
+
+/* Brilho animado tipo "faca passando" */
+.botao-apagar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-20deg);
+  animation: shine 2s infinite;
+}
+
+/* Animação da lâmina */
+@keyframes shine {
+  0% {
+    left: -75%;
+  }
+  100% {
+    left: 125%;
+  }
+}
+
+
+.botao-apagar:hover {
+  background-color: #cc0000;
+}
+
+.mensagem-container {
+  position: relative;
+  padding-top: 28px; 
+}
+
+.responder-wrapper {
+  display: none;
+  position: absolute;
+  bottom: 44.5px; /* ou como preferir */
+  left: 10px;
+}
+
+.mensagem-container:hover .responder-wrapper {
+  display: block;
+}
+
+.botao-responder {
+  background: rgba(34, 34, 34, 0.5); /* preto/cinza com 50% de opacidade */
+  border: none;
+  border-radius: 5px;
+  color: #ccc;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 2px 6px;
+  transition: background 0.2s;
+  outline: none;
+  box-shadow: none;
+}
+
+.botao-responder:hover {
+  background: #5865f2;
+  color: white;
+}
+
 #chat-input::placeholder {
   font-weight: 500;
   font-size: 14px;
@@ -996,7 +1072,7 @@ position: relative;
   <!-- Mensagens -->
   <div id="chat-messages" style="
   flex: 1;
-  padding: 10px;
+  padding: 10px
   overflow-y: auto;
   display: flex;
   flex-direction: column-reverse;
@@ -1745,6 +1821,7 @@ onSnapshot(q, (snapshot) => {
 
     // Criação do container da mensagem
 const div = document.createElement("div");
+div.classList.add("mensagem-container"); // ✅ Adicione esta linha
 div.style.display = "flex";
 div.style.alignItems = "flex-start";
 div.style.gap = "10px";
@@ -1833,19 +1910,42 @@ if (msg.respostaDe) {
     div.appendChild(avatar);
     div.appendChild(texto);
 
-    // 🗑️ botão de deletar (para o autor ou Zeus)
+    // ↩️ botão de responder + 🗑️ apagar (juntos no canto inferior da mensagem)
+    const btnReplyWrapper = document.createElement("div");
+    btnReplyWrapper.className = "responder-wrapper";
+
+    // Botão de responder (só aparece para mensagens dos outros)
+const btnReply = document.createElement("button");
+btnReply.textContent = "Responder";
+btnReply.title = "Responder mensagem";
+btnReply.className = "botao-responder";
+btnReply.style.marginRight = "5px";
+
+btnReply.onclick = () => {
+  responderPara = {
+    nome: msg.nome || msg.email,
+    text: msg.text,
+    id: docSnap.id,
+    uid: msg.uid,
+    avatar: msg.avatar || ""
+  };
+
+  exibirMensagemRespondida();
+  chatInput.focus();
+};
+
+btnReplyWrapper.appendChild(btnReply);
+
+
+    // Botão de deletar (só aparece se for o autor ou o Zeus)
     if (msg.uid === user.uid || user.email === "zeuszeuz007@gmail.com") {
       const btnDelete = document.createElement("button");
-      btnDelete.textContent = "🗑️";
+      btnDelete.textContent = "Apagar";
       btnDelete.title = "Apagar mensagem";
-      btnDelete.style.border = "none";
-      btnDelete.style.background = "transparent";
-      btnDelete.style.cursor = "pointer";
-      btnDelete.style.color = "#f55";
-      btnDelete.style.fontSize = "1rem";
-      btnDelete.style.position = "absolute";
-      btnDelete.style.top = "0";
-      btnDelete.style.right = "0";
+      btnDelete.className = "botao-responder botao-apagar"; // ✅ adiciona a nova classe
+
+btnDelete.classList.add("botao-apagar");
+
 
       btnDelete.onclick = async () => {
         const confirmar = confirm("Deseja apagar esta mensagem?");
@@ -1859,38 +1959,10 @@ if (msg.respostaDe) {
         }
       };
 
-      div.appendChild(btnDelete);
+      btnReplyWrapper.appendChild(btnDelete);
     }
 
-    // ↩️ botão de responder (para mensagens de outros)
-    if (msg.uid !== user.uid) {
-      const btnReply = document.createElement("button");
-      btnReply.textContent = "↩️";
-      btnReply.title = "Responder mensagem";
-      btnReply.style.border = "none";
-      btnReply.style.background = "transparent";
-      btnReply.style.cursor = "pointer";
-      btnReply.style.color = "#ccc";
-      btnReply.style.fontSize = "1rem";
-      btnReply.style.position = "absolute";
-      btnReply.style.bottom = "0";
-      btnReply.style.right = "0px";
-
-      btnReply.onclick = () => {
-responderPara = {
-  nome: msg.nome || msg.email,
-  text: msg.text,
-  id: docSnap.id,
-  uid: msg.uid,
-    avatar: msg.avatar || ""
-};
-
-        exibirMensagemRespondida();
-        chatInput.focus();
-      };
-
-      div.appendChild(btnReply);
-    }
+    div.appendChild(btnReplyWrapper);
 
     chatMessages.prepend(div);
   });
