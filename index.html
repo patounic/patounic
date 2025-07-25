@@ -1437,13 +1437,11 @@ await addDoc(collection(db, "chat-global"), {
   timestamp: new Date(),
   respostaDe: responderPara
     ? {
-        nome: responderPara.nome,
-        text: responderPara.text,
-        uid: responderPara.uid,
-avatar: responderPara.avatar || "" // <- necessário para identificação
+        id: responderPara.id // apenas o ID da mensagem sendo respondida
       }
     : null
 });
+
 
 
     chatInput.value = "";
@@ -1861,44 +1859,57 @@ nomeExibido = `<strong class="nome-zeus">${msg.nome}</strong> <span class="coroa
 }
 
 
-if (msg.respostaDe) {
-  const resp = document.createElement("div");
-  resp.style.display = "flex";
-  resp.style.alignItems = "center";
-  resp.style.marginBottom = "4px";
+if (msg.respostaDe && msg.respostaDe.id) {
+  (async () => {
+    try {
+      const docRef = doc(db, "chat-global", msg.respostaDe.id);
+      const docSnap = await getDoc(docRef);
 
-  const avatarResp = document.createElement("img");
-  avatarResp.src = msg.respostaDe.avatar || "https://i.imgur.com/8Km9tLL.png";
-  avatarResp.alt = msg.respostaDe.nome;
-  avatarResp.style.width = "20px";
-  avatarResp.style.height = "20px";
-  avatarResp.style.borderRadius = "50%";
-  avatarResp.style.objectFit = "cover";
-  avatarResp.style.marginRight = "8px";
-  avatarResp.style.flexShrink = "0";
+      if (docSnap.exists()) {
+        const original = docSnap.data();
+        const avatarResp = document.createElement("img");
+        avatarResp.src = original.avatar || "https://i.imgur.com/8Km9tLL.png";
 
-  const textoResp = document.createElement("div");
+        const textoResp = document.createElement("div");
+        const nomeRespHtml =
+          original.uid === user.uid
+            ? `<span class="nome-que-me-respondeu">${original.nome}</span>`
+            : `<span>${original.nome}</span>`;
 
-  // 👇 Verifica se o usuário atual foi o mencionado
-  const nomeRespHtml =
-    msg.respostaDe.uid === user.uid
-      ? `<span class="nome-que-me-respondeu">${msg.respostaDe.nome}</span>`
-      : `<span>${msg.respostaDe.nome}</span>`;
+        textoResp.innerHTML = `@${nomeRespHtml} ${original.text || "(mensagem apagada)"}`;
 
-  const mensagemOriginal = msg.respostaDe.text || "(mensagem não encontrada)";
+        resp.style.display = "flex";
+        resp.style.alignItems = "center";
+        resp.style.marginBottom = "4px";
 
-  textoResp.innerHTML = `@${nomeRespHtml} ${mensagemOriginal}`;
-  textoResp.style.fontSize = "0.75rem";
-  textoResp.style.color = "#aaa";
-  textoResp.style.opacity = "0.8";
+        avatarResp.style.width = "20px";
+        avatarResp.style.height = "20px";
+        avatarResp.style.borderRadius = "50%";
+        avatarResp.style.objectFit = "cover";
+        avatarResp.style.marginRight = "8px";
+        avatarResp.style.flexShrink = "0";
 
-  resp.appendChild(avatarResp);
-  resp.appendChild(textoResp);
-  texto.appendChild(resp);
+        textoResp.style.fontSize = "0.75rem";
+        textoResp.style.color = "#aaa";
+        textoResp.style.opacity = "0.8";
+texto.appendChild(resp);
+        resp.appendChild(avatarResp);
+        resp.appendChild(textoResp);
+        
+        // 👇 Adiciona a menção ANTES do corpo da mensagem
+        texto.prepend(resp);
+      }
+    } catch (err) {
+      console.error("Erro ao buscar mensagem original:", err);
+    }
+  })();
 }
 
 
+
+
     // Texto principal
+const resp = document.createElement("div");
     const corpoMsg = document.createElement("div");
     corpoMsg.innerHTML = `${nomeExibido}<br>${msg.text}`;
     texto.appendChild(corpoMsg);
