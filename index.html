@@ -14,54 +14,55 @@
 .botao-apagar {
   position: relative;
   overflow: hidden;
-  background-color: rgba(255, 102, 102, 0.8) !important; /* vermelho claro e brilhante */
+background-color: #cc0000 !important; /* vermelho mais escuro */
   color: white !important;
   opacity: 1 !important;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 2px 6px;
+  transition: background-color 0.3s;
 }
 
-/* Brilho animado tipo "faca passando" */
 .botao-apagar::before {
   content: '';
   position: absolute;
   top: 0;
-  left: -75%;
-  width: 50%;
+  left: -100%;
+  width: 60%;
   height: 100%;
   background: linear-gradient(
     120deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.5) 50%,
-    rgba(255, 255, 255, 0) 100%
+    transparent,
+    rgba(255, 215, 0, 0.6),
+    transparent
   );
   transform: skewX(-20deg);
-  animation: shine 2s infinite;
+  opacity: 1;
+  pointer-events: none;
+  animation: corteDouradoApagar 1.2s linear infinite;
+  transition: opacity 0.2s;
 }
 
-/* Animação da lâmina */
-@keyframes shine {
+@keyframes corteDouradoApagar {
   0% {
-    left: -75%;
+    left: -100%;
   }
   100% {
-    left: 125%;
+    left: 120%;
   }
-}
-
-
-.botao-apagar:hover {
-  background-color: #cc0000;
 }
 
 .mensagem-container {
   position: relative;
-  padding-top: 28px; 
 }
 
 .responder-wrapper {
   display: none;
   position: absolute;
  top: -16.5px;
-  left: 10px;
+  left: 6px;
 }
 
 .mensagem-container:hover .responder-wrapper {
@@ -75,14 +76,14 @@
   color: #ccc;
   cursor: pointer;
   font-size: 0.8rem;
-  padding: 2px 6px;
+  padding: 2.3px 6px;
   transition: background 0.2s;
   outline: none;
   box-shadow: none;
 }
 
 .botao-responder:hover {
-  background: #5865f2;
+  background: #5555;
   color: white;
 }
 
@@ -1825,7 +1826,7 @@ div.classList.add("mensagem-container"); // ✅ Adicione esta linha
 div.style.display = "flex";
 div.style.alignItems = "flex-start";
 div.style.gap = "10px";
-div.style.marginBottom = "10px";
+div.style.marginBottom = "4px";
 div.style.position = "relative";
 
 // Estilo padrão
