@@ -918,21 +918,39 @@ position: relative;
 #salvar-nome:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
-
-/* Item logout com separador acima */
 .profile-menu .logout {
   color: red !important;
   background-color: transparent !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.1); /* mais transparente também */
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   margin-top: 5px;
+  position: relative; /* para o ::after */
+  cursor: pointer;
+  transition: text-shadow 0.2s ease;
 }
 
+/* Linha vermelha invisível inicialmente */
+.profile-menu .logout::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  left: 10px;
+  width: 0;
+  height: 2px;
+  background-color: red;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* Hover logout: linha cresce */
 .profile-menu .logout:hover {
   background-color: transparent !important;
   transform: none !important;
   backdrop-filter: blur(2px);
   text-shadow: 0 0 6px red;
-  transition: all 0.2s ease;
+}
+
+.profile-menu .logout:hover::after {
+  width: calc(100% - 20px); /* cresce a linha */
 }
 
   </style>
