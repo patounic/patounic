@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Patounic Watch: 0v</title>
@@ -867,30 +865,76 @@ position: relative;
       box-shadow: 0 0 5px #000;
     }
 
-    .profile-menu div {
-      padding: 0.5rem 1rem;
-      cursor: pointer;
-      white-space: nowrap;
-      color: white;
-      border-bottom: 1px solid #222;
-    }
+/* Caixa do menu de perfil */
+#profile-menu {
+  background-color: rgba(128, 0, 128, 0.2); /* Roxo translúcido */
+  border-radius: 0; /* Canto quadrado */
+  padding: 0;
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  right: 0;
+    top: calc(100% + 13px); /* empurra 10px abaixo do avatar */
+  border: 1px solid rgba(255, 255, 255, 0.1); /* mais transparente */
+  min-width: 160px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  z-index: 999;
+}
 
-    .profile-menu div:last-child {
-      border-bottom: none;
-    }
+/* Itens padrão */
+.profile-menu div {
+  background-color: transparent;
+  color: white;
+  text-align: left;
+  border: none;
+  border-radius: 0;
+  width: 100%;
+  padding: 10px 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
 
-    .profile-menu div:hover {
-      background-color: #222;
-    }
+/* Hover suave */
+.profile-menu div:hover {
+  transform: scale(1.05); /* aumenta 10% o tamanho */
+  transition: transform 0.2s ease;
+}
 
-.logout {
+/* Botão salvar nome (mantido, se for usado fora do menu também) */
+#salvar-nome {
+  background-color: transparent;
+  color: white;
+  border: none;
+  border-radius: 0;
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#salvar-nome:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Item logout com separador acima */
+.profile-menu .logout {
   color: red !important;
   background-color: transparent !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1); /* mais transparente também */
+  margin-top: 5px;
 }
 
-.profile-menu div.logout:hover {
-  background-color: #220000 !important;
+.profile-menu .logout:hover {
+  background-color: transparent !important;
+  transform: none !important;
+  backdrop-filter: blur(2px);
+  text-shadow: 0 0 6px red;
+  transition: all 0.2s ease;
 }
+
   </style>
 </head>
 <body>
@@ -1107,17 +1151,19 @@ position: relative;
   background-color: rgba(0, 0, 0, 0.4);
   background-blend-mode: overlay;
 ">
-  <input id="chat-input" type="text" placeholder="🍜 Digite uma mensagem..." autocomplete="off" style="
-    flex: 1;
-    padding: 10px;
-    border: none;
-    background-color: transparent;
-    color: white;
-    outline: none;
-    font-size: 1rem;
+ <textarea id="chat-input" placeholder="🍜 Digite uma mensagem..." rows="1" style="
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background-color: transparent;
+  color: white;
+  outline: none;
+  font-size: 1rem;
   border-radius: 15px;
-autocomplete="off"
-  ">
+  resize: none;
+  overflow-y: auto;
+  font-family: 'Inter', sans-serif;
+"></textarea>
 <button id="chat-enviar" style="
   background: transparent;
   border: none;
@@ -1380,91 +1426,94 @@ let tempoRestante = 0;
 let intervaloCooldown = null;
 
 chatInput.addEventListener("keydown", async (e) => {
-  if (e.key !== "Enter") return;
+  // Shift+Enter → permite quebra de linha
+  if (e.key === "Enter" && e.shiftKey) return;
 
-  const text = chatInput.value.trim();
-  if (!text) return;
+  // Enter sem Shift → envia
+  if (e.key === "Enter") {
+    e.preventDefault(); // impede quebra de linha padrão
 
-  const avisoNome = document.getElementById("chat-aviso-nome");
+    const text = chatInput.value.trim();
+    if (!text) return;
 
-  if (!podeEnviar) {
-    avisoNome.style.display = "block";
-    avisoNome.textContent = `Aguarde para enviar a próxima mensagem! ⏳ ${tempoRestante}s...`;
-    return;
-  }
+    const avisoNome = document.getElementById("chat-aviso-nome");
 
-  // ⛔ BLOQUEIA envio imediatamente!
-  podeEnviar = false;
-  tempoRestante = 10;
-
-  // 🔒 Impede digitação e limpa o campo
-  chatInput.value = "";
-  chatInput.disabled = true;
-  chatInput.placeholder = `🍜 Espere ${tempoRestante}s...`;
-
-
-  intervaloCooldown = setInterval(() => {
-    tempoRestante--;
-    if (tempoRestante > 0) {
-      chatInput.placeholder = `🍜 Espere ${tempoRestante}s...`;
-    } else {
-      clearInterval(intervaloCooldown);
-      podeEnviar = true;
-      avisoNome.style.display = "none";
-      chatInput.disabled = false;
-      chatInput.placeholder = "🍜 Digite uma mensagem...";
-      chatInput.focus();
+    if (!podeEnviar) {
+      avisoNome.style.display = "block";
+      avisoNome.textContent = `Aguarde para enviar a próxima mensagem! ⏳ ${tempoRestante}s...`;
+      return;
     }
-  }, 1000);
 
-  const user = auth.currentUser;
-  if (!user) {
-    alert("Você precisa estar logado para usar o chat.");
-    return;
-  }
+    // BLOQUEIA envio imediatamente
+    podeEnviar = false;
+    tempoRestante = 10;
 
-  let avatar = "";
-  let nome = "";
+    // Impede digitação
+    chatInput.disabled = true;
+    chatInput.placeholder = `🍜 Espere ${tempoRestante}s...`;
 
-  try {
-    const docSnap = await getDoc(doc(db, "usuarios", user.uid));
-    if (docSnap.exists()) {
-      const dados = docSnap.data();
-      avatar = dados.avatar || "";
-      nome = dados.nome || "";
+    intervaloCooldown = setInterval(() => {
+      tempoRestante--;
+      if (tempoRestante > 0) {
+        chatInput.placeholder = `🍜 Espere ${tempoRestante}s...`;
+      } else {
+        clearInterval(intervaloCooldown);
+        podeEnviar = true;
+        avisoNome.style.display = "none";
+        chatInput.disabled = false;
+        chatInput.placeholder = "🍜 Digite uma mensagem...";
+        chatInput.focus();
+      }
+    }, 1000);
+
+    const user = auth.currentUser;
+    if (!user) {
+      alert("Você precisa estar logado para usar o chat.");
+      return;
     }
-  } catch (err) {
-    console.error("Erro ao buscar perfil:", err.message);
+
+    let avatar = "";
+    let nome = "";
+
+    try {
+      const docSnap = await getDoc(doc(db, "usuarios", user.uid));
+      if (docSnap.exists()) {
+        const dados = docSnap.data();
+        avatar = dados.avatar || "";
+        nome = dados.nome || "";
+      }
+    } catch (err) {
+      console.error("Erro ao buscar perfil:", err.message);
+    }
+
+    if (!nome || nome.length < 2) {
+      avisoNome.style.display = "block";
+      return;
+    }
+
+    document.getElementById("resposta-preview").style.display = "none";
+
+    try {
+      await addDoc(collection(db, "chat-global"), {
+        uid: user.uid,
+        email: user.email,
+        nome: nome,
+        text: chatInput.value,
+        avatar: avatar,
+        timestamp: new Date(),
+        respostaDe: responderPara ? { id: responderPara.id } : null
+      });
+
+      responderPara = null;
+      chatInput.value = "";
+
+    } catch (err) {
+      console.error("Erro ao enviar mensagem:", err.message);
+      alert("Erro ao enviar mensagem.");
+    }
   }
-
-  if (!nome || nome.length < 2) {
-    avisoNome.style.display = "block";
-    return;
-  }
-
-document.getElementById("resposta-preview").style.display = "none";
-
-try {
-  await addDoc(collection(db, "chat-global"), {
-    uid: user.uid,
-    email: user.email,
-    nome: nome,
-    text: text,
-    avatar: avatar,
-    timestamp: new Date(),
-    respostaDe: responderPara
-      ? { id: responderPara.id }
-      : null
-  });
-
-  // 🔁 Após enviar, cancelar modo de resposta:
-  responderPara = null;
-
-} catch (err) {
-  console.error("Erro ao enviar mensagem:", err.message);
-  alert("Erro ao enviar mensagem.");
-}
 });
+
 
 
 
@@ -1716,10 +1765,24 @@ profileIcon.addEventListener("click", (e) => {
 
   if (menuAberto) {
     iniciarRotacao(1); // gira para a direita
+
+    // FECHA O CHAT, SE ESTIVER ABERTO
+    const chatBox = document.getElementById("chat-box");
+    if (chatBox.style.display === "flex") {
+      chatBox.style.display = "none";
+      
+      // Reativa setas de rolagem dos vídeos
+      const setas = document.querySelectorAll(".scroll-arrow");
+      setas.forEach(seta => {
+        seta.style.display = "";
+      });
+    }
+
   } else {
     pararRotacao();
   }
 });
+
 
 document.body.addEventListener("click", () => {
   if (menuAberto) {
@@ -1925,7 +1988,8 @@ texto.appendChild(resp);
     // Texto principal
 const resp = document.createElement("div");
     const corpoMsg = document.createElement("div");
-    corpoMsg.innerHTML = `${nomeExibido}<br>${msg.text}`;
+const textoComQuebra = (msg.text || "").replace(/\n/g, "<br>");
+corpoMsg.innerHTML = `${nomeExibido}<br>${textoComQuebra}`;
     texto.appendChild(corpoMsg);
 
     div.appendChild(avatar);
