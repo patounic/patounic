@@ -8,6 +8,24 @@
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/Picsart_25-07-09_14-16-08-080_LE_upscale_balanced_x4_light_ai_30_tone_enhance_30_color_enhance_30 (1).webp">
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/wallpaper.png.webp">
   <style>
+.confirmacao-wrapper button {
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.confirmacao-wrapper .botao-apagar {
+  background-color: #cc0000;
+  color: white;
+}
+
+.confirmacao-wrapper .botao-responder {
+  background-color: #555;
+  color: white;
+}
 
 .botao-apagar {
   position: relative;
@@ -2041,26 +2059,62 @@ btnReplyWrapper.appendChild(btnReply);
 
 
     // Botão de deletar (só aparece se for o autor ou o Zeus)
-    if (msg.uid === user.uid || user.email === "zeuszeuz007@gmail.com") {
-      const btnDelete = document.createElement("button");
-      btnDelete.textContent = "Apagar";
-      btnDelete.title = "Apagar mensagem";
-      btnDelete.className = "botao-responder botao-apagar"; // ✅ adiciona a nova classe
+if (msg.uid === user.uid || user.email === "zeuszeuz007@gmail.com") {
+  const btnDelete = document.createElement("button");
+  btnDelete.textContent = "Apagar";
+  btnDelete.title = "Apagar mensagem";
+  btnDelete.className = "botao-responder botao-apagar";
 
-btnDelete.classList.add("botao-apagar");
+  btnDelete.onclick = () => {
+    // Substitui os botões dentro do mesmo wrapper (mantendo posição)
+    btnReplyWrapper.innerHTML = "";
 
+    const btnSim = document.createElement("button");
+    btnSim.textContent = "Sim";
+    btnSim.className = "botao-apagar";
+    btnSim.style.marginRight = "5px";
+    btnSim.onclick = async () => {
+      try {
+        await deleteDoc(doc(db, "chat-global", docSnap.id));
+      } catch (err) {
+        console.error("Erro ao apagar:", err.message);
+        alert("Erro ao apagar mensagem.");
+      }
+    };
 
-      btnDelete.onclick = async () => {
-        const confirmar = confirm("Deseja apagar esta mensagem?");
-        if (confirmar) {
-          try {
-            await deleteDoc(docSnap.ref);
-          } catch (err) {
-            console.error("Erro ao apagar:", err.message);
-            alert("Erro ao apagar mensagem.");
-          }
-        }
-      };
+    const btnNao = document.createElement("button");
+    btnNao.textContent = "Não";
+    btnNao.className = "botao-responder";
+    btnNao.onclick = () => {
+      // Volta os botões originais
+      btnReplyWrapper.innerHTML = "";
+  btnReplyWrapper.appendChild(btnReply);
+  btnReplyWrapper.appendChild(btnDelete);
+
+  // Remove estilos inline que podem atrapalhar hover
+  btnReply.removeAttribute("style");
+  btnDelete.removeAttribute("style");
+
+  // Remove estilo inline do wrapper se existir
+  btnReplyWrapper.removeAttribute("style");
+    };
+
+    btnReplyWrapper.appendChild(btnSim);
+    btnReplyWrapper.appendChild(btnNao);
+
+    // Mostra manualmente durante a confirmação
+    btnReplyWrapper.style.display = "block";
+
+    // Após 8 segundos, reverte
+    setTimeout(() => {
+      if (btnReplyWrapper.contains(btnSim)) {
+        btnReplyWrapper.innerHTML = "";
+        btnReplyWrapper.appendChild(btnReply);
+        btnReplyWrapper.appendChild(btnDelete);
+        btnReplyWrapper.removeAttribute("style"); // volta para hover
+      }
+    }, 8000);
+  };
 
       btnReplyWrapper.appendChild(btnDelete);
     }
