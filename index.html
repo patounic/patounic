@@ -110,7 +110,9 @@ background-color: #cc0000 !important; /* vermelho mais escuro */
   animation: gradientAnim 6s ease infinite;
   opacity: 1;
 }
-
+#chat-input::-webkit-scrollbar {
+  display: none;
+}
 @keyframes gradientAnim {
   0% {
     background-position: 0% 50%;
@@ -489,7 +491,6 @@ margin-top: 1 px;
   background-color: #000;
   background-size: cover;
   background-position: center;
-  border-radius: 13px;
   flex-shrink: 0;
   display: flex;
   align-items: flex-end;
@@ -503,7 +504,11 @@ margin-top: 1 px;
   position: relative;
   overflow: visible;
 }
-
+.video-card,
+.video-card * {
+  border: none !important;
+  border-radius: 0 !important;
+}
 .video-card:hover {
   background-color: #5865f2; /* mesma cor de hover dos botões */
   transform: scale(1.05);    /* aumenta suavemente igual aos botões */
@@ -1122,7 +1127,7 @@ position: relative;
   overflow: hidden;
   box-shadow: 0 0 12px black;
 
-  background-image: url('https://i.pinimg.com/1200x/1d/f7/22/1df7223fe2464d91aaf1adf9a5a67887.jpg');
+  background-image: url('https://i.pinimg.com/736x/db/f9/43/dbf9430f5b0eeb9b611547a19a6e937f.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -1178,7 +1183,7 @@ position: relative;
   /* Gradiente escuro no topo + imagem de fundo */
   background-image:
     linear-gradient(to bottom, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0)),
-    url('https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/740F9C0F-6D28-4F89-B094-C620FCE5D9EB.png');
+    url('https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/1AC9DAD3-2FBD-4B5F-9249-70BD7847981A.png');
 
   background-size: cover;
   background-position: center;
@@ -1281,9 +1286,11 @@ position: relative;
         </div>
       </div>
 
-      <div class="video-card" onclick="abrirModal('https://www.youtube.com/embed/9bZkp7q19f0')" style="background-image: url('https://img.youtube.com/vi/9bZkp7q19f0/hqdefault.jpg');">
-        <span class="video-title">Vídeo 2</span>
-      </div>
+<div class="video-card" 
+     onclick="abrirModal('https://drive.google.com/file/d/1SMoyOaJ0swynUeJGxTYi_BNDbgsID30x/preview')" 
+     style="background-image: url('https://via.placeholder.com/260x140.png?text=Minha+Capa');">
+  <span class="video-title">Meu Vídeo no Drive</span>
+</div>
 
       <div class="video-card" onclick="abrirModal('https://www.youtube.com/embed/kJQP7kiw5Fk')" style="background-image: url('https://img.youtube.com/vi/kJQP7kiw5Fk/hqdefault.jpg');">
         <span class="video-title">Vídeo 3</span>
@@ -1455,7 +1462,10 @@ chatButton.onclick = () => {
 };
 
 
-
+chatInput.addEventListener("input", () => {
+  chatInput.style.height = "auto"; 
+  chatInput.style.height = Math.min(chatInput.scrollHeight, 72) + "px";
+});
 
 let podeEnviar = true;
 let tempoRestante = 0;
@@ -1542,6 +1552,7 @@ chatInput.addEventListener("keydown", async (e) => {
 
       responderPara = null;
       chatInput.value = "";
+chatInput.style.height = "auto"; 
 
     } catch (err) {
       console.error("Erro ao enviar mensagem:", err.message);
@@ -2205,9 +2216,8 @@ function filtrarCategoria(categoria) {
   alert(`Você filtrou pela categoria: ${categoria}`);
   categoriasDiv.style.display = "none"; // Oculta após clique
 }
-
 function abrirModal(videoUrl) {
-  // Para todos os previews visíveis
+  // Fecha/prepara qualquer preview que estiver tocando
   document.querySelectorAll(".preview-video").forEach(video => {
     video.pause();
     video.currentTime = 0;
@@ -2215,24 +2225,70 @@ function abrirModal(videoUrl) {
     if (video.previewTimeout) clearTimeout(video.previewTimeout);
   });
 
+  const modal = document.querySelector(".video-modal");
+  const content = modal.querySelector(".modal-content");
+  content.innerHTML = "";
 
-  const modal = document.getElementById("video-modal");
-  const video = document.getElementById("video-frame");
-  video.src = videoUrl;
-  video.load();
-  video.play();
-  modal.style.display = "flex";
+  // Fecha modal clicando no fundo escuro
+  modal.onclick = (e) => {
+    if (e.target === modal) {
+      fecharModal();
+    }
+  };
+
+  if (videoUrl.includes("drive.google.com")) {
+    const iframe = document.createElement("iframe");
+    iframe.src = videoUrl;
+    iframe.width = "100%";
+    iframe.height = "100%";
+    iframe.frameBorder = "0";
+    iframe.allowFullscreen = true;
+    content.appendChild(iframe);
+
+    // Mostra modal só após iframe carregar (melhora percepção de rapidez)
+    iframe.onload = () => {
+      modal.style.display = "flex";
+    };
+  } else {
+    const video = document.createElement("video");
+    video.src = videoUrl;
+    video.controls = true;
+    video.autoplay = true;
+    video.muted = true;          // começa mudo para garantir autoplay
+    video.preload = "auto";      // ajuda o browser a carregar antes
+    video.style.width = "100%";
+    content.appendChild(video);
+
+    // Mostra modal imediatamente
+    modal.style.display = "flex";
+
+    // Garante que o vídeo comece a tocar assim que estiver pronto
+    video.addEventListener('canplay', () => {
+      video.play().catch(() => {});
+    });
+
+    // Clique no vídeo: tira mute e já toca sem precisar clicar duas vezes
+    video.addEventListener('click', () => {
+      if (video.muted) {
+        video.muted = false;
+        video.play().catch(() => {});
+      } else if (video.paused) {
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    });
+  }
 }
-
 
 function fecharModal() {
-  const modal = document.getElementById("video-modal");
-  const video = document.getElementById("video-frame");
-  video.pause();
-  video.currentTime = 0;
-  video.src = "";
+  const modal = document.querySelector(".video-modal");
   modal.style.display = "none";
+
+  const content = modal.querySelector(".modal-content");
+  content.innerHTML = "";
 }
+
 
 function mostrarPreview(card, videoUrl) {
   const video = card.querySelector('.preview-video');
