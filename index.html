@@ -1133,9 +1133,9 @@ position: relative;
   background-repeat: no-repeat;
 ">
   <!-- Botão de fechar -->
-<!-- Botões de lock e fechar -->
 <div style="position: absolute; top: 5px; right: 10px; display: flex; gap: 6px; align-items: center; z-index: 10000;">
-  <div id="chat-lock" style="cursor: pointer; font-size: 0.85rem; color: #aaa;" title="Travar chat">🔓</div>
+  <div id="chat-clear" style="cursor: pointer; font-size: 0.85rem; color: #aaa; display: none;" title="Limpar chat">🧼</div>
+  <div id="chat-lock" style="cursor: pointer; font-size: 0.85rem; color: #aaa; display: none;" title="Travar chat">🔓</div>
   <div id="chat-fechar" style="cursor: pointer; font-size: 0.85rem; color: #aaa;" title="Fechar">❌</div>
 </div>
 
@@ -1357,12 +1357,13 @@ import {
   doc,
   setDoc,
   getDoc,
+  getDocs, // ✅ Adicione esta linha
   onSnapshot,
   collection,
   query,
   orderBy,
-deleteDoc,
-  addDoc  // ✅ adicione esta linha
+  deleteDoc,
+  addDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 
@@ -1438,25 +1439,21 @@ const chatButton = document.getElementById("chat-button");
 const chatBox = document.getElementById("chat-box");
 const chatInput = document.getElementById("chat-input");
 const chatMessages = document.getElementById("chat-messages");
+const chatClear = document.getElementById("chat-clear");
 
 // 🔓 Controle de trava do chat
 const chatLock = document.getElementById("chat-lock");
-let chatTrancado = false;
 
-chatLock.addEventListener("click", () => {
-  const user = auth.currentUser;
-  if (!user || user.email !== "zeuszeuz007@gmail.com") {
-    alert("Apenas Zeus pode trancar/destrancar o chat.");
-    return;
-  }
+// Carrega o estado salvo (true ou false)
+let chatTrancado = localStorage.getItem("chatTrancado") === "true";
 
-  chatTrancado = !chatTrancado;
-
+// Aplica o estado visual
+function aplicarEstadoChat(user) {
   if (chatTrancado) {
     chatLock.textContent = "🔐";
-    if (user.email === "zeuszeuz007@gmail.com") {
+    if (user && user.email === "zeuszeuz007@gmail.com") {
       chatInput.placeholder = "🔓 Pode digitar ADM";
-      chatInput.disabled = false; // ADM continua podendo digitar
+      chatInput.disabled = false;
     } else {
       chatInput.placeholder = "🔒 Chat trancado para anuncio";
       chatInput.disabled = true;
@@ -1465,6 +1462,49 @@ chatLock.addEventListener("click", () => {
     chatLock.textContent = "🔓";
     chatInput.placeholder = "🍜 Digite uma mensagem...";
     chatInput.disabled = false;
+  }
+}
+
+// Quando clicar no cadeado
+chatLock.addEventListener("click", () => {
+  const user = auth.currentUser;
+  if (!user || user.email !== "zeuszeuz007@gmail.com") {
+    alert("Apenas Zeus pode trancar/destrancar o chat.");
+    return;
+  }
+
+  // Alterna e salva no localStorage
+  chatTrancado = !chatTrancado;
+  localStorage.setItem("chatTrancado", chatTrancado);
+
+  aplicarEstadoChat(user);
+});
+
+// Chame isso assim que souber o usuário logado
+onAuthStateChanged(auth, (user) => {
+  aplicarEstadoChat(user);
+});
+
+
+chatClear.addEventListener("click", async () => {
+  const user = auth.currentUser;
+  if (!user || user.email !== "zeuszeuz007@gmail.com") {
+    alert("Apenas Zeus pode limpar o chat.");
+    return;
+  }
+
+  if (!confirm("Tem certeza que deseja apagar TODAS as mensagens do chat?")) return;
+
+  try {
+    const q = query(collection(db, "chat-global"));
+    const snap = await getDocs(q);
+    for (const docSnap of snap.docs) {
+      await deleteDoc(doc(db, "chat-global", docSnap.id));
+    }
+    alert("Chat limpo com sucesso!");
+  } catch (err) {
+console.error("Erro ao limpar chat:", err.message, err.stack);
+alert(`Erro ao limpar chat: ${err.message}`);
   }
 });
 
@@ -1947,11 +1987,13 @@ onAuthStateChanged(auth, async (user) => {
       siteContent.style.display = "block";
       iconBar.style.display = "flex";
 
-      if (user.email === "zeuszeuz007@gmail.com") {
-        document.getElementById("chat-lock").style.display = "block";
-      } else {
-        document.getElementById("chat-lock").style.display = "none";
-      }
+if (user.email === "zeuszeuz007@gmail.com") {
+  document.getElementById("chat-lock").style.display = "block";
+  document.getElementById("chat-clear").style.display = "block";
+} else {
+  document.getElementById("chat-lock").style.display = "none";
+  document.getElementById("chat-clear").style.display = "none";
+}
 
       // 🔄 Chat realtime
       const q = query(collection(db, "chat-global"), orderBy("timestamp"));
