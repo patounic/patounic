@@ -1133,15 +1133,11 @@ position: relative;
   background-repeat: no-repeat;
 ">
   <!-- Botão de fechar -->
-  <div id="chat-fechar" style="
-    position: absolute;
-    top: 5px;
-    right: 10px;
-    font-size: 0.85rem;
-    cursor: pointer;
-    color: #aaa;
-    z-index: 10000;
-  " title="Fechar">❌</div>
+<!-- Botões de lock e fechar -->
+<div style="position: absolute; top: 5px; right: 10px; display: flex; gap: 6px; align-items: center; z-index: 10000;">
+  <div id="chat-lock" style="cursor: pointer; font-size: 0.85rem; color: #aaa;" title="Travar chat">🔓</div>
+  <div id="chat-fechar" style="cursor: pointer; font-size: 0.85rem; color: #aaa;" title="Fechar">❌</div>
+</div>
 
 <div style="padding: 10px; border-bottom: 1px solid #222;">
   <h3 style="margin: 0; font-size: 1.1rem; color: white;">🥡 Chat Global 🥢</h3>
@@ -1443,24 +1439,55 @@ const chatBox = document.getElementById("chat-box");
 const chatInput = document.getElementById("chat-input");
 const chatMessages = document.getElementById("chat-messages");
 
+// 🔓 Controle de trava do chat
+const chatLock = document.getElementById("chat-lock");
+let chatTrancado = false;
+
+chatLock.addEventListener("click", () => {
+  const user = auth.currentUser;
+  if (!user || user.email !== "zeuszeuz007@gmail.com") {
+    alert("Apenas Zeus pode trancar/destrancar o chat.");
+    return;
+  }
+
+  chatTrancado = !chatTrancado;
+
+  if (chatTrancado) {
+    chatLock.textContent = "🔐";
+    if (user.email === "zeuszeuz007@gmail.com") {
+      chatInput.placeholder = "🔓 Pode digitar ADM";
+      chatInput.disabled = false; // ADM continua podendo digitar
+    } else {
+      chatInput.placeholder = "🔒 Chat trancado para anuncio";
+      chatInput.disabled = true;
+    }
+  } else {
+    chatLock.textContent = "🔓";
+    chatInput.placeholder = "🍜 Digite uma mensagem...";
+    chatInput.disabled = false;
+  }
+});
+
+// Bloqueio de envio/digitação para não-Zeus quando chat está trancado
+chatInput.addEventListener("keydown", (e) => {
+  const user = auth.currentUser;
+  if (chatTrancado && (!user || user.email !== "zeuszeuz007@gmail.com")) {
+    e.preventDefault();
+    return;
+  }
+});
+
 chatButton.onclick = () => {
   const isOpen = chatBox.style.display === "flex";
   chatBox.style.display = isOpen ? "none" : "flex";
 
   const setas = document.querySelectorAll(".scroll-arrow");
   setas.forEach(seta => {
-    if (isOpen) {
-      // Se o chat estava aberto e vamos fechar, volta o estilo original
-      seta.style.display = "";
-    } else {
-      // Se o chat estava fechado e vamos abrir, esconde as setas
-      seta.style.display = "none";
-    }
+    seta.style.display = isOpen ? "" : "none";
   });
 
   document.getElementById("chat-alerta").style.display = "none";
 };
-
 
 chatInput.addEventListener("input", () => {
   chatInput.style.height = "auto"; 
@@ -1919,6 +1946,12 @@ onAuthStateChanged(auth, async (user) => {
       registerContainer.style.display = "none";
       siteContent.style.display = "block";
       iconBar.style.display = "flex";
+
+      if (user.email === "zeuszeuz007@gmail.com") {
+        document.getElementById("chat-lock").style.display = "block";
+      } else {
+        document.getElementById("chat-lock").style.display = "none";
+      }
 
       // 🔄 Chat realtime
       const q = query(collection(db, "chat-global"), orderBy("timestamp"));
