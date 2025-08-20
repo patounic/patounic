@@ -1439,9 +1439,7 @@ const chatClear = document.getElementById("chat-clear");
 
 // 🔓 Controle de trava do chat
 const chatLock = document.getElementById("chat-lock");
-
-// Carrega o estado salvo (true ou false)
-let chatTrancado = localStorage.getItem("chatTrancado") === "true";
+let chatTrancado = false; // valor padrão
 
 // Aplica o estado visual
 function aplicarEstadoChat(user) {
@@ -1462,16 +1460,21 @@ function aplicarEstadoChat(user) {
 }
 
 // Quando clicar no cadeado
-chatLock.addEventListener("click", () => {
+chatLock.addEventListener("click", async () => {
   const user = auth.currentUser;
   if (!user || user.email !== "zeuszeuz007@gmail.com") {
     alert("Apenas Zeus pode trancar/destrancar o chat.");
     return;
   }
 
-  // Alterna e salva no localStorage
   chatTrancado = !chatTrancado;
-  localStorage.setItem("chatTrancado", chatTrancado);
+
+  // 🔴 Salva o estado no Firestore em vez de localStorage
+  try {
+    await setDoc(doc(db, "config", "chat"), { trancado: chatTrancado }, { merge: true });
+  } catch (e) {
+    console.error("Erro ao atualizar estado do chat:", e);
+  }
 
   aplicarEstadoChat(user);
 });
@@ -2048,6 +2051,14 @@ texto.appendChild(resp);
   })();
 }
 
+onSnapshot(doc(db, "config", "chat"), (docSnap) => {
+  if (docSnap.exists()) {
+    chatTrancado = docSnap.data().trancado;
+
+    const user = auth.currentUser;
+    aplicarEstadoChat(user);
+  }
+});
 
 
 
