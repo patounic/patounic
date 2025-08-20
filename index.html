@@ -1243,10 +1243,6 @@ position: relative;
 </div>
 </div>
 
-    <!-- Busca e perfil -->
-    <div class="search-container" id="search-container">
-      <div class="popcorn-icon" id="popcorn-icon" title="Pesquisar 🍿">🍿</div>
-    </div>
     <div class="profile-container">
       <div class="profile-icon" id="profile-icon" title="Menu de perfil"></div>
       <div class="profile-menu" id="profile-menu">
@@ -1911,58 +1907,6 @@ document.body.addEventListener("click", () => {
       profileMenu.style.display = "none";
     };
 
-    function criarCampoPesquisa() {
-      if (searchInputWrapper) return;
-
-      searchInputWrapper = document.createElement("div");
-      searchInputWrapper.className = "search-input-wrapper";
-
-      const input = document.createElement("input");
-      input.className = "search-input";
-      input.placeholder = "Pesquise...";
-      input.type = "text";
-
-      const submitIcon = document.createElement("div");
-      submitIcon.className = "search-submit-icon";
-      submitIcon.title = "Enviar pesquisa";
-      submitIcon.textContent = "🍿";
-
-      const realizarPesquisa = () => {
-        const termo = input.value.trim();
-        if (termo) {
-          alert("🍿 Pesquisando por: " + termo);
-        }
-        limparCampoPesquisa();
-      };
-
-      input.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-          realizarPesquisa();
-        }
-      });
-
-      submitIcon.onclick = realizarPesquisa;
-
-      searchInputWrapper.appendChild(input);
-      searchInputWrapper.appendChild(submitIcon);
-      searchContainer.innerHTML = "";
-      searchContainer.appendChild(searchInputWrapper);
-      input.focus();
-    }
-
-    function limparCampoPesquisa() {
-      if (searchInputWrapper) {
-        searchContainer.innerHTML = "";
-        const icon = document.createElement("div");
-        icon.className = "popcorn-icon";
-        icon.id = "popcorn-icon";
-        icon.title = "Pesquisar 🍿";
-        icon.textContent = "🍿";
-        icon.onclick = criarCampoPesquisa;
-        searchContainer.appendChild(icon);
-        searchInputWrapper = null;
-      }
-    }
 let authReady = false;
 
 onAuthStateChanged(auth, async (user) => {
@@ -2266,8 +2210,6 @@ if (msg.uid === user.uid || user.email === "zeuszeuz007@gmail.com") {
     }
   }
 });
-
-    popcornIcon.onclick = criarCampoPesquisa;
 
 const dropdownMenu = document.getElementById("dropdown-menu");
 const homeMenu = document.getElementById("home-menu");
