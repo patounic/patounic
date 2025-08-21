@@ -8,6 +8,26 @@
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/Picsart_25-07-09_14-16-08-080_LE_upscale_balanced_x4_light_ai_30_tone_enhance_30_color_enhance_30 (1).webp">
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/wallpaper.png.webp">
   <style>
+/* 🔍 Campo de pesquisa no estilo "caixa" */
+.menu-input {
+  padding: 8px 15px;
+  background-color: #333;
+  color: white;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  width: 140px; /* pode ajustar */
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  margin-left: 4px;
+}
+
+/* Não muda ao passar o mouse */
+.menu-input:hover {
+  background-color: #333; 
+  transform: none;
+}
+
 .confirmacao-wrapper button {
   font-size: 0.8rem;
   padding: 4px 10px;
@@ -1094,7 +1114,13 @@ position: relative;
     <div id="dropdown-menu" class="dropdown-menu">
       <div id="home-menu" class="menu-item">Home</div>
       <div id="categoria-menu" class="menu-item">Categoria</div>
-    </div>
+  <input 
+    type="text" 
+    id="pesquisar-input" 
+    placeholder="Pesquisar..." 
+    class="menu-input"
+  />
+</div>
 
     <!-- Lista de Categorias -->
     <div class="categories" id="categorias">
