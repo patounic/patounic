@@ -1309,9 +1309,11 @@ position: relative;
   <span class="video-title">Meu Vídeo no Drive</span>
 </div>
 
-      <div class="video-card" onclick="abrirModal('https://www.youtube.com/embed/kJQP7kiw5Fk')" style="background-image: url('https://img.youtube.com/vi/kJQP7kiw5Fk/hqdefault.jpg');">
-        <span class="video-title">Vídeo 3</span>
-      </div>
+<div class="video-card" 
+     onclick="abrirModal('https://www.youtube.com/embed/kJQP7kiw5Fk')" 
+     style="background-image: url('https://img.youtube.com/vi/kJQP7kiw5Fk/hqdefault.jpg');">
+  <span class="video-title">Vídeo 3</span>
+</div>
 
       <div class="video-card" onclick="abrirModal('https://www.youtube.com/embed/L_jWHffIx5E')" style="background-image: url('https://img.youtube.com/vi/L_jWHffIx5E/hqdefault.jpg');">
         <span class="video-title">Vídeo 4</span>
@@ -1361,7 +1363,47 @@ position: relative;
     </button>
   </div>
 </div>
+
+<!-- Seção da série -->
+<div class="section">
+  <div class="section-title">Minha Série - Temporada 1</div>
+
+  <div class="video-wrapper">
+    <div class="video-row" id="serie-temporada1">
+
+      <!-- Episódio 1 -->
+      <div class="video-card"
+        onclick="abrirModal('https://www.youtube.com/embed/ScMzIvxBSi4?rel=0&modestbranding=1&iv_load_policy=3')"
+        style="background-image: url('https://img.youtube.com/vi/ScMzIvxBSi4/hqdefault.jpg');">
+        <span class="video-title">Episódio 1</span>
+      </div>
+
+      <!-- Episódio 2 -->
+      <div class="video-card"
+        onclick="abrirModal('https://www.youtube.com/embed/tgbNymZ7vqY?rel=0&modestbranding=1&iv_load_policy=3')"
+        style="background-image: url('https://img.youtube.com/vi/tgbNymZ7vqY/hqdefault.jpg');">
+        <span class="video-title">Episódio 2</span>
+      </div>
+
+      <!-- Episódio 3 -->
+      <div class="video-card"
+        onclick="abrirModal('https://www.youtube.com/embed/L_jWHffIx5E?rel=0&modestbranding=1&iv_load_policy=3')"
+        style="background-image: url('https://img.youtube.com/vi/L_jWHffIx5E/hqdefault.jpg');">
+        <span class="video-title">Episódio 3</span>
+      </div>
+
+    </div>
+
+    <!-- Setas de rolagem (se quiser navegar pelos episódios) -->
+    <button class="scroll-arrow left" onclick="scrollVideos('left', 'serie-temporada1')">
+      <img src="https://cdn-icons-png.flaticon.com/512/271/271220.png" alt="Anterior" class="arrow-icon" />
+    </button>
+    <button class="scroll-arrow right" onclick="scrollVideos('right', 'serie-temporada1')">
+      <img src="https://cdn-icons-png.flaticon.com/512/271/271228.png" alt="Próximo" class="arrow-icon" />
+    </button>
+  </div>
 </div>
+
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -2289,7 +2331,37 @@ function abrirModal(videoUrl) {
     }
   };
 
-  if (videoUrl.includes("drive.google.com")) {
+  // 🎬 Se for YouTube
+  if (videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be")) {
+    let videoId = "";
+
+    if (videoUrl.includes("watch?v=")) {
+      videoId = videoUrl.split("watch?v=")[1].split("&")[0];
+    } else if (videoUrl.includes("youtu.be/")) {
+      videoId = videoUrl.split("youtu.be/")[1].split("?")[0];
+    } else if (videoUrl.includes("embed/")) {
+      videoId = videoUrl.split("embed/")[1].split("?")[0];
+    }
+
+    // monta embed limpo (sem logo nem recomendados)
+    videoUrl = `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&showinfo=0`;
+
+    const iframe = document.createElement("iframe");
+    iframe.src = videoUrl;
+    iframe.width = "100%";
+    iframe.height = "100%";
+    iframe.frameBorder = "0";
+    iframe.allow =
+      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+    iframe.allowFullscreen = true;
+    content.appendChild(iframe);
+
+    iframe.onload = () => {
+      modal.style.display = "flex";
+    };
+
+  // 📂 Se for Google Drive
+  } else if (videoUrl.includes("drive.google.com")) {
     const iframe = document.createElement("iframe");
     iframe.src = videoUrl;
     iframe.width = "100%";
@@ -2298,30 +2370,28 @@ function abrirModal(videoUrl) {
     iframe.allowFullscreen = true;
     content.appendChild(iframe);
 
-    // Mostra modal só após iframe carregar (melhora percepção de rapidez)
     iframe.onload = () => {
       modal.style.display = "flex";
     };
+
+  // 🎞️ Se for MP4 normal
   } else {
     const video = document.createElement("video");
     video.src = videoUrl;
     video.controls = true;
     video.autoplay = true;
-    video.muted = true;          // começa mudo para garantir autoplay
-    video.preload = "auto";      // ajuda o browser a carregar antes
+    video.muted = true;   // garante autoplay
+    video.preload = "auto";
     video.style.width = "100%";
     content.appendChild(video);
 
-    // Mostra modal imediatamente
     modal.style.display = "flex";
 
-    // Garante que o vídeo comece a tocar assim que estiver pronto
-    video.addEventListener('canplay', () => {
+    video.addEventListener("canplay", () => {
       video.play().catch(() => {});
     });
 
-    // Clique no vídeo: tira mute e já toca sem precisar clicar duas vezes
-    video.addEventListener('click', () => {
+    video.addEventListener("click", () => {
       if (video.muted) {
         video.muted = false;
         video.play().catch(() => {});
@@ -2333,6 +2403,7 @@ function abrirModal(videoUrl) {
     });
   }
 }
+
 
 function fecharModal() {
   const modal = document.querySelector(".video-modal");
