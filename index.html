@@ -668,7 +668,7 @@ margin-top: 1 px;
 
 html, body {
   min-height: 100%;
-  overflow: hidden; /* 🚫 sem scroll global */
+  overflow: auto; /* 🚫 sem scroll global */
   color: white;
 }
 
@@ -1035,29 +1035,10 @@ position: relative;
   <button id="btn-voltar-login">Voltar ao Login</button>
 </div>
 
-<div id="verificacao-container" style="display: none; background-color: black; color: white; width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem;">
-  <h2>Verifique seu e-mail 📩</h2>
-  <p>Enviamos um link de verificação para o seu e-mail.<br>Verifique sua caixa de entrada ou spam.</p>
 
-<h2>Vai para caixa de spam, por conta da host. 😞</h2>
-
-  <!-- 🔴 Aviso de erro/feedback -->
+<div id="verificacao-spam" 
+     style="display: none; background-color: black; color: white; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem;">
   <div id="verificacao-aviso" style="color: #ff6b6b; font-weight: bold; margin-top: 0.8rem; display: none;"></div>
-
-  <button id="btn-voltar-login-verificacao" style="margin-top: 1rem; background-color: #5865f2; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-    Já me verifiquei / Voltar ao login
-  </button>
-
-  <button id="btn-reenviar-email" style="margin-top: 0.8rem; background-color: #333; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-    Reenviar e-mail de verificação 🔁
-  </button>
-
-  <button id="btn-voltar-registro" style="margin-top: 0.8rem; background-color: #222; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
-    Corrigir e-mail / Voltar ao cadastro ✏️
-  </button>
-</div>
-
-<div id="verificacao-spam" style="display: none; background-color: black; color: white; width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem;">
   <h2>📬 Verifique sua caixa de spam</h2>
   <p>Não encontramos sua verificação ainda.<br>Verifique sua caixa de entrada e spam.<br>O e-mail pode levar alguns segundos para chegar.</p>
 <button id="btn-voltar-login-spam" style="margin-top: 1rem; background-color: #5865f2; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
@@ -1875,7 +1856,7 @@ btnRegistrarConta.onclick = async () => {
 
     localStorage.setItem("verificacao_origem", "registro");
 registerContainer.style.display = "none";
-document.getElementById("verificacao-container").style.display = "flex";
+document.getElementById("verificacao-spam").style.display = "flex";
 
 
   } catch (e) {
@@ -1993,7 +1974,7 @@ onAuthStateChanged(auth, async (user) => {
 
       await carregarAvatar(user.uid);
 
-      document.getElementById("verificacao-container").style.display = "none";
+      document.getElementById("verificacao-spam").style.display = "none";
       document.getElementById("verificacao-spam").style.display = "none";
       document.getElementById("loading-screen").style.display = "none";
       loginContainer.style.display = "none";
@@ -2260,10 +2241,10 @@ if (msg.uid === user.uid || user.email === "zeuszeuz007@gmail.com") {
 
         if (origem === "login") {
           document.getElementById("verificacao-spam").style.display = "flex";
-          document.getElementById("verificacao-container").style.display = "none";
+          document.getElementById("verificacao-spam").style.display = "none";
         } else {
           document.getElementById("verificacao-spam").style.display = "none";
-          document.getElementById("verificacao-container").style.display = "flex";
+          document.getElementById("verificacao-spam").style.display = "flex";
         }
 
         document.getElementById("loading-screen").style.display = "none";
@@ -2496,84 +2477,6 @@ profileIcon.addEventListener("mouseleave", () => {
     pararRotacao();
   }
 });
-document.getElementById("btn-voltar-login-verificacao").onclick = async () => {
-  const aviso = document.getElementById("verificacao-aviso");
-  aviso.style.display = "none";
-  aviso.textContent = "";
-
-  const user = auth.currentUser;
-
-  if (user) {
-    await user.reload();
-
-    if (user.emailVerified) {
-      localStorage.removeItem("verificacao_enviada");
-      emVerificacao = false;
-
-      document.getElementById("verificacao-container").style.display = "none";
-      siteContent.style.display = "block";
-      iconBar.style.display = "flex";
-      await carregarAvatar(user.uid);
-    } else {
-      // ⚠️ SOMENTE AVISO — não muda de tela
-      aviso.textContent = "Ainda não verificamos seu e-mail. Aguarde alguns segundos após clicar no link.";
-      aviso.style.display = "block";
-    }
-  } else {
-    aviso.textContent = "Sessão expirada. Faça login novamente.";
-    aviso.style.display = "block";
-
-    setTimeout(() => {
-      document.getElementById("verificacao-container").style.display = "none";
-      loginContainer.style.display = "flex";
-      inputEmail.value = "";
-      inputSenha.value = "";
-      emVerificacao = false;
-    }, 2000);
-  }
-};
-
-document.getElementById("btn-reenviar-email").onclick = async () => {
-  const aviso = document.getElementById("verificacao-aviso");
-  aviso.style.display = "none";
-  aviso.textContent = "";
-
-  const user = auth.currentUser;
-  if (user) {
-    if (localStorage.getItem("verificacao_enviada") === "true") {
-      aviso.textContent = "Já enviamos um e-mail de verificação. Aguarde alguns minutos e verifique sua caixa de entrada ou spam.";
-      aviso.style.display = "block";
-      return;
-    }
-
-    try {
-      await sendEmailVerification(user);
-      localStorage.setItem("verificacao_enviada", "true");
-      aviso.textContent = "Novo e-mail de verificação enviado com sucesso.";
-      aviso.style.display = "block";
-    } catch (error) {
-      console.error("Erro ao reenviar:", error.message);
-      aviso.textContent = "Erro ao reenviar: " + error.message;
-      aviso.style.display = "block";
-    }
-  } else {
-    aviso.textContent = "Usuário não encontrado. Faça login novamente.";
-    aviso.style.display = "block";
-
-    // ❌ REMOVIDO: não sair da tela preta
-    // document.getElementById("verificacao-container").style.display = "none";
-    // loginContainer.style.display = "flex";
-  }
-};
-
-
-
-const btnVoltarRegistro = document.getElementById("btn-voltar-registro");
-
-btnVoltarRegistro.onclick = () => {
-  document.getElementById("verificacao-container").style.display = "none";
-  registerContainer.style.display = "flex";
-};
 
 document.getElementById("btn-voltar-login-spam").onclick = () => {
   document.getElementById("verificacao-spam").style.display = "none";
