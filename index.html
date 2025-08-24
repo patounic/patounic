@@ -245,6 +245,21 @@ background-blend-mode: overlay;
   pointer-events: none;
   z-index: 10;
 }
+.top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.4); /* fundo semi-transparente */
+  backdrop-filter: blur(10px);           /* aplica o embaçado */
+  -webkit-backdrop-filter: blur(10px);   /* compatibilidade Safari */
+  z-index: 1100;
+  transition: background-color 0.3s ease, backdrop-filter 0.3s ease;
+}
 
 .video-card:hover .video-hover-title {
   opacity: 1;
@@ -618,7 +633,7 @@ border-radius: 5px;
 /* Item de menu */
 /* Menu Dropdown - Caixas estilizadas para Home e Categoria */
 .dropdown-menu {
-  position: absolute;
+  position: fixed;
   top: 0.5rem; /* Distância do topo */
   left: 50px; /* Distância do ícone */
   background-color: transparent;
@@ -782,12 +797,12 @@ position: relative;
       font-weight: bold;
     }
 .logo-superior-esquerd1a {
-  position: absolute;
+  position: fixed;
   top: 13px; 
   left: 470px;
   width: 200px; 
   height: auto;
-  z-index: 10;
+  z-index: 1002; 
 }
 
 #site-content {
@@ -809,16 +824,26 @@ position: relative;
 .icon-bar {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* Alinha os itens à esquerda */
+  justify-content: space-between;
+  height: 62px; 
   padding: 1rem;
-  background-color: transparent;
-  position: absolute; /* Fixa a posição no topo */
+  position: fixed;  /* 🔒 fixa no topo */
   top: 0;
-  left: 0; /* Garante que o conteúdo fique no topo esquerdo */
-  width: 100%; /* Ocupa toda a largura da tela */
-  z-index: 10;
-  gap: 1rem;
+  left: 0;
+  width: 100%;
+  background-color: transparent; 
+  z-index: 1000;  /* 🔽 menor que o logo */
+  transition: background-color 0.3s ease, backdrop-filter 0.3s ease;
 }
+
+/* quando rolar a página */
+.icon-bar.scrolled {
+  background-color: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+
 
 .icon-bar {
   display: flex;
@@ -832,21 +857,6 @@ position: relative;
   z-index: 10;
 }
 
-.movie-icon {
-  font-size: 1.5rem;
-  cursor: pointer;
-  opacity: 0.8;
-  transition: opacity 0.2s ease;
-  left: 1rem;
-  top: 1rem;
-  z-index: 20;
-}
-
-.movie-icon img {
-  width: 1.5rem;
-  height: auto;
-  object-fit: contain;
-}
 
 
 /* Restante do código permanece o mesmo */
@@ -855,26 +865,13 @@ position: relative;
   align-items: center;
 }
 
-.popcorn-icon {
-  font-size: 1.2rem;
-  cursor: pointer;
-  opacity: 0.8;
-  transition: opacity 0.2s ease;
-  position: relative;  /* Ou absolute, dependendo do seu layout */
-  top: 0;  /* Ajuste este valor para mover a pipoca mais para cima */
-}
-
-.popcorn-icon:hover {
-  opacity: 1;
-}
-
     .icon-bar {
       display: flex;
       align-items: center;
       justify-content: flex-end;
       padding: 1rem;
     background-color: transparent;
-      position: absolute;
+      position: fixed;
       top: 0;
       right: 0;
       width: 100%;
@@ -885,17 +882,6 @@ position: relative;
     .search-container {
       display: flex;
       align-items: center;
-    }
-
-    .popcorn-icon {
-      font-size: 1.2rem;
-      cursor: pointer;
-      opacity: 0.8;
-      transition: opacity 0.2s ease;
-    }
-
-    .popcorn-icon:hover {
-      opacity: 1;
     }
 
     .search-input-wrapper {
@@ -2733,6 +2719,14 @@ function atualizarControles() {
   // se estiver no último episódio, esconde o botão pular
   btnPular.style.display = episodioAtual === totalEpisodios ? "none" : "inline-block";
 }
+window.addEventListener("scroll", () => {
+  const topBar = document.querySelector(".icon-bar");
+  if (window.scrollY > 10) {
+    topBar.classList.add("scrolled");
+  } else {
+    topBar.classList.remove("scrolled");
+  }
+});
 
 // expõe globalmente
 window.abrirEpisodio = abrirEpisodio;
