@@ -265,16 +265,17 @@ background-blend-mode: overlay;
   opacity: 1;
 }
 
-  @media (max-width: 600px) {
-    #chat-box {
-      top: 50% !important;
-      left: 50% !important;
-      right: auto !important;
-      transform: translate(-50%, -50%) !important;
-      width: 90% !important;
-      height: 75vh !important;
-    }
+@media (max-width: 600px) {
+  #chat-box {
+    top: 40px;         /* mesmo alinhamento do desktop */
+    right: 10px;       /* fica no canto direito */
+    left: auto;
+    transform: none;   /* remove o "puxar pro meio" */
+    width: 90%;        /* ocupa boa parte da tela */
+    height: 70vh;
   }
+}
+
   .coroa-brilhante {
     animation: brilhoCoroa 1.5s infinite alternate;
     display: inline-block;
@@ -1211,17 +1212,15 @@ position: relative;
 <!-- Caixa do chat -->
 <div id="chat-box" style="
   position: absolute;
-  top: 350px;
-  right: 20px;
-  transform: translateY(-50%);
+  top: 60px;   /* distância abaixo da lâmpada */
+  right: 20;    /* alinhar pela direita do wrapper */
   width: 380px;
   height: 75vh;
   background-color: #111;
-  color: white;
   border-radius: 10px;
   display: none;
   flex-direction: column;
-  z-index: 99999;
+  z-index: 9999;
   overflow: hidden;
   box-shadow: 0 0 12px black;
 
