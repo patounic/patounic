@@ -1667,7 +1667,13 @@ chatButton.onclick = () => {
 
   const setas = document.querySelectorAll(".scroll-arrow");
   setas.forEach(seta => {
-    seta.style.display = isOpen ? "" : "none";
+    if (isOpen) {
+      // chat estava aberto → agora fechou → volta ao normal (usa só o CSS)
+      seta.style.removeProperty("display");
+    } else {
+      // chat acabou de abrir → esconde setas
+      seta.style.display = "none";
+    }
   });
 
   document.getElementById("chat-alerta").style.display = "none";
@@ -2641,6 +2647,10 @@ const btnFecharChat = document.getElementById("chat-fechar");
 
 btnFecharChat.addEventListener("click", () => {
   chatBox.style.display = "none";
+
+  // 🔄 volta as setas ao normal
+  const setas = document.querySelectorAll(".scroll-arrow");
+  setas.forEach(seta => seta.style.removeProperty("display"));
 });
 
 let responderPara = null;
