@@ -637,10 +637,8 @@ border-radius: 5px;
   position: fixed;
   top: 0.5rem; /* Distância do topo */
   left: 50px; /* Distância do ícone */
-  background-color: transparent;
   border-radius: 8px;
   padding: 0.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   z-index: 20;
   display: flex;
   flex-direction: row;
@@ -648,26 +646,31 @@ border-radius: 5px;
   width: auto;
   transition: opacity 0.3s ease;
 }
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
 /* Item de menu estilizado como caixinha */
 .menu-item {
   padding: 8px 15px;
-  background-color: #333; /* Cor de fundo */
-  color: white;
-  border-radius: 10px; /* Bordas arredondadas */
+  background-color: transparent; /* 🔹 sem fundo */
+  color: white;                  /* texto branco */
+  border: none;                  /* remove qualquer borda */
+  border-radius: 10px;              /* sem arredondado */
   cursor: pointer;
   display: inline-block;
   text-align: center;
-  width: 120px; /* Largura fixa */
-  margin: 0 5px; /* Espaçamento entre as caixas */
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  width: auto;                   /* deixa o tamanho do texto */
+  margin: 0 10px;                /* espaçamento */
+  font-size: 1rem;
+  font-family: 'Roboto', sans-serif; /* alternativa genérica */
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Efeito ao passar o mouse */
 .menu-item:hover {
-  background-color: #5865f2; /* Cor de fundo quando hover */
-  transform: scale(1.05); /* Leve aumento de tamanho ao passar o mouse */
+  background-color: white; /* fundo branco */
+  color: black;            /* texto preto */
 }
+
 
 .menu-item:first-child {
   margin-left: 0; /* Retira margem esquerda do primeiro item */
@@ -800,7 +803,7 @@ position: relative;
 .logo-superior-esquerd1a {
   position: fixed;
   top: 13px; 
-  left: 470px;
+  left: 405px;
   width: 200px; 
   height: auto;
   z-index: 1002; 
@@ -823,28 +826,47 @@ position: relative;
   background-attachment: fixed;
 }
 
+/* Barra fixa no topo */
 .icon-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 62px; 
-  padding: 1rem;
-  position: fixed;  /* 🔒 fixa no topo */
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  background-color: transparent; 
-  z-index: 1000;  /* 🔽 menor que o logo */
-  transition: background-color 0.3s ease, backdrop-filter 0.3s ease;
+  height: 62px;       /* altura da barra */
+  width: 50%;         /* 🔹 só metade da tela */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 1rem;
+  background: transparent;
+  z-index: 1000;
+  transition: background 0.3s ease;
 }
 
-/* quando rolar a página */
 .icon-bar.scrolled {
-  background-color: rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  background: transparente;
 }
 
+.icon-bar.scrolled::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;        /* ou 100% se quiser toda a barra */
+  height: 100%;
+
+  /* fundo com gradiente e blur */
+  background: linear-gradient(to right, rgba(48,0,72,0.8), rgba(48,0,72,0.8));
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+
+  /* borda inferior sutil */
+border-bottom: 1px solid rgba(0,0,0,0.05);
+
+  /* curva só nas pontas de baixo */
+  border-radius: 0 0 40px 40px;
+
+  pointer-events: none;
+}
 
 
 .icon-bar {
