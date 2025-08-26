@@ -101,22 +101,17 @@ background-color: rgba(75, 0, 130, 0.35);
 
 /* 🔍 Campo de pesquisa no estilo "caixa" */
 .menu-input {
-  padding: 8px 15px;
-  background-color: #333;
+  padding: 4px 12px; /* ajuste fino vertical */
+  background-color: rgba(20,20,20,0.6); /* fundo levemente transparente */
   color: white;
-  border-radius: 10px;
-  border: none;
+  border-radius: none;
+  border: 0.1px solid rgba(255,255,255,0.25); /* borda bem fina e translúcida */
   outline: none;
-  width: 140px; /* pode ajustar */
+  width: 140px;
   font-size: 1rem;
   font-family: 'Inter', sans-serif;
-  margin-left: 4px;
-}
-
-/* Não muda ao passar o mouse */
-.menu-input:hover {
-  background-color: #333; 
-  transform: none;
+  margin-left: 6px;
+  transition: border-color 0.3s ease, background 0.3s ease;
 }
 
 .confirmacao-wrapper button {
