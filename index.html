@@ -8,6 +8,83 @@
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/Picsart_25-07-09_14-16-08-080_LE_upscale_balanced_x4_light_ai_30_tone_enhance_30_color_enhance_30 (1).webp">
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/wallpaper.png.webp">
   <style>
+/* Fundo do modal */
+#modal-nome {
+  position: fixed;
+  inset: 0; /* cobre a tela toda */
+  background: rgba(0, 0, 0, 0.7); /* fundo escuro transparente */
+  display: none; /* só aparece quando abrir */
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+}
+
+/* Caixa central */
+#modal-nome .modal-content {
+  background: rgba(48, 0, 72, 0.95); /* roxo escuro sólido */
+  padding: 20px;                     /* reduzi um pouco pra não ficar tão alto */
+  border-radius: 0;                  /* quadrado */
+  border: 0.5px solid rgba(200, 200, 200, 0.2); /* cinza claro, translúcido e bem fino */
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.5);       /* sombra mais suave */
+  animation: fadeIn 0.3s ease-out;
+
+  height: auto;        /* deixa ajustar pela altura do conteúdo */
+  min-height: 22px;   /* altura mínima */
+  max-height: 22vh;    /* nunca passa de 70% da altura da tela */
+}
+
+/* Título */
+#modal-nome h3 {
+  margin: 0 0 15px;
+  font-size: 1.2rem;
+  color: #fff;
+  text-align: center;
+}
+
+/* Input */
+#modal-nome input {
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  margin-bottom: 15px;
+  width: 100%;
+  font-size: 1rem;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+
+/* Botões */
+#modal-nome button {
+  padding: 10px 15px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#cancelar-nome {
+  background: #555;
+  color: white;
+}
+
+#confirmar-nome {
+  background: #5865f2;
+  color: white;
+}
+
+#confirmar-nome:hover {
+  background: #4752c4;
+}
+
+/* Animação */
+@keyframes fadeIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
 #episodio-page {
   background-image:
     linear-gradient(to bottom, rgba(20, 0, 40, 0.8) 55%, rgba(40, 0, 70, 0.98) 85%),
@@ -805,7 +882,7 @@ position: relative;
   left: 415px;
   width: 200px; 
   height: auto;
-  z-index: 1002; 
+  z-index: 10; 
 }
 
 #site-content {
@@ -837,7 +914,7 @@ position: relative;
   justify-content: flex-start;
   padding: 1rem;
   background: transparent;
-  z-index: 1000;
+  z-index: 9;
   transition: background 0.3s ease;
 }
 
@@ -865,6 +942,7 @@ border-bottom: 1px solid rgba(0,0,0,0.05);
   border-radius: 0 0 40px 40px;
 
   pointer-events: none;
+  z-index: 9;
 }
 
 
@@ -877,7 +955,7 @@ border-bottom: 1px solid rgba(0,0,0,0.05);
   position: fixed; /* Barra fixa no topo */
   top: 0; /* Fixa no topo */
   width: 100%; /* Ocupa toda a largura da tela */
-  z-index: 10;
+  z-index: 9;
 }
 
 
@@ -898,7 +976,7 @@ border-bottom: 1px solid rgba(0,0,0,0.05);
       top: 0;
       right: 0;
       width: 100%;
-      z-index: 10;
+      z-index: 9;
        gap: 0.5rem;
     }
 
@@ -1171,50 +1249,25 @@ background-color: rgba(75, 0, 130, 0.35);  border-radius: 0;
 <!-- Conteúdo principal -->
 <div id="site-content" style="display: none;">
 
-    <!-- Logo no topo -->
-  <img src="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/Picsart_25-07-15_22-26-46-902.png" 
-       alt="Logo" class="logo-superior-esquerd1a">
-
   <!-- Barra de ícones fixa no topo -->
   <div class="icon-bar" id="icon-bar">
     <div id="movie-icon" class="movie-icon" title="">
           </div>
-<div id="modal-nome" style="
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 9999;
-  align-items: center;
-  justify-content: center;
-">
-  <div style="
-    background: #1e1e1e;
-    padding: 20px;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 400px;
-    box-shadow: 0 0 10px black;
-    display: flex;
-    flex-direction: column;
-  ">
-<h3 style="margin-top: 0;">Definir Nome</h3>
 
-<input
-  id="input-nome-modal"
-  type="text"
-  placeholder="Digite seu nome"
-  maxlength="30"
-  style="padding: 10px; border-radius: 5px; border: none; margin-bottom: 10px; width: 100%;"
-/>
+<div id="modal-nome" aria-hidden="true">
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-nome-titulo">
+    <h3 id="modal-nome-titulo">Definir Nome</h3>
 
-<div style="display: flex; justify-content: flex-end; gap: 10px;">
-  <button id="cancelar-nome" style="padding: 8px 12px; background: #555; color: white; border: none; border-radius: 4px;">Cancelar</button>
-  <button id="confirmar-nome" style="padding: 8px 12px; background: #5865f2; color: white; border: none; border-radius: 4px;">Salvar</button>
-</div>
+    <input id="input-nome-modal" type="text" placeholder="Digite seu nome" maxlength="30" />
+
+    <div class="modal-actions">
+      <button type="button" id="cancelar-nome">Cancelar</button>
+      <button type="button" id="confirmar-nome">Salvar</button>
+    </div>
   </div>
 </div>
+
+
     <!-- Menu Dropdown -->
     <div id="dropdown-menu" class="dropdown-menu">
 <div id="home-menu" class="menu-item" data-text="Home">Home</div>
@@ -1226,7 +1279,11 @@ background-color: rgba(75, 0, 130, 0.35);  border-radius: 0;
     placeholder="Pesquisar..." 
     class="menu-input"
   />
+
 </div>
+    <!-- Logo no topo -->
+  <img src="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/Picsart_25-07-15_22-26-46-902.png"
+       alt="Logo" class="logo-superior-esquerd1a">
 
     <!-- Lista de Categorias -->
     <div class="categories" id="categorias">
