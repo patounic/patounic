@@ -1139,33 +1139,6 @@ background-color: rgba(75, 0, 130, 0.35);  border-radius: 0;
 .profile-menu .logout:hover::after {
   width: calc(100% - 20px); /* cresce a linha */
 }
-/* 🔒 Layout estático no mobile */
-@media (max-width: 768px) {
-  html, body {
-    width: 100vw;
-    overflow-x: hidden;
-  }
-
-  /* trava o zoom e garante escala fixa */
-  body {
-    min-width: 480px;  /* largura mínima desejada */
-    max-width: 480px;  /* largura máxima (fixa) */
-    margin: 0 auto;    /* centraliza */
-  }
-
-  /* impede que cards e vídeos diminuam */
-  .video-card, .card {
-    width: 220px !important;
-    height: 130px !important;
-  }
-
-  /* garante que menus e barra fiquem fixos */
-  .icon-bar, .dropdown-menu {
-    position: fixed;
-    width: 100% !important;
-  }
-}
-
   </style>
 </head>
 <body>
