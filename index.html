@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=480, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>Patounic Watch: 0v</title>
   <link rel="icon" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/Picsart_25-07-12_08-46-28-463.png" />
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/Picsart_25-07-09_14-16-08-080_LE_upscale_balanced_x4_light_ai_30_tone_enhance_30_color_enhance_30 (1).webp">
@@ -1138,6 +1138,32 @@ background-color: rgba(75, 0, 130, 0.35);  border-radius: 0;
 
 .profile-menu .logout:hover::after {
   width: calc(100% - 20px); /* cresce a linha */
+}
+/* 🔒 Layout estático no mobile */
+@media (max-width: 768px) {
+  html, body {
+    width: 100vw;
+    overflow-x: hidden;
+  }
+
+  /* trava o zoom e garante escala fixa */
+  body {
+    min-width: 480px;  /* largura mínima desejada */
+    max-width: 480px;  /* largura máxima (fixa) */
+    margin: 0 auto;    /* centraliza */
+  }
+
+  /* impede que cards e vídeos diminuam */
+  .video-card, .card {
+    width: 220px !important;
+    height: 130px !important;
+  }
+
+  /* garante que menus e barra fiquem fixos */
+  .icon-bar, .dropdown-menu {
+    position: fixed;
+    width: 100% !important;
+  }
 }
 
   </style>
