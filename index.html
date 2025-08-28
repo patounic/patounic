@@ -19,6 +19,31 @@
   filter: brightness(0.55);
 }
 
+/* Overlay que escurece e fica roxo ao descer */
+#bg-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+
+  background: linear-gradient(to bottom,
+    rgba(0,0,0,0) 0%,                  /* topo transparente */
+    rgba(0,0,0,0) 75%,                 /* até 75% nada */
+    rgba(48,0,72,0.0) 75%,             /* começa a transição */
+    rgba(48,0,72,0.8) 85%,             /* em 85% já chegou no roxo */
+    rgba(48,0,72,0.8) 100%             /* últimos 15% roxo sólido */
+  );
+
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+
+
+
+
+
+
 /* Garante que os contêineres principais fiquem acima do vídeo e sem fundos antigos */
 #site-content, #episodio-page, #login-container, #register-container{
   position: relative;
@@ -2802,6 +2827,51 @@ function pularEpisodio() {
   }
 }
 
+function atualizarControles() {
+  const btnVoltar = document.getElementById("btn-voltar-ep");
+  const btnPular = document.getElementById("btn-pular-ep");
+
+  // se estiver no primeiro episódio, esconde o botão voltar
+  btnVoltar.style.display = episodioAtual === 1 ? "none" : "inline-block";
+  // se estiver no último episódio, esconde o botão pular
+  btnPular.style.display = episodioAtual === totalEpisodios ? "none" : "inline-block";
+}
+window.addEventListener("scroll", () => {
+  const topBar = document.querySelector(".icon-bar");
+  if (window.scrollY > 10) {
+    topBar.classList.add("scrolled");
+  } else {
+    topBar.classList.remove("scrolled");
+  }
+
+  const overlay = document.getElementById("bg-overlay");
+  if (!overlay) return;
+
+  const scrollY = window.scrollY;
+  const maxScroll = document.body.scrollHeight - window.innerHeight;
+  const progress = Math.min(scrollY / maxScroll, 1);
+
+  const startPercent = 75;     // ponto inicial do roxo
+  const transitionHeight = 15; // altura da transição em % (mais suave)
+  
+  // Posição onde começa o roxo sólido
+  const purpleStart = startPercent - startPercent * progress;
+  const transitionStart = purpleStart;
+  const transitionEnd = Math.min(purpleStart + transitionHeight, 100);
+
+  overlay.style.background = `
+    linear-gradient(to bottom,
+      rgba(0,0,0,0) 0%,                  /* topo transparente */
+      rgba(48,0,72,0.0) ${transitionStart}%, /* começa a transição */
+      rgba(48,0,72,1) ${transitionEnd}%,     /* roxo sólido escuro */
+      rgba(48,0,72,1) 100%)
+  `;
+
+  overlay.style.backdropFilter = "blur(4px)";
+  overlay.style.webkitBackdropFilter = "blur(4px)";
+});
+
+
 // expõe globalmente
 window.abrirEpisodio = abrirEpisodio;
 window.voltarEpisodio = voltarEpisodio;
@@ -2810,65 +2880,32 @@ window.pularEpisodio = pularEpisodio;
   const bgVideo = document.getElementById("bg-video");
 
   // começa o vídeo 2s depois que a página carregar
-window.addEventListener("load", () => {
-  // autoplay mudo após 2s (OK)
-  setTimeout(() => {
-    bgVideo.muted = true;
-    bgVideo.play().catch(err => console.log("⚠️ Autoplay bloqueado:", err));
-  }, 2000);
-});
-window.addEventListener("scroll", () => {
-  const overlay = document.getElementById("bg-overlay");
-  if (!overlay) return;
+  window.addEventListener("load", () => {
+    setTimeout(() => {
+      bgVideo.muted = true;
+      bgVideo.play().catch(err => console.log("⚠️ Autoplay bloqueado:", err));
+    }, 2000); // ⏳ 2s delay para iniciar
+  });
 
-  const scrollY = window.scrollY;
-  const maxScroll = document.body.scrollHeight - window.innerHeight;
-  const progress = Math.min(scrollY / maxScroll, 1);
+  function liberarSom() {
+    setTimeout(() => {
+      bgVideo.muted = false;
+      bgVideo.volume = 0.2; // 🔉 volume bem baixo (20%)
+      bgVideo.play().catch(err => console.log("⚠️ Autoplay bloqueado:", err));
+    }, 2000); // ⏳ 2s delay para o áudio também
+     
+    // remove os listeners depois da primeira interação
+    document.removeEventListener("click", liberarSom);
+    document.removeEventListener("scroll", liberarSom);
+    document.removeEventListener("mousemove", liberarSom);
+    document.removeEventListener("mouseover", liberarSom);
+  }
 
-  const startPercent = 65;     // ponto inicial do roxo
-  const transitionHeight = 15; // altura da transição em %
-
-  // Calcula o topo e o fundo da transição
-  const purpleStart = startPercent - startPercent * progress;
-  const transitionStart = purpleStart;
-  const transitionEnd = Math.min(purpleStart + transitionHeight, 100);
-  
-  // Mantém a mesma proporção na parte de baixo
-  const bottomStart = 100 - (100 - transitionEnd);
-  const bottomEnd = 100; // sempre até 100%
-
-  overlay.style.background = `
-    linear-gradient(to bottom,
-      rgba(0,0,0,0) 0%,                  /* topo transparente */
-      rgba(48,0,72,0.0) ${transitionStart}%, /* transição topo */
-      rgba(48,0,72,1) ${transitionEnd}%,     /* roxo sólido topo */
-      rgba(48,0,72,1) ${bottomStart}%,       /* roxo sólido fundo proporcional */
-      rgba(48,0,72,1) ${bottomEnd}%          /* fundo sólido */
-    )
-  `;
-
-  overlay.style.backdropFilter = "blur(4px)";
-  overlay.style.webkitBackdropFilter = "blur(4px)";
-});
-function liberarSom(e) {
-  // toca e desmuta IMEDIATAMENTE no evento do usuário
-  bgVideo.muted = false;
-  bgVideo.volume = 0.2;
-  bgVideo.play().catch(err => console.log("⚠️ Erro ao tocar o áudio:", err));
-
-  // remove os listeners para não repetir
-  document.removeEventListener("click", liberarSom);
-  document.removeEventListener("scroll", liberarSom);
-  document.removeEventListener("mousemove", liberarSom);
-  document.removeEventListener("mouseover", liberarSom);
-}
-
-// adiciona os eventos de interação
-document.addEventListener("click", liberarSom);
-document.addEventListener("scroll", liberarSom);
-document.addEventListener("mousemove", liberarSom);
-document.addEventListener("mouseover", liberarSom);
-
+  // ativa som na primeira interação
+  document.addEventListener("click", liberarSom);
+  document.addEventListener("scroll", liberarSom);
+  document.addEventListener("mousemove", liberarSom);
+  document.addEventListener("mouseover", liberarSom);
   </script>
 <div id="video-modal" class="video-modal">
   <div class="modal-content">
