@@ -19,31 +19,6 @@
   filter: brightness(0.55);
 }
 
-/* Overlay que escurece e fica roxo ao descer */
-#bg-overlay {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-
-  background: linear-gradient(to bottom,
-    rgba(0,0,0,0) 0%,                  /* topo transparente */
-    rgba(0,0,0,0) 65%,                 /* até 75% nada */
-    rgba(48,0,72,0.0) 65%,             /* começa a transição */
-    rgba(48,0,72,0.8) 75%,             /* em 85% já chegou no roxo */
-    rgba(48,0,72,0.8) 100%             /* últimos 15% roxo sólido */
-  );
-
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-}
-
-
-
-
-
-
-
 /* Garante que os contêineres principais fiquem acima do vídeo e sem fundos antigos */
 #site-content, #episodio-page, #login-container, #register-container{
   position: relative;
@@ -2842,7 +2817,39 @@ window.addEventListener("load", () => {
     bgVideo.play().catch(err => console.log("⚠️ Autoplay bloqueado:", err));
   }, 2000);
 });
+window.addEventListener("scroll", () => {
+  const overlay = document.getElementById("bg-overlay");
+  if (!overlay) return;
 
+  const scrollY = window.scrollY;
+  const maxScroll = document.body.scrollHeight - window.innerHeight;
+  const progress = Math.min(scrollY / maxScroll, 1);
+
+  const startPercent = 65;     // ponto inicial do roxo
+  const transitionHeight = 15; // altura da transição em %
+
+  // Calcula o topo e o fundo da transição
+  const purpleStart = startPercent - startPercent * progress;
+  const transitionStart = purpleStart;
+  const transitionEnd = Math.min(purpleStart + transitionHeight, 100);
+  
+  // Mantém a mesma proporção na parte de baixo
+  const bottomStart = 100 - (100 - transitionEnd);
+  const bottomEnd = 100; // sempre até 100%
+
+  overlay.style.background = `
+    linear-gradient(to bottom,
+      rgba(0,0,0,0) 0%,                  /* topo transparente */
+      rgba(48,0,72,0.0) ${transitionStart}%, /* transição topo */
+      rgba(48,0,72,1) ${transitionEnd}%,     /* roxo sólido topo */
+      rgba(48,0,72,1) ${bottomStart}%,       /* roxo sólido fundo proporcional */
+      rgba(48,0,72,1) ${bottomEnd}%          /* fundo sólido */
+    )
+  `;
+
+  overlay.style.backdropFilter = "blur(4px)";
+  overlay.style.webkitBackdropFilter = "blur(4px)";
+});
 function liberarSom(e) {
   // toca e desmuta IMEDIATAMENTE no evento do usuário
   bgVideo.muted = false;
