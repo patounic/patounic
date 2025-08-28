@@ -8,25 +8,6 @@
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/Picsart_25-07-09_14-16-08-080_LE_upscale_balanced_x4_light_ai_30_tone_enhance_30_color_enhance_30 (1).webp">
 <link rel="preload" as="image" href="https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/wallpaper.png.webp">
   <style>
-
-
-#bg-video, #bg-overlay {
-  position: absolute; /* agora só dentro da primeira página */
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Garante que os contêineres principais fiquem acima do vídeo e sem fundos antigos */
-#site-content, #episodio-page, #login-container, #register-container{
-  position: relative;
-  z-index: 1;
-  background: transparent !important;
-  background-image: none !important;
-}
-
 /* Fundo do modal */
 #modal-nome {
   position: fixed;
@@ -829,7 +810,6 @@ html, body {
     body {
       margin: 0;
       padding: 0;
-background-color: rgb(30, 0, 50); /* roxo mais escuro */
 
     }
 
@@ -914,7 +894,7 @@ position: relative;
 
   background-image:
     linear-gradient(to bottom, rgba(20, 0, 40, 0.8) 55%, rgba(40, 0, 70, 0.98) 85%),
-    url("https://i.pinimg.com/736x/73/06/c1/7306c1bb2c477ac042098cbf4962f8d1.jpg");
+    url("https://cdn.jsdelivr.net/gh/patounic/patounic@latest/imagem/wallpaper.png.webp");
   background-size: cover;
   background-position: top;
   background-repeat: no-repeat;
@@ -1032,7 +1012,7 @@ border-bottom: none;
 
     .profile-container {
       position: relative;
-margin-right: 40px;
+margin-right: 35px;
     }
 
     .profile-icon {
@@ -1159,14 +1139,10 @@ background-color: rgba(75, 0, 130, 0.35);  border-radius: 0;
 .profile-menu .logout:hover::after {
   width: calc(100% - 20px); /* cresce a linha */
 }
+
   </style>
 </head>
 <body>
-<video id="bg-video" autoplay muted loop playsinline preload="auto"
-       poster="https://i.pinimg.com/736x/73/06/c1/7306c1bb2c477ac042098cbf4962f8d1.jpg">
-  <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
-</video>
-<div id="bg-overlay"></div>
 
 <!-- Página do Episódio -->
 <div id="episodio-page" style="display:none; padding:20px; text-align:center;">
@@ -1177,7 +1153,6 @@ background-color: rgba(75, 0, 130, 0.35);  border-radius: 0;
   </button>
 
   <h1 id="episodio-titulo">Episódio</h1>
-
 
   <!-- player -->
   <div style="max-width:900px; margin:auto;">
@@ -1490,33 +1465,27 @@ background-color: rgba(75, 0, 130, 0.35);  border-radius: 0;
 
 <div class="video-card" 
      onclick="abrirModal('https://drive.google.com/file/d/1SMoyOaJ0swynUeJGxTYi_BNDbgsID30x/preview')" 
-     style="background-image: url('https://media.discordapp.net/attachments/1326697236771635234/1410240505085689986/Picsart_25-08-27_14-31-56-696.jpg?ex=68b04c51&is=68aefad1&hm=b24a59ec5bda57b17569fdad1161af8c423e64c778e58b05ab9f9e6337f785ce&=&format=webp&width=1522&height=856');">
+     style="background-image: url('https://via.placeholder.com/260x140.png?text=Minha+Capa');">
   <span class="video-title">Meu Vídeo no Drive</span>
 </div>
 
 <div class="video-card" 
      onclick="abrirModal('https://www.youtube.com/embed/kJQP7kiw5Fk')" 
-     style="background-image: url('https://media.discordapp.net/attachments/1326697236771635234/1410240505085689986/Picsart_25-08-27_14-31-56-696.jpg?ex=68b04c51&is=68aefad1&hm=b24a59ec5bda57b17569fdad1161af8c423e64c778e58b05ab9f9e6337f785ce&=&format=webp&width=1522&height=856');">
+     style="background-image: url('https://img.youtube.com/vi/kJQP7kiw5Fk/hqdefault.jpg');">
   <span class="video-title">Vídeo 3</span>
 </div>
 
-<div class="video-card" 
-     onclick="abrirModal('https://www.youtube.com/embed/kJQP7kiw5Fk')" 
-     style="background-image: url('https://media.discordapp.net/attachments/1326697236771635234/1410240505085689986/Picsart_25-08-27_14-31-56-696.jpg?ex=68b04c51&is=68aefad1&hm=b24a59ec5bda57b17569fdad1161af8c423e64c778e58b05ab9f9e6337f785ce&=&format=webp&width=1522&height=856');">
-  <span class="video-title">Vídeo 3</span>
-</div>
+      <div class="video-card" onclick="abrirModal('https://www.youtube.com/embed/L_jWHffIx5E')" style="background-image: url('https://img.youtube.com/vi/L_jWHffIx5E/hqdefault.jpg');">
+        <span class="video-title">Vídeo 4</span>
+      </div>
 
-<div class="video-card" 
-     onclick="abrirModal('https://www.youtube.com/embed/kJQP7kiw5Fk')" 
-     style="background-image: url('https://media.discordapp.net/attachments/1326697236771635234/1410240505085689986/Picsart_25-08-27_14-31-56-696.jpg?ex=68b04c51&is=68aefad1&hm=b24a59ec5bda57b17569fdad1161af8c423e64c778e58b05ab9f9e6337f785ce&=&format=webp&width=1522&height=856');">
-  <span class="video-title">Vídeo 3</span>
-</div>
+      <div class="video-card" onclick="abrirModal('https://www.youtube.com/embed/OPf0YbXqDm0')" style="background-image: url('https://img.youtube.com/vi/OPf0YbXqDm0/hqdefault.jpg');">
+        <span class="video-title">Vídeo 5</span>
+      </div>
 
-<div class="video-card" 
-     onclick="abrirModal('https://www.youtube.com/embed/kJQP7kiw5Fk')" 
-     style="background-image: url('https://media.discordapp.net/attachments/1326697236771635234/1410240505085689986/Picsart_25-08-27_14-31-56-696.jpg?ex=68b04c51&is=68aefad1&hm=b24a59ec5bda57b17569fdad1161af8c423e64c778e58b05ab9f9e6337f785ce&=&format=webp&width=1522&height=856');">
-  <span class="video-title">Vídeo 3</span>
-</div>
+      <div class="video-card" onclick="abrirModal('https://www.youtube.com/embed/tVj0ZTS4WF4')" style="background-image: url('https://img.youtube.com/vi/tVj0ZTS4WF4/hqdefault.jpg');">
+        <span class="video-title">Vídeo 6</span>
+      </div>
 
     </div>
 
@@ -2820,42 +2789,10 @@ window.addEventListener("scroll", () => {
   }
 });
 
-
-
 // expõe globalmente
 window.abrirEpisodio = abrirEpisodio;
 window.voltarEpisodio = voltarEpisodio;
 window.pularEpisodio = pularEpisodio;
-
-  const bgVideo = document.getElementById("bg-video");
-
-  // começa o vídeo 2s depois que a página carregar
-  window.addEventListener("load", () => {
-    setTimeout(() => {
-      bgVideo.muted = true;
-      bgVideo.play().catch(err => console.log("⚠️ Autoplay bloqueado:", err));
-    }, 2000); // ⏳ 2s delay para iniciar
-  });
-
-  function liberarSom() {
-    setTimeout(() => {
-      bgVideo.muted = false;
-      bgVideo.volume = 0.2; // 🔉 volume bem baixo (20%)
-      bgVideo.play().catch(err => console.log("⚠️ Autoplay bloqueado:", err));
-    }, 2000); // ⏳ 2s delay para o áudio também
-     
-    // remove os listeners depois da primeira interação
-    document.removeEventListener("click", liberarSom);
-    document.removeEventListener("scroll", liberarSom);
-    document.removeEventListener("mousemove", liberarSom);
-    document.removeEventListener("mouseover", liberarSom);
-  }
-
-  // ativa som na primeira interação
-  document.addEventListener("click", liberarSom);
-  document.addEventListener("scroll", liberarSom);
-  document.addEventListener("mousemove", liberarSom);
-  document.addEventListener("mouseover", liberarSom);
   </script>
 <div id="video-modal" class="video-modal">
   <div class="modal-content">
